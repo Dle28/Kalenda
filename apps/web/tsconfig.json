@@ -3,8 +3,32 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
-    }
+      "@/*": [
+        "src/*"
+      ],
+      "@starter/ts-sdk/idl": [
+        "../../packages/ts-sdk/dist/idl/index.d.ts"
+      ],
+      "@starter/ts-sdk/idl/*": [
+        "../../packages/ts-sdk/dist/idl/*"
+      ]
+    },
+    "allowJs": true,
+    "noEmit": true,
+    "incremental": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
-  "include": ["next-env.d.ts", "src/**/*", "src/**/*.tsx", "src/**/*.ts"]
+  "include": [
+    "next-env.d.ts",
+    "src/**/*",
+    "src/**/*.tsx",
+    "src/**/*.ts",
+    ".next/types/**/*.ts"
+  ]
 }

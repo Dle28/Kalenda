@@ -6,6 +6,26 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": ["dist", "idl"],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./idl/*": {
+      "types": "./dist/idl/*.d.ts",
+      "import": "./dist/idl/*.js"
+    },
+    "./idl": {
+      "types": "./dist/idl/index.d.ts",
+      "import": "./dist/idl/index.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "idl": ["dist/idl/index.d.ts"],
+      "idl/*": ["dist/idl/*.d.ts"]
+    }
+  },
   "scripts": {
     "build": "tsc -p .",
     "prepublishOnly": "pnpm build"

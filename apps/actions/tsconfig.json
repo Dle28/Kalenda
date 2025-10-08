@@ -1,10 +1,13 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "build",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "target": "ES2021"
+    "outDir": "dist",
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "declaration": true,
+    "skipLibCheck": true,
+    "types": ["node", "bun"]
   },
-  "include": ["src/**/*"]
+  "include": ["src", "env.d.ts"]
 }
