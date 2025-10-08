@@ -1,0 +1,14 @@
+{
+  "name": "solana-dapp-starter",
+  "private": true,
+  "packageManager": "pnpm@9",
+  "workspaces": ["apps/*", "programs/*", "packages/*"],
+  "scripts": {
+    "dev:web": "pnpm --filter @starter/web dev",
+    "dev:actions": "pnpm --filter @starter/actions dev",
+    "dev:chain": "anchor localnet",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test"
+  }
+}

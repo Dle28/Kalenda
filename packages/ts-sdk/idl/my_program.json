@@ -1,0 +1,34 @@
+{
+  "version": "0.1.0",
+  "name": "my_program",
+  "instructions": [
+    {
+      "name": "initialize",
+      "accounts": [
+        { "name": "counter", "isMut": true, "isSigner": true },
+        { "name": "signer", "isMut": true, "isSigner": true },
+        { "name": "systemProgram", "isMut": false, "isSigner": false }
+      ],
+      "args": []
+    },
+    {
+      "name": "increment",
+      "accounts": [
+        { "name": "counter", "isMut": true, "isSigner": false }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Counter",
+      "type": {
+        "kind": "struct",
+        "fields": [{ "name": "value", "type": "u64" }]
+      }
+    }
+  ],
+  "errors": [
+    { "code": 6000, "name": "Overflow", "msg": "Overflow" }
+  ]
+}

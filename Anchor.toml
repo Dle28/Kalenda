@@ -1,0 +1,12 @@
+[programs.localnet]
+my_program = "4xVJq8m...ReplaceWithYourKey..."
+
+[registry]
+url = "https://anchor.projectserum.com"
+
+[provider]
+cluster = "Localnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+deploy = "anchor build && anchor deploy"
