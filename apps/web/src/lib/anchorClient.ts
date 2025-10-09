@@ -8,15 +8,28 @@ type Wallet = {
   signAllTransactions<T extends Transaction | VersionedTransaction>(txs: T[]): Promise<T[]>;
 };
 
+function getProgramId(): PublicKey {
+  const fromEnv = process.env.NEXT_PUBLIC_PROGRAM_ID?.trim();
+  const fromIdl = (idl as any)?.address as string | undefined; // nếu idl có address
+  const candidate = fromEnv ?? fromIdl;
+
+  if (!candidate) {
+    throw new Error(
+      "Program ID is missing. Set NEXT_PUBLIC_PROGRAM_ID or include `address` in your IDL."
+    );
+  }
+  try {
+    return new PublicKey(candidate);
+  } catch (e) {
+    throw new Error(`Invalid Program ID: "${candidate}". ${String(e)}`);
+  }
+}
+
 export const getProgram = (conn: Connection, wallet: Wallet) => {
-  const provider = new AnchorProvider(conn, wallet, { commitment: "processed" });
+  const provider = new AnchorProvider(conn, wallet as any, { commitment: "processed" });
   setProvider(provider);
 
-  const pid = process.env.NEXT_PUBLIC_PROGRAM_ID;
-  if (!pid) throw new Error("NEXT_PUBLIC_PROGRAM_ID is not defined");
-  const programId = new PublicKey(pid);
-
-  // Cast the generated JSON to Anchor Idl
-  const anchorIdl = idl as unknown as Idl;
-  return new Program(anchorIdl, provider, programId);
+  const programId = getProgramId();
+  
+  return new Program(idl as unknown as Idl, provider as any, programId as any);
 };

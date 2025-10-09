@@ -1,7 +1,7 @@
 {
   "name": "solana-dapp-starter",
   "private": true,
-  "packageManager": "pnpm@9",
+  "packageManager": "pnpm@9.32.0",
   "workspaces": ["apps/*", "programs/*", "packages/*"],
   "scripts": {
     "dev:web": "pnpm --filter @starter/web dev",
