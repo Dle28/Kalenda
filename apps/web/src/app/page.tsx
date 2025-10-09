@@ -1,3 +1,4 @@
+"use client";
 import dynamic from "next/dynamic";
 import { Connection } from "@solana/web3.js";
 
