@@ -2,7 +2,11 @@
   "name": "solana-dapp-starter",
   "private": true,
   "packageManager": "pnpm@9.6.0",
-  "workspaces": ["apps/*", "programs/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "programs/*",
+    "packages/*"
+  ],
   "scripts": {
     "dev:web": "pnpm --filter @starter/web dev",
     "dev:actions": "pnpm --filter @starter/actions dev",
@@ -10,5 +14,8 @@
     "build": "pnpm -r build",
     "lint": "pnpm -r lint",
     "test": "pnpm -r test"
+  },
+  "devDependencies": {
+    "typescript": "5.6.2"
   }
 }
