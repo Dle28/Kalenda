@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-declare_id!("4xVJq8m...ReplaceWithYourKey...");
+declare_id!("Er8bzgBBAkq9MuuLoBccj5YedQkf313ehosEpuYfsDPM");
 
 #[program]
 pub mod my_program {
