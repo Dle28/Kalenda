@@ -1,16 +1,17 @@
-[programs.localnet]
-my_program = "Er8bzgBBAkq9MuuLoBccj5YedQkf313ehosEpuYfsDPM"
+[programs.devnet]
 timemarket = "TmMkt11111111111111111111111111111111111111"
 
 [registry]
 url = "https://anchor.projectserum.com"
 
 [provider]
-cluster = "Localnet"
-wallet = "~/.config/solana/id.json"
+cluster = "Devnet"
+wallet = "~/.config/solana/devnet.json"
 
 [scripts]
 deploy = "anchor build && anchor deploy"
+# Use an underscore in the key; TOML bare keys cannot contain ':'
+deploy_timemarket = "anchor build -p timemarket && anchor deploy -p timemarket"
 
 [toolchain]
 anchor_version = '0.31.1'
