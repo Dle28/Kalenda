@@ -8,13 +8,21 @@ crate-type = ["cdylib", "lib"]
 name = "timemarket"
 
 [features]
+default = ["init-if-needed"]
 no-entrypoint = []
 no-idl = []
 no-log-ix-name = []
-idl-build = []
+idl-build = ["anchor-lang/idl-build"]
+anchor-debug = []
+cpi = []
+custom-heap = []
+custom-panic = []
+init-if-needed = ["anchor-lang/init-if-needed"]
 
 [dependencies]
 anchor-lang = "0.30.1"
-anchor-spl = { version = "0.30.1", features = ["token", "token-2022", "associated-token", "metadata"] }
+anchor-spl = { version = "0.30.1", features = ["token", "token_2022", "associated_token", "metadata"] }
 bytemuck = { version = "1.14", features = ["derive"] }
 
+[patch.crates-io]
+anchor-syn = { path = "../../patches/anchor-syn-0.30.1" }

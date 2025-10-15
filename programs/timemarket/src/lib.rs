@@ -1,4 +1,5 @@
 use anchor_lang::prelude::*;
+use anchor_lang::Bumps;
 use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token_interface::{transfer_checked, Mint, TokenAccount, TokenInterface, TransferChecked};
 
@@ -24,7 +25,7 @@ pub mod timemarket {
         platform.platform_fee_bps = platform_fee_bps;
         platform.mint = ctx.accounts.mint.key();
         platform.dispute_vault = ctx.accounts.dispute_vault.key();
-        platform.bump = *ctx.bumps.get("platform").unwrap();
+        platform.bump = ctx.bumps.platform;
         Ok(())
     }
 
@@ -42,7 +43,7 @@ pub mod timemarket {
         profile.payout_wallet = payout_wallet;
         profile.fee_bps_override = fee_bps_override;
         profile.platform = ctx.accounts.platform.key();
-        profile.bump = *ctx.bumps.get("profile").unwrap();
+        profile.bump = ctx.bumps.profile;
         Ok(())
     }
 
@@ -108,7 +109,7 @@ pub mod timemarket {
         slot.auction_start_ts = params.auction_start_ts;
         slot.auction_end_ts = params.auction_end_ts;
         slot.anti_sniping_sec = params.anti_sniping_sec;
-        slot.bump = *ctx.bumps.get("slot").unwrap();
+        slot.bump = ctx.bumps.slot;
         Ok(())
     }
 
@@ -118,7 +119,7 @@ pub mod timemarket {
         escrow.token_acc = ctx.accounts.escrow_vault.key();
         escrow.amount_locked = 0;
         escrow.buyer = None;
-        escrow.bump = *ctx.bumps.get("escrow").unwrap();
+        escrow.bump = ctx.bumps.escrow;
         Ok(())
     }
 
@@ -131,7 +132,7 @@ pub mod timemarket {
         bidbook.last_bid_ts = 0;
         bidbook.pending_refund_amount = 0;
         bidbook.pending_refund_bidder = Pubkey::default();
-        bidbook.bump = *ctx.bumps.get("bidbook").unwrap();
+        bidbook.bump = ctx.bumps.bidbook;
         Ok(())
     }
 
@@ -142,7 +143,7 @@ pub mod timemarket {
         store.max_entries = max_entries;
         store.count = 0;
         store.entries = Vec::with_capacity(max_entries as usize);
-        store.bump = *ctx.bumps.get("commit_store").unwrap();
+        store.bump = ctx.bumps.commit_store;
         Ok(())
     }
 
@@ -276,19 +277,27 @@ pub mod timemarket {
         require_keys_eq!(book.pending_refund_bidder, ctx.accounts.prev_bidder.key(), ErrorCode::Unauthorized);
         // Transfer escrow -> prev bidder token
         let decimals = ctx.accounts.mint.decimals;
-        let slot = &ctx.accounts.slot;
+        let slot_key = ctx.accounts.slot.key();
+        let escrow_bump = ctx.accounts.escrow.bump;
+        let token_program = ctx.accounts.token_program.to_account_info();
+        let escrow_vault = ctx.accounts.escrow_vault.to_account_info();
+        let mint = ctx.accounts.mint.to_account_info();
+        let prev_bidder_token = ctx.accounts.prev_bidder_token.to_account_info();
+        let escrow_info = ctx.accounts.escrow.to_account_info();
+        let prev_bidder_key = ctx.accounts.prev_bidder.key();
+        let bump_seed = [escrow_bump];
+        let seeds: &[&[u8]] = &[b"escrow", slot_key.as_ref(), &bump_seed];
+        let signer: &[&[&[u8]]] = &[seeds];
         let escrow = &mut ctx.accounts.escrow;
-        let seeds = &[b"escrow".as_ref(), slot.key().as_ref(), &[escrow.bump]];
-        let signer = &[&seeds[..]];
         let amt = book.pending_refund_amount;
         transfer_checked(
             CpiContext::new_with_signer(
-                ctx.accounts.token_program.to_account_info(),
+                token_program,
                 TransferChecked {
-                    from: ctx.accounts.escrow_vault.to_account_info(),
-                    mint: ctx.accounts.mint.to_account_info(),
-                    to: ctx.accounts.prev_bidder_token.to_account_info(),
-                    authority: ctx.accounts.escrow.to_account_info(),
+                    from: escrow_vault,
+                    mint,
+                    to: prev_bidder_token,
+                    authority: escrow_info.clone(),
                 },
                 signer,
             ),
@@ -297,7 +306,7 @@ pub mod timemarket {
         )?;
         // Adjust escrow locked sum
         escrow.amount_locked = escrow.amount_locked.checked_sub(amt).ok_or(ErrorCode::Overflow)?;
-        emit!(OutbidRefundedEvent { slot: slot.key(), to: ctx.accounts.prev_bidder.key(), amount: amt });
+        emit!(OutbidRefundedEvent { slot: slot_key, to: prev_bidder_key, amount: amt });
         // Clear pending
         book.pending_refund_amount = 0;
         book.pending_refund_bidder = Pubkey::default();
@@ -305,6 +314,19 @@ pub mod timemarket {
     }
 
     pub fn auction_end(ctx: Context<AuctionEnd>) -> Result<()> {
+        let decimals = ctx.accounts.mint.decimals;
+        let slot_key = ctx.accounts.slot.key();
+        let escrow_bump = ctx.accounts.escrow.bump;
+        let token_program = ctx.accounts.token_program.to_account_info();
+        let escrow_vault = ctx.accounts.escrow_vault.to_account_info();
+        let creator_payout = ctx.accounts.creator_payout_ata.to_account_info();
+        let platform_vault = ctx.accounts.platform_vault.to_account_info();
+        let mint = ctx.accounts.mint.to_account_info();
+        let escrow_info = ctx.accounts.escrow.to_account_info();
+        let bump_seed = [escrow_bump];
+        let seeds: &[&[u8]] = &[b"escrow", slot_key.as_ref(), &bump_seed];
+        let signer: &[&[&[u8]]] = &[seeds];
+
         let slot = &mut ctx.accounts.slot;
         let book = &mut ctx.accounts.bidbook;
         require!(slot.mode == Mode::EnglishAuction, ErrorCode::WrongMode);
@@ -322,22 +344,19 @@ pub mod timemarket {
         require!(escrow.amount_locked == book.highest_bid, ErrorCode::InvalidEscrowBalance);
 
         // T0 payout (40%) to creator, fee pro-rata
-        let decimals = ctx.accounts.mint.decimals;
         let total_fee = mul_bps_u64(book.highest_bid, ctx.accounts.platform.platform_fee_bps as u64)?;
         let t0_base = mul_bps_u64(book.highest_bid, AUCTION_T0_BPS)?;
         let t0_fee = mul_bps_u64(total_fee, AUCTION_T0_BPS)?;
         let t0_creator = t0_base.checked_sub(t0_fee).ok_or(ErrorCode::Overflow)?;
-        let seeds = &[b"escrow".as_ref(), slot.key().as_ref(), &[escrow.bump]];
-        let signer = &[&seeds[..]];
         // creator payout
         transfer_checked(
             CpiContext::new_with_signer(
-                ctx.accounts.token_program.to_account_info(),
+                token_program.clone(),
                 TransferChecked {
-                    from: ctx.accounts.escrow_vault.to_account_info(),
-                    mint: ctx.accounts.mint.to_account_info(),
-                    to: ctx.accounts.creator_payout_ata.to_account_info(),
-                    authority: ctx.accounts.escrow.to_account_info(),
+                    from: escrow_vault.clone(),
+                    mint: mint.clone(),
+                    to: creator_payout,
+                    authority: escrow_info.clone(),
                 },
                 signer,
             ),
@@ -347,12 +366,12 @@ pub mod timemarket {
         // fee
         transfer_checked(
             CpiContext::new_with_signer(
-                ctx.accounts.token_program.to_account_info(),
+                token_program,
                 TransferChecked {
-                    from: ctx.accounts.escrow_vault.to_account_info(),
-                    mint: ctx.accounts.mint.to_account_info(),
-                    to: ctx.accounts.platform_vault.to_account_info(),
-                    authority: ctx.accounts.escrow.to_account_info(),
+                    from: escrow_vault,
+                    mint,
+                    to: platform_vault,
+                    authority: escrow_info,
                 },
                 signer,
             ),
@@ -361,7 +380,7 @@ pub mod timemarket {
         )?;
         escrow.amount_locked = escrow.amount_locked.checked_sub(t0_creator + t0_fee).ok_or(ErrorCode::Overflow)?;
         slot.state = SlotState::Locked;
-        emit!(AuctionEndedEvent { slot: slot.key(), winner: book.highest_bidder, winning_bid: book.highest_bid });
+        emit!(AuctionEndedEvent { slot: slot_key, winner: book.highest_bidder, winning_bid: book.highest_bid });
         Ok(())
     }
 
@@ -382,11 +401,24 @@ pub mod timemarket {
     }
 
     pub fn auction_settle(ctx: Context<AuctionSettle>) -> Result<()> {
+        let decimals = ctx.accounts.mint.decimals;
+        let slot_key = ctx.accounts.slot.key();
+        let creator_ata_key = ctx.accounts.creator_payout_ata.key();
+        let escrow_bump = ctx.accounts.escrow.bump;
+        let token_program = ctx.accounts.token_program.to_account_info();
+        let escrow_vault = ctx.accounts.escrow_vault.to_account_info();
+        let mint = ctx.accounts.mint.to_account_info();
+        let creator_payout = ctx.accounts.creator_payout_ata.to_account_info();
+        let platform_vault = ctx.accounts.platform_vault.to_account_info();
+        let escrow_info = ctx.accounts.escrow.to_account_info();
+        let bump_seed = [escrow_bump];
+        let seeds: &[&[u8]] = &[b"escrow", slot_key.as_ref(), &bump_seed];
+        let signer: &[&[&[u8]]] = &[seeds];
+
         let platform = &ctx.accounts.platform;
         let slot = &mut ctx.accounts.slot;
         let escrow = &mut ctx.accounts.escrow;
         let book = &ctx.accounts.bidbook;
-        let decimals = ctx.accounts.mint.decimals;
         require!(slot.mode == Mode::EnglishAuction, ErrorCode::WrongMode);
         require!(!slot.frozen, ErrorCode::Frozen);
         require!(book.highest_bid > 0, ErrorCode::NoBids);
@@ -401,18 +433,15 @@ pub mod timemarket {
         let t1_fee = mul_bps_u64(t1_base, platform.platform_fee_bps as u64)?;
         let t1_creator = t1_release.checked_sub(t1_fee).ok_or(ErrorCode::Overflow)?;
 
-        let seeds = &[b"escrow".as_ref(), slot.key().as_ref(), &[escrow.bump]];
-        let signer = &[&seeds[..]];
-
         // to creator
         transfer_checked(
             CpiContext::new_with_signer(
-                ctx.accounts.token_program.to_account_info(),
+                token_program.clone(),
                 TransferChecked {
-                    from: ctx.accounts.escrow_vault.to_account_info(),
-                    mint: ctx.accounts.mint.to_account_info(),
-                    to: ctx.accounts.creator_payout_ata.to_account_info(),
-                    authority: ctx.accounts.escrow.to_account_info(),
+                    from: escrow_vault.clone(),
+                    mint: mint.clone(),
+                    to: creator_payout.clone(),
+                    authority: escrow_info.clone(),
                 },
                 signer,
             ),
@@ -422,12 +451,12 @@ pub mod timemarket {
         // fee
         transfer_checked(
             CpiContext::new_with_signer(
-                ctx.accounts.token_program.to_account_info(),
+                token_program.clone(),
                 TransferChecked {
-                    from: ctx.accounts.escrow_vault.to_account_info(),
-                    mint: ctx.accounts.mint.to_account_info(),
-                    to: ctx.accounts.platform_vault.to_account_info(),
-                    authority: ctx.accounts.escrow.to_account_info(),
+                    from: escrow_vault.clone(),
+                    mint: mint.clone(),
+                    to: platform_vault.clone(),
+                    authority: escrow_info.clone(),
                 },
                 signer,
             ),
@@ -437,12 +466,12 @@ pub mod timemarket {
         if t1_withhold > 0 {
             transfer_checked(
                 CpiContext::new_with_signer(
-                    ctx.accounts.token_program.to_account_info(),
+                    token_program.clone(),
                     TransferChecked {
-                        from: ctx.accounts.escrow_vault.to_account_info(),
-                        mint: ctx.accounts.mint.to_account_info(),
-                        to: ctx.accounts.platform_vault.to_account_info(),
-                        authority: ctx.accounts.escrow.to_account_info(),
+                        from: escrow_vault.clone(),
+                        mint: mint.clone(),
+                        to: platform_vault.clone(),
+                        authority: escrow_info.clone(),
                     },
                     signer,
                 ),
@@ -457,7 +486,7 @@ pub mod timemarket {
         require!(escrow.amount_locked >= total_out, ErrorCode::InvalidEscrowBalance);
         escrow.amount_locked = escrow.amount_locked.checked_sub(total_out).ok_or(ErrorCode::Overflow)?;
         slot.state = SlotState::Settled;
-        emit!(SettledT1Event { slot: slot.key(), to: ctx.accounts.creator_payout_ata.key(), amount: t1_creator, fee: t1_fee, retained: t1_withhold });
+        emit!(SettledT1Event { slot: slot_key, to: creator_ata_key, amount: t1_creator, fee: t1_fee, retained: t1_withhold });
         Ok(())
     }
 
@@ -493,6 +522,19 @@ pub mod timemarket {
     }
 
     pub fn stable_cancel(ctx: Context<StableCancel>) -> Result<()> {
+        let decimals = ctx.accounts.mint.decimals;
+        let slot_key = ctx.accounts.slot.key();
+        let buyer_key = ctx.accounts.buyer.key();
+        let escrow_bump = ctx.accounts.escrow.bump;
+        let token_program = ctx.accounts.token_program.to_account_info();
+        let escrow_vault = ctx.accounts.escrow_vault.to_account_info();
+        let mint = ctx.accounts.mint.to_account_info();
+        let buyer_token = ctx.accounts.buyer_token.to_account_info();
+        let escrow_info = ctx.accounts.escrow.to_account_info();
+        let bump_seed = [escrow_bump];
+        let seeds: &[&[u8]] = &[b"escrow", slot_key.as_ref(), &bump_seed];
+        let signer: &[&[&[u8]]] = &[seeds];
+
         let slot = &mut ctx.accounts.slot;
         require!(slot.mode == Mode::Stable, ErrorCode::WrongMode);
         require!(slot.state == SlotState::Reserved, ErrorCode::InvalidState);
@@ -503,22 +545,18 @@ pub mod timemarket {
 
         let escrow = &mut ctx.accounts.escrow;
         let buyer = escrow.buyer.ok_or(ErrorCode::NotReserved)?;
-        require_keys_eq!(buyer, ctx.accounts.buyer.key(), ErrorCode::UnauthorizedBuyer);
+        require_keys_eq!(buyer, buyer_key, ErrorCode::UnauthorizedBuyer);
         let amount = escrow.amount_locked;
         require!(amount > 0, ErrorCode::NothingToRefund);
-        // Transfer escrow_vault -> buyer_token
-        let decimals = ctx.accounts.mint.decimals;
-        let seeds = &[b"escrow".as_ref(), ctx.accounts.slot.key().as_ref(), &[escrow.bump]];
-        let signer = &[&seeds[..]];
         let cpi_accounts = TransferChecked {
-            from: ctx.accounts.escrow_vault.to_account_info(),
-            mint: ctx.accounts.mint.to_account_info(),
-            to: ctx.accounts.buyer_token.to_account_info(),
-            authority: ctx.accounts.escrow.to_account_info(),
+            from: escrow_vault,
+            mint,
+            to: buyer_token,
+            authority: escrow_info,
         };
         transfer_checked(
             CpiContext::new_with_signer(
-                ctx.accounts.token_program.to_account_info(),
+                token_program,
                 cpi_accounts,
                 signer,
             ),
@@ -528,7 +566,7 @@ pub mod timemarket {
         escrow.amount_locked = 0;
         escrow.buyer = None;
         slot.state = SlotState::Open;
-        emit!(RefundedEvent { slot: slot.key(), to: ctx.accounts.buyer.key(), amount });
+        emit!(RefundedEvent { slot: slot_key, to: buyer_key, amount });
         Ok(())
     }
 
@@ -549,17 +587,26 @@ pub mod timemarket {
     }
 
     pub fn stable_settle(ctx: Context<StableSettle>) -> Result<()> {
+        let decimals = ctx.accounts.mint.decimals;
+        let slot_key = ctx.accounts.slot.key();
+        let creator_ata_key = ctx.accounts.creator_payout_ata.key();
+        let escrow_bump = ctx.accounts.escrow.bump;
+        let token_program = ctx.accounts.token_program.to_account_info();
+        let escrow_vault = ctx.accounts.escrow_vault.to_account_info();
+        let mint = ctx.accounts.mint.to_account_info();
+        let creator_payout = ctx.accounts.creator_payout_ata.to_account_info();
+        let platform_vault = ctx.accounts.platform_vault.to_account_info();
+        let escrow_info = ctx.accounts.escrow.to_account_info();
+        let bump_seed = [escrow_bump];
+        let seeds: &[&[u8]] = &[b"escrow", slot_key.as_ref(), &bump_seed];
+        let signer: &[&[&[u8]]] = &[seeds];
+
         let platform = &ctx.accounts.platform;
         let slot = &mut ctx.accounts.slot;
         let escrow = &mut ctx.accounts.escrow;
-        let decimals = ctx.accounts.mint.decimals;
         require!(slot.mode == Mode::Stable, ErrorCode::WrongMode);
         require!(!slot.frozen, ErrorCode::Frozen);
         require!(escrow.amount_locked == slot.price, ErrorCode::InvalidEscrowBalance);
-
-        // Seeds for escrow signer
-        let seeds = &[b"escrow".as_ref(), slot.key().as_ref(), &[escrow.bump]];
-        let signer = &[&seeds[..]];
 
         let total_fee = mul_bps_u64(slot.price, platform.platform_fee_bps as u64)?;
         let t0_base = mul_bps_u64(slot.price, STABLE_T0_BPS)?;
@@ -578,12 +625,12 @@ pub mod timemarket {
                 // payout to creator
                 transfer_checked(
                     CpiContext::new_with_signer(
-                        ctx.accounts.token_program.to_account_info(),
+                        token_program.clone(),
                         TransferChecked {
-                            from: ctx.accounts.escrow_vault.to_account_info(),
-                            mint: ctx.accounts.mint.to_account_info(),
-                            to: ctx.accounts.creator_payout_ata.to_account_info(),
-                            authority: ctx.accounts.escrow.to_account_info(),
+                            from: escrow_vault.clone(),
+                            mint: mint.clone(),
+                            to: creator_payout.clone(),
+                            authority: escrow_info.clone(),
                         },
                         signer,
                     ),
@@ -593,12 +640,12 @@ pub mod timemarket {
                 // platform fee for T0
                 transfer_checked(
                     CpiContext::new_with_signer(
-                        ctx.accounts.token_program.to_account_info(),
+                        token_program.clone(),
                         TransferChecked {
-                            from: ctx.accounts.escrow_vault.to_account_info(),
-                            mint: ctx.accounts.mint.to_account_info(),
-                            to: ctx.accounts.platform_vault.to_account_info(),
-                            authority: ctx.accounts.escrow.to_account_info(),
+                            from: escrow_vault.clone(),
+                            mint: mint.clone(),
+                            to: platform_vault.clone(),
+                            authority: escrow_info.clone(),
                         },
                         signer,
                     ),
@@ -612,7 +659,7 @@ pub mod timemarket {
                     .checked_sub(t0_creator + t0_fee)
                     .ok_or(ErrorCode::Overflow)?;
                 slot.state = SlotState::Locked;
-                emit!(SettledT0Event { slot: slot.key(), to: ctx.accounts.creator_payout_ata.key(), amount: t0_creator, fee: t0_fee });
+                emit!(SettledT0Event { slot: slot_key, to: creator_ata_key, amount: t0_creator, fee: t0_fee });
                 Ok(())
             }
             SlotState::Completed => {
@@ -623,46 +670,43 @@ pub mod timemarket {
                 let t1_creator = t1_release.checked_sub(t1_fee).ok_or(ErrorCode::Overflow)?;
 
                 // payouts
-                // to creator
                 transfer_checked(
                     CpiContext::new_with_signer(
-                        ctx.accounts.token_program.to_account_info(),
+                        token_program.clone(),
                         TransferChecked {
-                            from: ctx.accounts.escrow_vault.to_account_info(),
-                            mint: ctx.accounts.mint.to_account_info(),
-                            to: ctx.accounts.creator_payout_ata.to_account_info(),
-                            authority: ctx.accounts.escrow.to_account_info(),
+                            from: escrow_vault.clone(),
+                            mint: mint.clone(),
+                            to: creator_payout.clone(),
+                            authority: escrow_info.clone(),
                         },
                         signer,
                     ),
                     t1_creator,
                     decimals,
                 )?;
-                // platform fee (T1 share)
                 transfer_checked(
                     CpiContext::new_with_signer(
-                        ctx.accounts.token_program.to_account_info(),
+                        token_program.clone(),
                         TransferChecked {
-                            from: ctx.accounts.escrow_vault.to_account_info(),
-                            mint: ctx.accounts.mint.to_account_info(),
-                            to: ctx.accounts.platform_vault.to_account_info(),
-                            authority: ctx.accounts.escrow.to_account_info(),
+                            from: escrow_vault.clone(),
+                            mint: mint.clone(),
+                            to: platform_vault.clone(),
+                            authority: escrow_info.clone(),
                         },
                         signer,
                     ),
                     t1_fee,
                     decimals,
                 )?;
-                // retained per 98% policy → route to platform vault for now
                 if t1_withhold > 0 {
                     transfer_checked(
                         CpiContext::new_with_signer(
-                            ctx.accounts.token_program.to_account_info(),
+                            token_program.clone(),
                             TransferChecked {
-                                from: ctx.accounts.escrow_vault.to_account_info(),
-                                mint: ctx.accounts.mint.to_account_info(),
-                                to: ctx.accounts.platform_vault.to_account_info(),
-                                authority: ctx.accounts.escrow.to_account_info(),
+                                from: escrow_vault.clone(),
+                                mint: mint.clone(),
+                                to: platform_vault.clone(),
+                                authority: escrow_info.clone(),
                             },
                             signer,
                         ),
@@ -678,7 +722,7 @@ pub mod timemarket {
                 require!(escrow.amount_locked >= total_out, ErrorCode::InvalidEscrowBalance);
                 escrow.amount_locked = escrow.amount_locked.checked_sub(total_out).ok_or(ErrorCode::Overflow)?;
                 slot.state = SlotState::Settled;
-                emit!(SettledT1Event { slot: slot.key(), to: ctx.accounts.creator_payout_ata.key(), amount: t1_creator, fee: t1_fee, retained: t1_withhold });
+                emit!(SettledT1Event { slot: slot_key, to: creator_ata_key, amount: t1_creator, fee: t1_fee, retained: t1_withhold });
                 Ok(())
             }
             _ => err!(ErrorCode::InvalidState),
@@ -701,27 +745,37 @@ pub mod timemarket {
 
     pub fn resolve_dispute(ctx: Context<ResolveDispute>, payout_split_bps_to_creator: u16) -> Result<()> {
         require!(payout_split_bps_to_creator <= 10_000, ErrorCode::InvalidBps);
+        let decimals = ctx.accounts.mint.decimals;
+        let slot_key = ctx.accounts.slot.key();
+        let creator_ata_key = ctx.accounts.creator_payout_ata.key();
+        let escrow_bump = ctx.accounts.escrow.bump;
+        let token_program = ctx.accounts.token_program.to_account_info();
+        let escrow_vault = ctx.accounts.escrow_vault.to_account_info();
+        let mint = ctx.accounts.mint.to_account_info();
+        let creator_payout = ctx.accounts.creator_payout_ata.to_account_info();
+        let buyer_token = ctx.accounts.buyer_token.to_account_info();
+        let escrow_info = ctx.accounts.escrow.to_account_info();
+        let bump_seed = [escrow_bump];
+        let seeds: &[&[u8]] = &[b"escrow", slot_key.as_ref(), &bump_seed];
+        let signer: &[&[&[u8]]] = &[seeds];
+
         let slot = &mut ctx.accounts.slot;
         require!(slot.frozen, ErrorCode::Unauthorized);
         let escrow = &mut ctx.accounts.escrow;
-        let decimals = ctx.accounts.mint.decimals;
         let remaining = escrow.amount_locked;
 
         let to_creator = mul_bps_u64(remaining, payout_split_bps_to_creator as u64)?;
         let to_buyer = remaining.checked_sub(to_creator).ok_or(ErrorCode::Overflow)?;
 
-        let seeds = &[b"escrow".as_ref(), slot.key().as_ref(), &[escrow.bump]];
-        let signer = &[&seeds[..]];
-
         if to_creator > 0 {
             transfer_checked(
                 CpiContext::new_with_signer(
-                    ctx.accounts.token_program.to_account_info(),
+                    token_program.clone(),
                     TransferChecked {
-                        from: ctx.accounts.escrow_vault.to_account_info(),
-                        mint: ctx.accounts.mint.to_account_info(),
-                        to: ctx.accounts.creator_payout_ata.to_account_info(),
-                        authority: ctx.accounts.escrow.to_account_info(),
+                        from: escrow_vault.clone(),
+                        mint: mint.clone(),
+                        to: creator_payout.clone(),
+                        authority: escrow_info.clone(),
                     },
                     signer,
                 ),
@@ -732,12 +786,12 @@ pub mod timemarket {
         if to_buyer > 0 {
             transfer_checked(
                 CpiContext::new_with_signer(
-                    ctx.accounts.token_program.to_account_info(),
+                    token_program.clone(),
                     TransferChecked {
-                        from: ctx.accounts.escrow_vault.to_account_info(),
-                        mint: ctx.accounts.mint.to_account_info(),
-                        to: ctx.accounts.buyer_token.to_account_info(),
-                        authority: ctx.accounts.escrow.to_account_info(),
+                        from: escrow_vault,
+                        mint,
+                        to: buyer_token,
+                        authority: escrow_info.clone(),
                     },
                     signer,
                 ),
@@ -749,7 +803,7 @@ pub mod timemarket {
         escrow.amount_locked = 0;
         slot.frozen = false;
         slot.state = if to_creator > 0 { SlotState::Settled } else { SlotState::Refunded };
-        emit!(DisputeResolvedEvent { slot: slot.key(), creator_amount: to_creator, buyer_amount: to_buyer });
+        emit!(DisputeResolvedEvent { slot: slot_key, creator_amount: to_creator, buyer_amount: to_buyer });
         Ok(())
     }
 }
@@ -784,6 +838,7 @@ pub struct InitPlatform<'info> {
 
 #[derive(Accounts)]
 pub struct InitCreatorProfile<'info> {
+    #[account(mut)]
     pub authority: Signer<'info>,
     /// Ensure we bind profile to a specific platform/mint
     pub platform: Account<'info, Platform>,
@@ -817,6 +872,7 @@ pub struct UpdateCreatorProfile<'info> {
 #[derive(Accounts)]
 #[instruction(params: CreateSlotParams)]
 pub struct CreateTimeSlot<'info> {
+    #[account(mut)]
     pub authority: Signer<'info>,
     pub platform: Account<'info, Platform>,
     #[account(constraint = mint.key() == platform.mint)]
@@ -843,6 +899,7 @@ pub struct CreateTimeSlot<'info> {
 
 #[derive(Accounts)]
 pub struct InitEscrow<'info> {
+    #[account(mut)]
     pub authority: Signer<'info>,
     pub platform: Account<'info, Platform>,
     #[account(constraint = mint.key() == platform.mint)]
@@ -882,6 +939,7 @@ pub struct InitEscrow<'info> {
 
 #[derive(Accounts)]
 pub struct InitBidBook<'info> {
+    #[account(mut)]
     pub authority: Signer<'info>,
     #[account(mut)]
     pub slot: Account<'info, TimeSlot>,
@@ -899,6 +957,7 @@ pub struct InitBidBook<'info> {
 #[derive(Accounts)]
 #[instruction(max_entries: u16)]
 pub struct InitCommitStore<'info> {
+    #[account(mut)]
     pub authority: Signer<'info>,
     #[account(mut)]
     pub slot: Account<'info, TimeSlot>,
@@ -1343,6 +1402,7 @@ pub struct StableSettle<'info> {
     )]
     pub profile: Account<'info, CreatorProfile>,
     #[account(
+        mut,
         init_if_needed,
         payer = authority,
         associated_token::mint = mint,
@@ -1413,6 +1473,7 @@ pub struct BidOutbidRefund<'info> {
 
 #[derive(Accounts)]
 pub struct AuctionEnd<'info> {
+    #[account(mut)]
     pub authority: Signer<'info>,
     pub platform: Account<'info, Platform>,
     #[account(constraint = mint.key() == platform.mint)]
@@ -1432,6 +1493,7 @@ pub struct AuctionEnd<'info> {
     )]
     pub profile: Account<'info, CreatorProfile>,
     #[account(
+        mut,
         init_if_needed,
         payer = authority,
         associated_token::mint = mint,
@@ -1461,6 +1523,7 @@ pub struct AuctionCheckin<'info> {
 
 #[derive(Accounts)]
 pub struct AuctionSettle<'info> {
+    #[account(mut)]
     pub authority: Signer<'info>,
     pub platform: Account<'info, Platform>,
     #[account(constraint = mint.key() == platform.mint)]
@@ -1480,6 +1543,7 @@ pub struct AuctionSettle<'info> {
     )]
     pub profile: Account<'info, CreatorProfile>,
     #[account(
+        mut,
         init_if_needed,
         payer = authority,
         associated_token::mint = mint,
@@ -1508,6 +1572,7 @@ pub struct RaiseDispute<'info> {
 
 #[derive(Accounts)]
 pub struct ResolveDispute<'info> {
+    #[account(mut)]
     pub admin: Signer<'info>,
     #[account(has_one = admin)]
     pub platform: Account<'info, Platform>,
@@ -1526,6 +1591,7 @@ pub struct ResolveDispute<'info> {
     )]
     pub profile: Account<'info, CreatorProfile>,
     #[account(
+        mut,
         init_if_needed,
         payer = admin,
         associated_token::mint = mint,
