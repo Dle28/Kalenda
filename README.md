@@ -1,158 +1,178 @@
-# TimeMarket — NFT Time Slots on Solana
+# TimeMarket: NFT Time Slots on Solana
 
-TimeMarket turns calendar slots into transferable NFT tickets on Solana. Two sale modes are supported:
+TimeMarket turns calendar availability into tradable NFTs on Solana. Creators configure time slots, buyers reserve or bid on them, and settlement routes funds through PDA-owned escrow vaults. This monorepo holds the Anchor program (`programs/timemarket`), a reference counter program (`programs/my_program`), and scaffolding for future apps/packages.
 
-- StableNFT: fixed price, first-come-first-serve.
-- BiddingNFT: English auction (auto‑bid ready), sealed‑bid (commit‑reveal skeleton).
+## Stack Versions
 
-Funds flow transparently through an escrow PDA. Payouts split into T0/T1 phases with platform fees applied pro‑rata.
+| Component      | Version / Range | Notes |
+|----------------|-----------------|-------|
+| Anchor CLI     | 0.31.1          | Install via `avm`; see setup below |
+| Anchor crates  | 0.31.1          | `anchor-lang` and `anchor-spl` |
+| Solana CLI     | 1.18.x          | Tested with 1.18.16+ |
+| Rust toolchain | stable (1.75+)  | Managed with `rustup` |
+| Node / pnpm    | Node 18+, pnpm 9 | For app builds (`corepack` recommended) |
 
-This repo includes an Anchor program (`timemarket`) and a monorepo scaffold for apps/packages.
+Keep these in sync to avoid linker or IDL build issues.
 
-Status: MVP program scaffolded with Stable flow, English auction, dispute, and sealed‑bid commit/reveal skeleton.
+## Repository Layout
 
-## Quick Start
+- `Anchor.toml` – shared configuration and script aliases.
+- `programs/timemarket` – main Anchor program for slot creation, auctions, settlement, and disputes.
+- `programs/my_program` – lightweight example program kept for scaffolding/tests.
+- `apps/` & `packages/` – client placeholders (only `apps/actions` contains runtime code today).
 
-- Prereqs: Rust, Solana CLI, Anchor CLI, Node 18+, pnpm
-- Install deps: `pnpm i`
-- Local validator: `pnpm dev:chain` (or `anchor localnet`)
-- Build: `anchor build`
-- Deploy: `anchor deploy`
+## Prerequisites
 
-Program IDs:
+### 1. Rust toolchain
+```bash
+rustup default stable
+rustup component add rustfmt clippy
+```
 
-- Set a real program ID for `timemarket`:
-  - Generate: `solana-keygen new -o target/deploy/timemarket-keypair.json`
-  - Update `programs/timemarket/src/lib.rs` `declare_id!("...")`
-  - Update `Anchor.toml` under `[programs.localnet] timemarket = "..."`
+### 2. Anchor CLI 0.31.1
+```bash
+cargo install --git https://github.com/coral-xyz/anchor avm --locked
+avm install 0.31.1
+avm use 0.31.1
+anchor --version      # expect anchor-cli 0.31.1
+```
 
-## Repo Structure
+### 3. Solana CLI 1.18.x
+```bash
+sh -c "$(curl -sSfL https://release.solana.com/v1.18.16/install)"
+solana --version
+solana config set --url localhost
+```
+Replace `v1.18.16` with a newer 1.18.x tag when available.
 
-- `programs/timemarket` — Anchor program
-- `programs/my_program` — example counter (kept for scaffold/testing)
-- `apps/*`, `packages/*` — frontends, SDKs (scaffold)
+### 4. Node.js & pnpm
+```bash
+corepack enable
+corepack prepare pnpm@9 --activate
+pnpm --version
+```
 
-## Token Support
+## Install Workspace Dependencies
 
-- USDC recommended; supports both SPL Token and Token‑2022 via `anchor_spl::token_interface`.
-- Escrow vaults are ATAs owned by PDAs (no direct withdraw by users).
+```bash
+pnpm install
+```
 
-## PDAs
+Rust dependencies download on demand during `anchor build` or `cargo check`.
 
-- `Platform` — seeds: `[b"platform"]`
-- `CreatorProfile` — seeds: `[b"creator", authority, platform]`
-- `TimeSlot` — seeds: `[b"slot", creator_profile, start_ts_le]`
-- `Escrow` — seeds: `[b"escrow", slot]`
-- `BidBook` — seeds: `[b"bidbook", slot]`
-- `CommitStore` — seeds: `[b"commit", slot]`
+## Configure Program IDs
 
-## Core Accounts (selected fields)
+Anchor expects a keypair and matching IDs for each program.
 
-- Platform: `admin`, `platform_fee_bps`, `mint`, `dispute_vault(ATA)`, `bump`
-- CreatorProfile: `authority`, `payout_wallet`, `fee_bps_override?`, `platform`, `bump`
-- TimeSlot: creator, window (`start_ts`/`end_ts`), `mode`, `state`, `capacity`, `nft_mint`, `price`, auction params, `frozen`, `buyer_checked_in`
-- Escrow: `slot`, `token_acc`, `amount_locked`, `buyer?`, `bump`
-- BidBook: `highest_bid`, `highest_bidder`, `pending_refund_*` for outbid refunds
-- CommitStore: vector of `{ bidder, commitment_hash, revealed, bid_amount? }`
+1. Generate a keypair for `timemarket` (localnet example):
+   ```bash
+   solana-keygen new -o target/deploy/timemarket-keypair.json
+   ```
 
-## Instruction Set
+2. Update IDs in code and config:
+   - Edit `programs/timemarket/src/lib.rs` and set `declare_id!("<pubkey>")`.
+   - Update `Anchor.toml`:
+     ```toml
+     [programs.localnet]
+     timemarket = "<pubkey>"
+     ```
 
-Platform & Creator
+3. For devnet or mainnet deployments add a dedicated section:
+   ```toml
+   [programs.devnet]
+   timemarket = "<devnet-program-id>"
+   ```
 
-- `init_platform(admin, fee_bps, token_mint)` → creates Platform PDA and its `dispute_vault` ATA.
-- `create_creator_profile(payout_wallet)` → one per `{authority, platform}`.
+Run `anchor keys list` to confirm Anchor sees the expected public keys.
 
-Slot Lifecycle
+## Local Development
 
-- `create_slot(params)` → Stable or Auction slot (optionally set `nft_mint`).
-- `init_escrow(slot)` → creates Escrow PDA + vault ATA for the slot.
+1. Start a validator:
+   ```bash
+   pnpm dev:chain
+   # or
+   anchor localnet
+   ```
 
-StableNFT
+2. Build the programs:
+   ```bash
+   anchor build
+   ```
 
-- `stable_reserve(slot, amount)` → buyer transfers USDC to escrow; state: Open → Reserved.
-- `stable_cancel(slot)` → before T0, refund 100% (minus gas); state: Reserved → Open.
-- `stable_checkin(slot)` → buyer or creator marks attended; state: Reserved/Locked → Completed.
-- `stable_settle(slot)` →
-  - T0 (≥ start_ts, Reserved): pay 50% minus pro‑rata platform fee; state → Locked.
-  - T1 (Completed): pay 50%×98% minus pro‑rata platform fee; retain 2% remainder to platform; state → Settled.
+3. Check the code locally (optional but fast feedback):
+   ```bash
+   cd programs/timemarket
+   cargo check
+   cargo test
+   ```
 
-English Auction
+4. Deploy to localnet:
+   ```bash
+   anchor deploy
+   ```
 
-- `init_bid_book(slot)` → create BidBook.
-- `auction_start(slot)` → creator opens auction at/after `auction_start_ts`; state: Open → AuctionLive.
-- `bid_place(slot, bid_amount, max_auto_bid?)` → enforces `min_increment_bps`, transfers full bid to escrow, marks pending refund for previous highest; anti‑sniping auto‑extends.
-- `bid_outbid_refund(slot)` → previous highest claims refund from escrow.
-- `auction_end(slot)` → after `auction_end_ts` and no pending refunds: bind winner; pay T0 = 40% minus pro‑rata platform fee; state → Locked.
-- `auction_checkin(slot)` → winner or creator marks attended; state → Completed.
-- `auction_settle(slot)` → T1 on 60%: pays 60%×98% minus pro‑rata platform fee; retain 2%; state → Settled.
+5. Generate the IDL for clients:
+   ```bash
+   anchor idl build
+   ```
 
-Sealed‑Bid (skeleton)
+## Deploying to Devnet (or Mainnet)
 
-- `init_commit_store(slot, max_entries)`
-- `bid_commit(slot, commitment_hash)` where `hash = sha256(bid_amount || salt || bidder_pubkey)`.
-- `bid_reveal(slot, bid_amount, salt)` → verifies hash, records revealed bid.
-- Winner selection, escrow funding and settlement for sealed‑bid to be added next.
+1. Point the Solana CLI at your target cluster and fund the wallet:
+   ```bash
+   solana config set --url devnet
+   solana airdrop 2     # devnet only
+   ```
 
-Dispute
+2. Update `Anchor.toml` provider settings:
+   ```toml
+   [provider]
+   cluster = "Devnet"
+   wallet = "~/.config/solana/id.json"
+   ```
 
-- `raise_dispute(slot, reason_code)` → buyer/creator freezes slot (`frozen=true`) to block settlement.
-- `resolve_dispute(slot, payout_split_bps)` → admin splits remaining escrow between creator/buyer; unfreezes and closes.
+3. Ensure the devnet program ID and keypair exist (see “Configure Program IDs”).
 
-## Payout Math (MVP)
+4. Build and deploy:
+   ```bash
+   anchor build
+   anchor deploy
+   ```
 
-- Platform fee `= amount * platform_fee_bps / 10000`, applied pro‑rata at T0 and T1.
-- Stable: T0=50%, T1=50%×98% (2% retained to platform).
-- Auction: T0=40%, T1=60%×98% (2% retained to platform).
+5. (Optional) Publish the IDL so clients can fetch it from the registry:
+   ```bash
+   anchor idl build
+   anchor idl deploy <program-id> target/idl/timemarket.json
+   ```
 
-Constants (compile‑time for MVP):
+The same pattern works for mainnet-beta; replace the cluster, ensure the wallet is funded, and guard your keypairs.
 
-- `STABLE_T0_BPS=5000`, `AUCTION_T0_BPS=4000`, `FINAL_RELEASE_BPS=9800` in `programs/timemarket/src/lib.rs`.
+## Useful Scripts
 
-## Events (for indexers)
+- `pnpm dev:chain` – launches `anchor localnet` with live logging.
+- `pnpm build` / `pnpm lint` – frontend tooling (see individual `package.json`).
+- `anchor test` – spins up a validator, builds, deploys, and runs Rust integration tests.
 
-- `SlotOpened`(implicit via create), `ReservedEvent`, `RefundedEvent`, `CheckinEvent`
-- `SettledT0Event`, `SettledT1Event`
-- `AuctionStartedEvent`, `BidPlacedEvent`, `OutbidRefundedEvent`, `AuctionExtendedEvent`, `AuctionEndedEvent`
-- `CommitPlacedEvent`, `RevealAcceptedEvent`
-- `DisputeRaisedEvent`, `DisputeResolvedEvent`
+## Program Highlights
 
-## Example Flows
+- **Slot lifecycle** – creators initialize a platform, register profiles, and create slots (`Mode::Stable`, `Mode::EnglishAuction`, `Mode::SealedBid`).
+- **Escrow handling** – funds flow into PDA-owned ATAs; payouts occur in T0/T1 phases with configurable fee splits.
+- **Dispute resolution** – `raise_dispute` freezes settlement; admins settle via `resolve_dispute` with custom split basis points.
+- **Events** – extensive `emit!` coverage for indexers (reservation, settlement, bids, disputes).
 
-Stable (devnet/localnet, pseudo‑client):
+For exact account constraints and math see `programs/timemarket/src/lib.rs`.
 
-1) `init_platform` with USDC mint
-2) `create_creator_profile`
-3) `create_slot` (mode=Stable, price)
-4) `init_escrow`
-5) Buyer `stable_reserve(slot, price)`
-6) After `start_ts` → `stable_settle` (T0)
-7) `stable_checkin` → `stable_settle` (T1)
+## Troubleshooting
 
-English Auction:
+- **`Safety checks failed` on build** – every `UncheckedAccount` must include a `/// CHECK:` comment explaining why unchecked access is safe (see `ResolveDispute`).
+- **IDL build failures around `token_interface`** – the code uses `anchor_spl::token` after the 0.31.1 upgrade; ensure your workspace matches the versions listed above.
+- **Linker errors (especially on Windows)** – install LLVM/clang and add `bpfel-unknown-unknown` via `rustup target add bpfel-unknown-unknown`.
+- **Lost validator state** – delete `.anchor` and restart `pnpm dev:chain` if the local validator enters a bad state.
 
-1) Steps 1–3 as above (mode=EnglishAuction, set start/end/min_increment)
-2) `init_escrow` + `init_bid_book`
-3) `auction_start`
-4) Bidders call `bid_place`; outbid users call `bid_outbid_refund`
-5) After end: `auction_end` (T0)
-6) `auction_checkin` → `auction_settle` (T1)
+## References
 
-## Build, Test, Deploy
+- Anchor docs: <https://www.anchor-lang.com/docs>
+- Solana CLI guide: <https://docs.solana.com/cli>
+- SPL Token program: <https://spl.solana.com/token>
 
-- Localnet: `pnpm dev:chain`
-- Build program: `anchor build`
-- Deploy program: `anchor deploy`
-- Program mapping: edit `Anchor.toml` under `[programs.localnet]` or `[programs.devnet]`.
-
-## Security Notes
-
-- All vaults are ATAs owned by PDAs; only program‑signed CPIs can move funds.
-- Validates mode/state transitions, timestamps, min increments, and disallows re‑init.
-- Dispute sets `frozen=true` to block settlement until resolution.
-
-## Roadmap (near‑term)
-
-- Mint/attach NFT tickets (Metaplex) on reserve/win; optional compressed NFTs.
-- Sealed‑bid winner selection + settlement; auto‑bid execution loop.
-- Circuit‑breaker for payouts; admin multisig; configurable T0/T1 bps.
-- Minimal TS client for localnet e2e testing and event indexing.
+Feel free to open issues or reach out if you run into deployment bumps. Happy building!

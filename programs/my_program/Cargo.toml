@@ -18,7 +18,5 @@ custom-heap = []
 custom-panic = []
 
 [dependencies]
-anchor-lang = "0.30.1"
+anchor-lang = "0.31.1"
 
-[patch.crates-io]
-anchor-syn = { path = "../../patches/anchor-syn-0.30.1" }

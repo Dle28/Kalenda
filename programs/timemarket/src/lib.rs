@@ -1,5 +1,4 @@
 use anchor_lang::prelude::*;
-use anchor_lang::Bumps;
 use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token_interface::{transfer_checked, Mint, TokenAccount, TokenInterface, TransferChecked};
 
@@ -403,7 +402,6 @@ pub mod timemarket {
     pub fn auction_settle(ctx: Context<AuctionSettle>) -> Result<()> {
         let decimals = ctx.accounts.mint.decimals;
         let slot_key = ctx.accounts.slot.key();
-        let creator_ata_key = ctx.accounts.creator_payout_ata.key();
         let escrow_bump = ctx.accounts.escrow.bump;
         let token_program = ctx.accounts.token_program.to_account_info();
         let escrow_vault = ctx.accounts.escrow_vault.to_account_info();
@@ -486,7 +484,7 @@ pub mod timemarket {
         require!(escrow.amount_locked >= total_out, ErrorCode::InvalidEscrowBalance);
         escrow.amount_locked = escrow.amount_locked.checked_sub(total_out).ok_or(ErrorCode::Overflow)?;
         slot.state = SlotState::Settled;
-        emit!(SettledT1Event { slot: slot_key, to: creator_ata_key, amount: t1_creator, fee: t1_fee, retained: t1_withhold });
+        emit!(SettledT1Event { slot: slot_key, to: ctx.accounts.creator_payout_ata.key(), amount: t1_creator, fee: t1_fee, retained: t1_withhold });
         Ok(())
     }
 
@@ -589,7 +587,6 @@ pub mod timemarket {
     pub fn stable_settle(ctx: Context<StableSettle>) -> Result<()> {
         let decimals = ctx.accounts.mint.decimals;
         let slot_key = ctx.accounts.slot.key();
-        let creator_ata_key = ctx.accounts.creator_payout_ata.key();
         let escrow_bump = ctx.accounts.escrow.bump;
         let token_program = ctx.accounts.token_program.to_account_info();
         let escrow_vault = ctx.accounts.escrow_vault.to_account_info();
@@ -659,7 +656,7 @@ pub mod timemarket {
                     .checked_sub(t0_creator + t0_fee)
                     .ok_or(ErrorCode::Overflow)?;
                 slot.state = SlotState::Locked;
-                emit!(SettledT0Event { slot: slot_key, to: creator_ata_key, amount: t0_creator, fee: t0_fee });
+                emit!(SettledT0Event { slot: slot_key, to: ctx.accounts.creator_payout_ata.key(), amount: t0_creator, fee: t0_fee });
                 Ok(())
             }
             SlotState::Completed => {
@@ -722,7 +719,7 @@ pub mod timemarket {
                 require!(escrow.amount_locked >= total_out, ErrorCode::InvalidEscrowBalance);
                 escrow.amount_locked = escrow.amount_locked.checked_sub(total_out).ok_or(ErrorCode::Overflow)?;
                 slot.state = SlotState::Settled;
-                emit!(SettledT1Event { slot: slot_key, to: creator_ata_key, amount: t1_creator, fee: t1_fee, retained: t1_withhold });
+                emit!(SettledT1Event { slot: slot_key, to: ctx.accounts.creator_payout_ata.key(), amount: t1_creator, fee: t1_fee, retained: t1_withhold });
                 Ok(())
             }
             _ => err!(ErrorCode::InvalidState),
@@ -747,7 +744,6 @@ pub mod timemarket {
         require!(payout_split_bps_to_creator <= 10_000, ErrorCode::InvalidBps);
         let decimals = ctx.accounts.mint.decimals;
         let slot_key = ctx.accounts.slot.key();
-        let creator_ata_key = ctx.accounts.creator_payout_ata.key();
         let escrow_bump = ctx.accounts.escrow.bump;
         let token_program = ctx.accounts.token_program.to_account_info();
         let escrow_vault = ctx.accounts.escrow_vault.to_account_info();
@@ -1379,6 +1375,7 @@ pub struct StableCheckin<'info> {
 #[derive(Accounts)]
 pub struct StableSettle<'info> {
     /// anyone can trigger based on time/state, no special auth
+    #[account(mut)]
     pub authority: Signer<'info>,
     pub platform: Account<'info, Platform>,
     #[account(constraint = mint.key() == platform.mint)]
@@ -1401,12 +1398,15 @@ pub struct StableSettle<'info> {
         bump = profile.bump
     )]
     pub profile: Account<'info, CreatorProfile>,
+    #[account(address = profile.payout_wallet)]
+    /// CHECK: Address is constrained to `profile.payout_wallet` above.
+    /// No further data access is performed on this account.
+    pub profile_payout_wallet: UncheckedAccount<'info>,
     #[account(
-        mut,
         init_if_needed,
         payer = authority,
         associated_token::mint = mint,
-        associated_token::authority = profile.payout_wallet,
+        associated_token::authority = profile_payout_wallet,
         associated_token::token_program = token_program
     )]
     pub creator_payout_ata: InterfaceAccount<'info, TokenAccount>,
@@ -1492,12 +1492,15 @@ pub struct AuctionEnd<'info> {
         bump = profile.bump
     )]
     pub profile: Account<'info, CreatorProfile>,
+    #[account(address = profile.payout_wallet)]
+    /// CHECK: Address is constrained to `profile.payout_wallet` above.
+    /// No further data access is performed on this account.
+    pub profile_payout_wallet: UncheckedAccount<'info>,
     #[account(
-        mut,
         init_if_needed,
         payer = authority,
         associated_token::mint = mint,
-        associated_token::authority = profile.payout_wallet,
+        associated_token::authority = profile_payout_wallet,
         associated_token::token_program = token_program
     )]
     pub creator_payout_ata: InterfaceAccount<'info, TokenAccount>,
@@ -1542,12 +1545,15 @@ pub struct AuctionSettle<'info> {
         bump = profile.bump
     )]
     pub profile: Account<'info, CreatorProfile>,
+    #[account(address = profile.payout_wallet)]
+    /// CHECK: Address is constrained to `profile.payout_wallet` above.
+    /// No further data access is performed on this account.
+    pub profile_payout_wallet: UncheckedAccount<'info>,
     #[account(
-        mut,
         init_if_needed,
         payer = authority,
         associated_token::mint = mint,
-        associated_token::authority = profile.payout_wallet,
+        associated_token::authority = profile_payout_wallet,
         associated_token::token_program = token_program
     )]
     pub creator_payout_ata: InterfaceAccount<'info, TokenAccount>,
@@ -1590,12 +1596,15 @@ pub struct ResolveDispute<'info> {
         bump = profile.bump
     )]
     pub profile: Account<'info, CreatorProfile>,
+    #[account(address = profile.payout_wallet)]
+    /// CHECK: Address is constrained to `profile.payout_wallet` above.
+    /// No further data access is performed on this account.
+    pub profile_payout_wallet: UncheckedAccount<'info>,
     #[account(
-        mut,
         init_if_needed,
         payer = admin,
         associated_token::mint = mint,
-        associated_token::authority = profile.payout_wallet,
+        associated_token::authority = profile_payout_wallet,
         associated_token::token_program = token_program
     )]
     pub creator_payout_ata: InterfaceAccount<'info, TokenAccount>,
@@ -1606,3 +1615,5 @@ pub struct ResolveDispute<'info> {
     pub token_program: Interface<'info, TokenInterface>,
     pub system_program: Program<'info, System>,
 }
+
+
