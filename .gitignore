@@ -5,6 +5,13 @@ build/
 .turbo/
 .next/
 .vercel/
+.cache/
+*.tsbuildinfo
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Env
 .env
@@ -14,7 +21,12 @@ build/
 # Rust/Anchor
 target/
 .anchor/
+docker-target/
 
 # OS
 .DS_Store
 Thumbs.db
+
+# IDE/Editor
+.vscode/
+.idea/
