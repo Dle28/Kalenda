@@ -1,5 +1,4 @@
 use anchor_lang::prelude::*;
-use anchor_lang::Bumps;
 
 declare_id!("Er8bzgBBAkq9MuuLoBccj5YedQkf313ehosEpuYfsDPM");
 

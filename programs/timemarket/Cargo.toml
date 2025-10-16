@@ -12,7 +12,7 @@ default = ["init-if-needed"]
 no-entrypoint = []
 no-idl = []
 no-log-ix-name = []
-idl-build = ["anchor-lang/idl-build"]
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
 anchor-debug = []
 cpi = []
 custom-heap = []
@@ -21,6 +21,6 @@ init-if-needed = ["anchor-lang/init-if-needed"]
 
 [dependencies]
 anchor-lang = "0.31.1"
-anchor-spl = { version = "0.31.1", features = ["token", "token_2022", "associated_token", "metadata", "idl-build"] }
+anchor-spl = { version = "0.31.1", features = ["token", "token_2022", "associated_token", "metadata"] }
 bytemuck = { version = "1.14", features = ["derive"] }
 

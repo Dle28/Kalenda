@@ -1,4 +1,4 @@
-import TimezoneSelector from '@/components/TimezoneSelector';
+import TimezoneControl from '@/components/TimezoneControl';
 import SlotCard from '@/components/SlotCard';
 import { creators, slots } from '@/lib/mock';
 
@@ -36,7 +36,7 @@ export default function CreatorPage({ params }: { params: { pubkey: string } }) 
       </div>
 
       <div style={{marginTop:24}}>
-        <TimezoneSelector value={tz} onChange={() => {}} />
+        <TimezoneControl initial={tz} />
         <div className="calendar">
           {[0,1,2,3,4,5,6].map((d) => (
             <div key={d} className="day">
@@ -61,4 +61,3 @@ export default function CreatorPage({ params }: { params: { pubkey: string } }) 
     </section>
   );
 }
-
