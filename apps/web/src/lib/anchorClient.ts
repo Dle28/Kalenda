@@ -30,6 +30,5 @@ export const getProgram = (conn: Connection, wallet: Wallet) => {
   setProvider(provider);
 
   const programId = getProgramId();
-  
-  return new Program(idl as unknown as Idl, provider as any, programId as any);
+  return new Program(idl as unknown as Idl, programId, provider as any);
 };
