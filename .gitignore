@@ -6,6 +6,7 @@ build/
 .next/
 .vercel/
 .cache/
+/.pnpm-store/
 *.tsbuildinfo
 *.log
 npm-debug.log*
