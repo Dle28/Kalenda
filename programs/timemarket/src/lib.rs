@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use anchor_spl::associated_token::AssociatedToken;
 use anchor_spl::token_interface::{transfer_checked, Mint, TokenAccount, TokenInterface, TransferChecked};
 
-declare_id!("TmMkt11111111111111111111111111111111111111");
+declare_id!("Gz7jdgqsn3R8mBrthEx5thAFYdM369kHN7wMTY3PKhty");
 
 const BPS_DENOM: u64 = 10_000;
 const STABLE_T0_BPS: u64 = 5_000; // 50%

@@ -1,5 +1,4 @@
 [programs.devnet]
-my_program = "976YMB317cwvHyay22Whvq3YThwsvL6qMur6paW5eQL1"
 timemarket = "Gz7jdgqsn3R8mBrthEx5thAFYdM369kHN7wMTY3PKhty"
 
 [registry]
