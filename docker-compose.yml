@@ -1,0 +1,19 @@
+services:
+  anchor:
+    build: .
+    working_dir: /work
+    volumes:
+      - ./:/work
+      # Reuse target artifacts between runs to speed up builds
+      - ./docker-target:/work/target
+      # Optional: share host Solana config/wallet
+      - ${HOME:-/root}/.config/solana:/root/.config/solana
+    environment:
+      - ANCHOR_WALLET=/root/.config/solana/id.json
+    # Map validator ports when running localnet in the container
+    ports:
+      - "8899:8899"
+      - "8900:8900"
+    tty: true
+    stdin_open: true
+

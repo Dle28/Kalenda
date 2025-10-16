@@ -52,6 +52,41 @@ corepack prepare pnpm@9 --activate
 pnpm --version
 ```
 
+## Docker (SBF) Setup
+
+If you prefer to build and run everything inside Docker (recommended on Windows):
+
+1. Build the image:
+   ```bash
+   docker compose build
+   ```
+
+2. Run a local validator inside the container (exposes 8899/8900):
+   ```bash
+   pnpm dev:chain:docker
+   # or
+   docker compose run --service-ports --rm anchor anchor localnet
+   ```
+
+3. Build programs with Anchor (SBF):
+   ```bash
+   pnpm anchor:docker:build
+   # or
+   docker compose run --rm anchor anchor build
+   ```
+
+4. Deploy (ensure your wallet at `~/.config/solana/id.json` has SOL):
+   ```bash
+   pnpm anchor:docker:deploy
+   # or
+   docker compose run --rm anchor anchor deploy
+   ```
+
+Notes:
+- The container shares your repo at `/work` and reuses `./docker-target` as the Rust `target` directory to speed up rebuilds.
+- Your host Solana config/wallet (`~/.config/solana`) is mounted to `/root/.config/solana` in the container.
+- The image pins Anchor CLI 0.31.1 and Solana CLI 1.18.16 for reproducible SBF builds.
+
 ## Install Workspace Dependencies
 
 ```bash

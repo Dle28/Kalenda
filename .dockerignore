@@ -1,0 +1,11 @@
+node_modules
+target
+docker-target/deploy
+docker-target/release
+.git
+.gitignore
+.github
+.anchor
+**/*.log
+**/.DS_Store
+
