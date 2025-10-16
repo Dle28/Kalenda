@@ -9,7 +9,7 @@ cluster = "Devnet"
 wallet = "~/.config/solana/devnet.json"
 
 [scripts]
-deploy = "anchor build && anchor deploy"
+deploy = "anchor deploy -p timemarket"
 # Use an underscore in the key; TOML bare keys cannot contain ':'
 deploy_timemarket = "anchor build -p timemarket && anchor deploy -p timemarket"
 

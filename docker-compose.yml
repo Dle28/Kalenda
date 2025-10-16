@@ -1,19 +1,25 @@
+version: "3.9"
 services:
+  # Optional: local validator. Comment out if using devnet.
+  solana:
+    image: solanalabs/solana:v1.18.10
+    command: solana-test-validator
+    ports: ["8899:8899", "8900:8900"]
+
   anchor:
-    build: .
-    working_dir: /work
+    image: solanafoundation/anchor:v0.31.1
+    working_dir: /workdir
+    # Mount repo + your Solana keypairs
     volumes:
-      - ./:/work
-      # Reuse target artifacts between runs to speed up builds
-      - ./docker-target:/work/target
-      # Optional: share host Solana config/wallet
-      - ${HOME:-/root}/.config/solana:/root/.config/solana
+      - .:/workdir
+      - ~/.config/solana:/root/.config/solana
+    # If using local validator, point at it. Otherwise set a devnet URL in .env (see README or .env.example).
     environment:
-      - ANCHOR_WALLET=/root/.config/solana/id.json
-    # Map validator ports when running localnet in the container
-    ports:
-      - "8899:8899"
-      - "8900:8900"
+      - CARGO_TERM_COLOR=always
+      - CARGO_TARGET_DIR=/workdir/docker-target
+      - ANCHOR_WALLET=/root/.config/solana/devnet.json
+      - ANCHOR_PROVIDER_URL=http://solana:8899
+    depends_on:
+      - solana
     tty: true
     stdin_open: true
-

@@ -12,8 +12,11 @@
     "dev:actions": "pnpm --filter @starter/actions dev",
     "dev:chain": "anchor localnet",
     "dev:chain:docker": "docker compose run --service-ports --rm anchor anchor localnet",
-    "anchor:docker:build": "docker compose run --rm anchor anchor build",
-    "anchor:docker:deploy": "docker compose run --rm anchor anchor deploy",
+    "anchor:docker:build": "docker compose run --rm anchor bash -lc \"anchor build -p ${PROGRAM:-timemarket}\"",
+    "anchor:docker:deploy": "docker compose run --rm anchor bash -lc \"anchor build -p ${PROGRAM:-timemarket} && anchor deploy -p ${PROGRAM:-timemarket}\"",
+    "anchor:docker:deploy-only": "docker compose run --rm anchor bash -lc \"anchor deploy -p ${PROGRAM:-timemarket}\"",
+    "anchor:docker:keys:sync": "docker compose run --rm anchor bash -lc \"anchor keys sync -p ${PROGRAM:-timemarket}\"",
+    "anchor:wsldeploy": "bash -lc 'export CARGO_TARGET_DIR=docker-target && anchor build -p ${PROGRAM:-timemarket} && anchor deploy -p ${PROGRAM:-timemarket}'",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint",
     "test": "pnpm -r test"
