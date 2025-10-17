@@ -1,33 +1,36 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "preserve",
+    "allowJs": true,
+    "noEmit": true,
+    "incremental": true,
+    "isolatedModules": true,
     "baseUrl": ".",
     "paths": {
       "@/*": [
         "./*"
       ]
     },
-    "jsx": "preserve",
+    "skipLibCheck": true,
     "plugins": [
       {
         "name": "next"
       }
-    ],
-    "allowJs": true,
-    "noEmit": true,
-    "incremental": true,
-    "isolatedModules": true
+    ]
   },
   "include": [
-    "next-env.d.ts",
     "app",
     "components",
     "lib",
+    "idl",
     "pages",
     "types",
     "env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
+    "next-env.d.ts",
     ".next/types/**/*.ts"
   ],
   "exclude": [
