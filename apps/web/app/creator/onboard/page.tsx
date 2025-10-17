@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useState } from 'react';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { getProgram } from '@/src/lib/anchorClient';
+import { getProgram } from '@/lib/anchorClient';
 
 export default function OnboardPage() {
   const { connection } = useConnection();

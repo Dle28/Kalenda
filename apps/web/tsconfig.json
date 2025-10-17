@@ -19,11 +19,14 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
+      "@/*": [
+        "./src/*"
+      ],
       "@/components/*": [
         "./components/*"
       ],
       "@/lib/*": [
-        "./lib/*"
+        "./src/lib/*"
       ]
     },
     "plugins": [
