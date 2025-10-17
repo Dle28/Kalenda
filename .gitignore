@@ -15,6 +15,9 @@ build/
 target/
 .anchor/
 
+# PNPM
+pnpm-store/
+
 # OS
 .DS_Store
 Thumbs.db
