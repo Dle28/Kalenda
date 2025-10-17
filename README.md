@@ -162,7 +162,7 @@ Run `anchor keys list` to confirm Anchor sees the expected public keys.
 2. Update `Anchor.toml` provider settings:
    ```toml
    [provider]
-   cluster = "Devnet"
+   cluster = "Devnet" 
    wallet = "~/.config/solana/id.json"
    ```
 
