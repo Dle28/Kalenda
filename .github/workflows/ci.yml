@@ -24,6 +24,12 @@ jobs:
           corepack prepare pnpm@9.6.0 --activate
           pnpm -v
 
+      # Override any repo-level .npmrc store-dir with a safe, writable path
+      - name: Configure pnpm store path
+        run: |
+          pnpm config set store-dir ${{ runner.temp }}/pnpm-store
+          pnpm store path
+
       # Now that pnpm is present, enable pnpm cache (uses `pnpm store path`)
       - name: Setup Node (enable pnpm cache)
         uses: actions/setup-node@v4
