@@ -1,5 +1,3 @@
-import Link from 'next/link';
-
 export default function CreatorCard(props: {
   pubkey: string;
   name: string;
@@ -63,10 +61,9 @@ export default function CreatorCard(props: {
           {typeof pricePerSlot === 'number' && (
             <span className="badge" title="Giá tham khảo">Từ {pricePerSlot} USDC</span>
           )}
-          <Link href={`/creator/${encodeURIComponent(safeKey)}`} className="btn btn-outline">Xem lịch</Link>
+          <a href={`/creator/${encodeURIComponent(safeKey)}`} className="btn btn-outline">Xem lịch</a>
         </div>
       </div>
     </div>
   );
 }
-
