@@ -5,6 +5,14 @@ build/
 .turbo/
 .next/
 .vercel/
+.cache/
+/.pnpm-store/
+*.tsbuildinfo
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Env
 .env
@@ -14,6 +22,7 @@ build/
 # Rust/Anchor
 target/
 .anchor/
+docker-target/
 
 # PNPM
 .pnpm-store/
@@ -21,3 +30,7 @@ target/
 # OS
 .DS_Store
 Thumbs.db
+
+# IDE/Editor
+.vscode/
+.idea/

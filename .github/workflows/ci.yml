@@ -14,9 +14,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Ensure Node is available so corepack can run
-      - name: Setup Node (base)
-        uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.18.3
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        if: ${{ hashFiles('pnpm-lock.yaml') == '' }}
         with:
           node-version: 20
 
