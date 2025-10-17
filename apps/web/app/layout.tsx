@@ -1,8 +1,8 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
 import Providers from '../src/app/providers';
+import WalletButton from '../components/WalletButton';
 
 export const metadata: Metadata = {
   title: 'TimeMarket',
@@ -10,10 +10,6 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const WalletMultiButton = dynamic(
-    async () => (await import('@solana/wallet-adapter-react-ui')).WalletMultiButton,
-    { ssr: false }
-  );
   return (
     <html lang="vi">
       <body>
@@ -25,7 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/creators" className="link">Khám phá Creator</Link>
               <Link href="/creator/onboard" className="link">Trở thành Creator</Link>
               <div style={{ marginLeft: 12 }}>
-                <WalletMultiButton />
+                <WalletButton />
               </div>
             </nav>
           </header>

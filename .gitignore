@@ -16,7 +16,7 @@ target/
 .anchor/
 
 # PNPM
-pnpm-store/
+.pnpm-store/
 
 # OS
 .DS_Store
