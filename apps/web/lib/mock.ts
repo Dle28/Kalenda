@@ -7,6 +7,19 @@ export type Creator = {
   pricePerSlot?: number;
 };
 
+type Socials = {
+  web?: string;
+  x?: string;
+  ig?: string;
+};
+
+export type CreatorUI = Creator & {
+  pubkey: string;
+  fields: string[];
+  rating?: number;
+  socials: Socials;
+};
+
 export type Slot = {
   id: string;
   creator: string; // pubkey
@@ -18,7 +31,7 @@ export type Slot = {
 };
 
 // Keep extra fields to satisfy existing UI while conforming to Creator
-export const creators = [
+export const creators: CreatorUI[] = [
   {
     id: 'demo-1',
     name: 'Alice',
@@ -43,7 +56,7 @@ export const creators = [
     rating: 4.7,
     socials: { x: 'https://x.com/' },
   },
-] satisfies Creator[];
+];
 
 export const slots: Slot[] = (() => {
   const base = new Date();

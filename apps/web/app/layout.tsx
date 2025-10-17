@@ -1,8 +1,10 @@
 import './globals.css';
+import '@solana/wallet-adapter-react-ui/styles.css';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Providers from '../src/app/providers';
 import WalletButton from '../components/WalletButton';
+import WalletStatus from '../components/WalletStatus';
 
 export const metadata: Metadata = {
   title: 'TimeMarket',
@@ -22,6 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/creator/onboard" className="link">Trở thành Creator</Link>
               <div style={{ marginLeft: 12 }}>
                 <WalletButton />
+                <WalletStatus />
               </div>
             </nav>
           </header>

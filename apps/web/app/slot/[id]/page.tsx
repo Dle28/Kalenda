@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import { slots } from '@/lib/mock';
 import SlotCard from '@/components/SlotCard';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { getProgram } from '@/src/lib/anchorClient';
+import { getProgram } from '@/lib/anchorClient';
 
 export default function SlotPage({ params }: { params: { id: string } }) {
   const id = decodeURIComponent(params.id);

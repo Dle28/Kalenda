@@ -17,15 +17,15 @@ const PROGRAM_ID = new PublicKey(
 
 // Map wallet-adapter context to Anchor-compatible wallet interface
 function toAnchorWallet(wallet: WalletContextState) {
-  const adapter = wallet?.adapter as any;
-  if (!adapter?.publicKey || !adapter?.signTransaction || !adapter?.signAllTransactions) {
+  const { publicKey, signTransaction, signAllTransactions } = wallet as any;
+  if (!publicKey || !signTransaction || !signAllTransactions) {
     throw new Error('Wallet chưa kết nối hoặc không hỗ trợ ký giao dịch.');
   }
   return {
-    publicKey: adapter.publicKey,
-    signTransaction: adapter.signTransaction.bind(adapter),
-    signAllTransactions: adapter.signAllTransactions.bind(adapter),
-  };
+    publicKey,
+    signTransaction: signTransaction.bind(wallet),
+    signAllTransactions: signAllTransactions.bind(wallet),
+  } as any;
 }
 
 export function getProvider(connection: Connection, wallet: WalletContextState) {
@@ -40,6 +40,7 @@ export function getProvider(connection: Connection, wallet: WalletContextState) 
 
 export function getProgram(connection: Connection, wallet: WalletContextState) {
   const provider = getProvider(connection, wallet);
-  return new Program(idl as Idl, PROGRAM_ID, provider);
+  // Anchor 0.31 Program constructor takes (idl, provider[, coder]) and reads address from IDL metadata
+  return new Program(idl as Idl, provider as any);
 }
 
