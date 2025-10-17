@@ -11,22 +11,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        if: ${{ hashFiles('pnpm-lock.yaml') == '' }}
+      # Ensure Node is available so corepack can run
+      - name: Setup Node (base)
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      # Use dependency caching only when lockfile exists
-      - uses: actions/setup-node@v4
-        if: ${{ hashFiles('pnpm-lock.yaml') != '' }}
-        with:
-          node-version: 20
-          cache: pnpm
-
+      # Install pnpm via Corepack before enabling cache logic that calls `pnpm`
       - name: Enable Corepack and pin pnpm
         run: |
           corepack enable
           corepack prepare pnpm@9.6.0 --activate
+          pnpm -v
+
+      # Now that pnpm is present, enable pnpm cache (uses `pnpm store path`)
+      - name: Setup Node (enable pnpm cache)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install deps (no lockfile)
         if: ${{ hashFiles('pnpm-lock.yaml') == '' }}
