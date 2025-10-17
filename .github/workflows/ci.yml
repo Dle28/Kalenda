@@ -7,9 +7,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      # Ensure pnpm store is writable on GitHub runners and overrides repo .npmrc
-      npm_config_store_dir: ${{ runner.temp }}/pnpm-store
 
     steps:
       - uses: actions/checkout@v4
@@ -34,7 +31,7 @@ jobs:
       # Override any repo-level .npmrc store-dir with a safe, writable path
       - name: Configure pnpm store path
         run: |
-          pnpm config set store-dir ${{ runner.temp }}/pnpm-store
+          pnpm config set store-dir "$RUNNER_TEMP/pnpm-store"
           pnpm store path
 
       # Now that pnpm is present, enable pnpm cache (uses `pnpm store path`)
