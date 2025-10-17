@@ -1,34 +1,69 @@
-import Link from 'next/link';
-
 export default function CreatorCard(props: {
   pubkey: string;
   name: string;
-  avatar: string;
+  avatar?: string;
   fields: string[];
-  rating: number;
+  rating?: number;
   bio?: string;
+  pricePerSlot?: number;
 }) {
-  const { pubkey, name, avatar, fields, rating, bio } = props;
+  const { pubkey, name, avatar, fields, rating, bio, pricePerSlot } = props;
+  const displayAvatar = avatar || 'https://placehold.co/96x96?text=User';
+  const displayRating = Number.isFinite(Number(rating)) ? Number(rating) : 5.0;
+  const fieldList = Array.isArray(fields) ? fields : [];
+  const shown = fieldList.slice(0, 3);
+  const rest = Math.max(0, fieldList.length - shown.length);
+  const safeKey = typeof pubkey === 'string' ? pubkey : '';
+  const shortKey = safeKey ? `${safeKey.slice(0,6)}...${safeKey.slice(-4)}` : '—';
+
   return (
-    <div className="card">
-      <div className="row">
-        <img src={avatar} alt={name} width={48} height={48} style={{borderRadius:12}} />
-        <div className="stack" style={{flex:1}}>
-          <b>{name}</b>
-          <div className="row" style={{gap:8, flexWrap:'wrap'}}>
-            {fields.map((f) => (
+    <div className="card creator-card">
+      <div className="row" style={{ alignItems: 'center' }}>
+        <div style={{ position: 'relative' }}>
+          <img
+            src={displayAvatar}
+            alt={name}
+            width={48}
+            height={48}
+            style={{ borderRadius: 999, border: '1px solid rgba(255,255,255,.15)' }}
+          />
+        </div>
+        <div className="stack" style={{ flex: 1, minWidth: 0 }}>
+          <b style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{name}</b>
+          <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
+            {shown.map((f) => (
               <span key={f} className="badge">{f}</span>
             ))}
+            {rest > 0 && <span className="badge">+{rest} nữa</span>}
           </div>
         </div>
-        <span className="badge">★ {rating.toFixed(1)}</span>
+        <span className="badge" title={`${displayRating.toFixed(2)} / 5.0`}>★ {displayRating.toFixed(1)}</span>
       </div>
-      {bio && <p className="muted" style={{marginTop:8}}>{bio}</p>}
-      <div className="row" style={{justifyContent:'space-between', marginTop:8}}>
-        <span className="muted" style={{fontSize:12}}>{pubkey.slice(0,6)}...{pubkey.slice(-4)}</span>
-        <Link href={`/creator/${pubkey}`} className="btn btn-secondary">Xem lịch</Link>
+
+      {bio && (
+        <p
+          className="muted"
+          style={{
+            marginTop: 8,
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical' as any,
+            overflow: 'hidden',
+          }}
+        >
+          {bio}
+        </p>
+      )}
+
+      <div className="row" style={{ justifyContent: 'space-between', marginTop: 8 }}>
+        <span className="muted" style={{ fontSize: 12 }}>{shortKey}</span>
+        <div className="row" style={{ gap: 8 }}>
+          {typeof pricePerSlot === 'number' && (
+            <span className="badge" title="Giá tham khảo">Từ {pricePerSlot} USDC</span>
+          )}
+          <a href={`/creator/${encodeURIComponent(safeKey)}`} className="btn btn-outline">Xem lịch</a>
+        </div>
       </div>
     </div>
   );
 }
-

@@ -1,0 +1,7 @@
+{
+  // Use the workspace TypeScript version (monorepo + pnpm friendly)
+  "typescript.tsdk": "node_modules/typescript/lib",
+  // Ensure VS Code picks up project references promptly
+  "typescript.enablePromptUseWorkspaceTsdk": true
+}
+

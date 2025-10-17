@@ -24,6 +24,9 @@ target/
 .anchor/
 docker-target/
 
+# PNPM
+.pnpm-store/
+
 # OS
 .DS_Store
 Thumbs.db

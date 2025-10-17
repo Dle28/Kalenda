@@ -1,11 +1,23 @@
+// apps/web/lib/mock.ts
 export type Creator = {
-  pubkey: string;
+  id: string;
   name: string;
-  avatar: string;
+  avatar?: string;
+  bio?: string;
+  pricePerSlot?: number;
+};
+
+type Socials = {
+  web?: string;
+  x?: string;
+  ig?: string;
+};
+
+export type CreatorUI = Creator & {
+  pubkey: string;
   fields: string[];
-  rating: number;
-  bio: string;
-  socials: { x?: string; ig?: string; web?: string };
+  rating?: number;
+  socials: Socials;
 };
 
 export type Slot = {
@@ -18,32 +30,30 @@ export type Slot = {
   startPrice?: number; // auction
 };
 
-export const creators: Creator[] = [
+// Keep extra fields to satisfy existing UI while conforming to Creator
+export const creators: CreatorUI[] = [
   {
-    pubkey: 'Cr8t0r111111111111111111111111111111111111',
-    name: 'Linh Nguyen',
+    id: 'demo-1',
+    name: 'Alice',
+    bio: 'Product designer',
+    pricePerSlot: 25,
     avatar: 'https://i.pravatar.cc/150?img=5',
+    // extra fields used by current UI
+    pubkey: 'Cr8t0rAlice111111111111111111111111111111',
     fields: ['Design', 'UI/UX'],
     rating: 4.9,
-    bio: 'Product designer. 10y in SaaS & fintech.',
-    socials: { x: 'https://x.com/', web: 'https://example.com' },
-  },
-  {
-    pubkey: 'Cr8t0r222222222222222222222222222222222222',
-    name: 'Minh Tran',
-    avatar: 'https://i.pravatar.cc/150?img=15',
-    fields: ['Marketing', 'Growth'],
-    rating: 4.7,
-    bio: 'Growth strategist, ex-startup operator.',
     socials: { x: 'https://x.com/' },
   },
   {
-    pubkey: 'Cr8t0r333333333333333333333333333333333333',
-    name: 'Thao Le',
-    avatar: 'https://i.pravatar.cc/150?img=25',
-    fields: ['AI', 'Data'],
-    rating: 4.8,
-    bio: 'ML engineer focusing on LLM tooling.',
+    id: 'demo-2',
+    name: 'Bob',
+    bio: 'Solana dev',
+    pricePerSlot: 40,
+    avatar: 'https://i.pravatar.cc/150?img=15',
+    // extra fields used by current UI
+    pubkey: 'Cr8t0rBob22222222222222222222222222222222',
+    fields: ['Blockchain', 'Solana'],
+    rating: 4.7,
     socials: { x: 'https://x.com/' },
   },
 ];
@@ -51,22 +61,37 @@ export const creators: Creator[] = [
 export const slots: Slot[] = (() => {
   const base = new Date();
   const startOfDay = new Date(base.getFullYear(), base.getMonth(), base.getDate(), 9, 0, 0);
-  const mk = (creator: string, dayOffset: number, hour: number, durMin: number, mode: Slot['mode'], price?: number, startPrice?: number) => {
+  const mk = (
+    creator: string,
+    dayOffset: number,
+    hour: number,
+    durMin: number,
+    mode: Slot['mode'],
+    price?: number,
+    startPrice?: number,
+  ) => {
     const s = new Date(startOfDay);
     s.setDate(s.getDate() + dayOffset);
     s.setHours(hour);
     const e = new Date(s);
     e.setMinutes(e.getMinutes() + durMin);
-    return { id: `${creator}-${s.toISOString()}`, creator, start: s.toISOString(), end: e.toISOString(), mode, price, startPrice } as Slot;
+    return {
+      id: `${creator}-${s.toISOString()}`,
+      creator,
+      start: s.toISOString(),
+      end: e.toISOString(),
+      mode,
+      price,
+      startPrice,
+    } as Slot;
   };
-  const c0 = creators[0].pubkey, c1 = creators[1].pubkey, c2 = creators[2].pubkey;
+  const c0 = (creators as any)[0].pubkey,
+    c1 = (creators as any)[1].pubkey;
   return [
     mk(c0, 0, 10, 30, 'Stable', 25),
     mk(c0, 1, 14, 45, 'EnglishAuction', undefined, 10),
     mk(c1, 2, 9, 30, 'Stable', 30),
     mk(c1, 3, 15, 60, 'EnglishAuction', undefined, 12),
-    mk(c2, 1, 11, 30, 'Stable', 20),
-    mk(c2, 4, 16, 45, 'EnglishAuction', undefined, 15),
   ];
 })();
 

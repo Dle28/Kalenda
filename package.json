@@ -12,6 +12,7 @@
     "dev:actions": "pnpm --filter @starter/actions dev",
     "dev:chain": "anchor localnet",
     "dev:chain:docker": "docker compose run --service-ports --rm anchor anchor localnet",
+    "idl:sync": "node scripts/sync-idl.mjs",
     "anchor:docker:build": "docker compose run --rm anchor bash -lc \"anchor build -p ${PROGRAM:-timemarket}\"",
     "anchor:docker:deploy": "docker compose run --rm anchor bash -lc \"anchor build -p ${PROGRAM:-timemarket} && anchor deploy -p ${PROGRAM:-timemarket}\"",
     "anchor:docker:deploy-only": "docker compose run --rm anchor bash -lc \"anchor deploy -p ${PROGRAM:-timemarket}\"",
