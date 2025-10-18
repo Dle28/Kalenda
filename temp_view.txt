@@ -1,4 +1,4 @@
-export default function CreatorCard(props: {
+﻿export default function CreatorCard(props: {
   pubkey: string;
   name: string;
   avatar?: string;
@@ -14,7 +14,7 @@ export default function CreatorCard(props: {
   const shown = fieldList.slice(0, 3);
   const rest = Math.max(0, fieldList.length - shown.length);
   const safeKey = typeof pubkey === 'string' ? pubkey : '';
-  const shortKey = safeKey ? `${safeKey.slice(0,6)}...${safeKey.slice(-4)}` : 'N/A';
+  const shortKey = safeKey ? `${safeKey.slice(0,6)}...${safeKey.slice(-4)}` : 'â€”';
 
   return (
     <div className="card creator-card">
@@ -34,10 +34,10 @@ export default function CreatorCard(props: {
             {shown.map((f) => (
               <span key={f} className="badge">{f}</span>
             ))}
-            {rest > 0 && <span className="badge">+{rest} more</span>}
+            {rest > 0 && <span className="badge">+{rest} ná»¯a</span>}
           </div>
         </div>
-        <span className="badge" title={`${displayRating.toFixed(2)} / 5.0`}>★ {displayRating.toFixed(1)}</span>
+        <span className="badge" title={`${displayRating.toFixed(2)} / 5.0`}>â˜… {displayRating.toFixed(1)}</span>
       </div>
 
       {bio && (
@@ -59,12 +59,11 @@ export default function CreatorCard(props: {
         <span className="muted" style={{ fontSize: 12 }}>{shortKey}</span>
         <div className="row" style={{ gap: 8 }}>
           {typeof pricePerSlot === 'number' && (
-            <span className="badge" title="Estimated price">From {pricePerSlot} USDC</span>
+            <span className="badge" title="GiÃ¡ tham kháº£o">Tá»« {pricePerSlot} USDC</span>
           )}
-          <a href={`/creator/${encodeURIComponent(safeKey)}`} className="btn btn-outline">View details</a>
+          <a href={`/creator/${encodeURIComponent(safeKey)}`} className="btn btn-outline">Xem lá»‹ch</a>
         </div>
       </div>
     </div>
   );
 }
-

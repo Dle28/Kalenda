@@ -16,19 +16,19 @@ export default function SlotCard(props: {
       <div className="row" style={{justifyContent:'space-between'}}>
         <div className="stack">
           <b>{start.toLocaleString()}</b>
-          <span className="muted">{durMin} phút</span>
+          <span className="muted">{durMin} min</span>
         </div>
         {mode === 'Stable' ? (
           <div className="stack" style={{alignItems:'flex-end'}}>
             <span><b>{price} USDC</b></span>
-            <Link href={`/slot/${encodeURIComponent(id)}`} className="btn">Đặt ngay</Link>
+            <Link href={`/slot/${encodeURIComponent(id)}`} className="btn">Book now</Link>
           </div>
         ) : (
           <div className="stack" style={{alignItems:'flex-end'}}>
-            <span className="muted">Giá khởi điểm</span>
+            <span className="muted">Starting price</span>
             <span><b>{startPrice} USDC</b></span>
             <Countdown to={new Date(start.getTime() + 2 * 60 * 60 * 1000)} />
-            <Link href={`/slot/${encodeURIComponent(id)}`} className="btn btn-secondary">Tham gia đấu giá</Link>
+            <Link href={`/slot/${encodeURIComponent(id)}`} className="btn btn-secondary">Join auction</Link>
           </div>
         )}
       </div>

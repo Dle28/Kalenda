@@ -8,24 +8,24 @@ export default function WalletTestPage() {
 
   const onSign = async () => {
     try {
-      if (!connected || !publicKey) return setResult("Vui lòng kết nối ví trước.");
-      if (!signMessage) return setResult("Ví không hỗ trợ ký thông điệp.");
-      const message = new TextEncoder().encode("TimeMarket demo: xin chào!");
+      if (!connected || !publicKey) return setResult("Please connect your wallet first.");
+      if (!signMessage) return setResult("Wallet does not support message signing.");
+      const message = new TextEncoder().encode("TimeMarket demo: hello!");
       const signature = await signMessage(message);
-      setResult(`Đã ký: ${Buffer.from(signature).toString("hex").slice(0, 32)}…`);
+      setResult(`Signed: ${Buffer.from(signature).toString("hex").slice(0, 32)}…`);
     } catch (e: any) {
-      setResult(`Lỗi: ${e?.message || e}`);
+      setResult(`Error: ${e?.message || e}`);
     }
   };
 
   return (
     <section className="stack">
-      <h1>Kiểm tra kết nối ví</h1>
+      <h1>Wallet connection test</h1>
       <div>
-        Trạng thái: {connected ? `Đã kết nối: ${publicKey?.toBase58()}` : "Chưa kết nối"}
+        Status: {connected ? `Connected: ${publicKey?.toBase58()}` : "Not connected"}
       </div>
       <div className="row" style={{ gap: 12 }}>
-        <button className="btn" onClick={onSign}>Ký thông điệp</button>
+        <button className="btn" onClick={onSign}>Sign message</button>
       </div>
       {result && <pre className="card" style={{ whiteSpace: 'pre-wrap' }}>{result}</pre>}
     </section>

@@ -8,20 +8,20 @@ import WalletStatus from '../components/WalletStatus';
 
 export const metadata: Metadata = {
   title: 'TimeMarket',
-  description: 'Đặt lịch số thông minh',
+  description: 'Smart time booking on Solana',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="vi">
+    <html lang="en">
       <body>
         <Providers>
           <header className="container">
             <nav className="nav">
               <Link href="/" className="brand">TimeMarket</Link>
               <div className="spacer" />
-              <Link href="/creators" className="link">Khám phá Creator</Link>
-              <Link href="/creator/onboard" className="link">Trở thành Creator</Link>
+              <Link href="/creators" className="link">Explore creators</Link>
+              <Link href="/creator/onboard" className="link">Become a creator</Link>
               <div style={{ marginLeft: 12 }}>
                 <WalletButton />
                 <WalletStatus />

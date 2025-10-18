@@ -17,6 +17,6 @@ export default function Countdown({ to }: { to: Date }) {
     const id = setInterval(() => setLeft(to.getTime() - Date.now()), 1000);
     return () => clearInterval(id);
   }, [to]);
-  return <span className="muted">Còn {fmt(left)}</span>;
+  return <span className="muted">Ends in {fmt(left)}</span>;
 }
 
