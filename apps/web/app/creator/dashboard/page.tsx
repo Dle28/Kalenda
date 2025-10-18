@@ -35,12 +35,21 @@ export default function CreatorDashboard() {
 
   return (
     <section className="container" style={{ padding: '20px 0 40px' }}>
-      <h1 className="title" style={{ fontSize: 28 }}>Creator Dashboard</h1>
-      <p className="muted">Create slots, toggle auction, set prices and view revenue.</p>
+      <div className="dashboard-shell">
+        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h1 className="title" style={{ fontSize: 28, margin: 0 }}>Creator Dashboard</h1>
+            <p className="muted" style={{ margin: '4px 0 0' }}>Create slots, toggle auction, set prices and view revenue.</p>
+          </div>
+          <div className="row" style={{ gap: 8 }}>
+            <button className="btn btn-outline" style={{ padding: '8px 12px' }}>Preview profile</button>
+            <button className="btn btn-secondary" style={{ padding: '8px 12px' }}>New slot</button>
+          </div>
+        </div>
 
-      <div className="grid" style={{ marginTop: 16 }}>
-        <div className="card" style={{ display: 'grid', gap: 10 }}>
-          <b>New slot</b>
+        <div className="grid" style={{ marginTop: 16 }}>
+          <div className="card" style={{ display: 'grid', gap: 10 }}>
+            <b>New slot</b>
           <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
             <label className="stack" style={{ minWidth: 160 }}>
               <span className="muted">Date</span>
@@ -95,31 +104,31 @@ export default function CreatorDashboard() {
             <button className="btn btn-outline" style={{ padding: '6px 10px' }} onClick={exportCSV}>Export CSV</button>
           </div>
         </div>
-      </div>
+        </div>
 
-      <div style={{ marginTop: 24 }}>
-        <h3 className="section-title">My slots</h3>
-        <div className="grid" style={{ marginTop: 12 }}>
-          {slots.length === 0 ? (
-            <div className="card muted">No slots yet.</div>
-          ) : (
-            slots.map((s) => (
-              <div key={s.id} className="card" style={{ display: 'grid', gap: 6 }}>
-                <div className="row" style={{ justifyContent: 'space-between' }}>
-                  <b>{s.mode === 'Stable' ? 'Fixed price' : 'Auction'}</b>
-                  <span className="badge">{s.durationMin} min</span>
+        <div style={{ marginTop: 24 }}>
+          <h3 className="section-title">My slots</h3>
+          <div className="grid" style={{ marginTop: 12 }}>
+            {slots.length === 0 ? (
+              <div className="card muted">No slots yet.</div>
+            ) : (
+              slots.map((s) => (
+                <div key={s.id} className="card" style={{ display: 'grid', gap: 6 }}>
+                  <div className="row" style={{ justifyContent: 'space-between' }}>
+                    <b>{s.mode === 'Stable' ? 'Fixed price' : 'Auction'}</b>
+                    <span className="badge">{s.durationMin} min</span>
+                  </div>
+                  <span className="muted">{s.date} {s.start}</span>
+                  <div className="row" style={{ gap: 8 }}>
+                    <button className="btn btn-outline" style={{ padding: '6px 10px' }}>Toggle auction</button>
+                    <button className="btn btn-outline" style={{ padding: '6px 10px' }}>Edit</button>
+                  </div>
                 </div>
-                <span className="muted">{s.date} {s.start}</span>
-                <div className="row" style={{ gap: 8 }}>
-                  <button className="btn btn-outline" style={{ padding: '6px 10px' }}>Toggle auction</button>
-                  <button className="btn btn-outline" style={{ padding: '6px 10px' }}>Edit</button>
-                </div>
-              </div>
-            ))
-          )}
+              ))
+            )}
+          </div>
         </div>
       </div>
     </section>
   );
 }
-

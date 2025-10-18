@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { creators } from '@/lib/mock';
 import styles from './home.module.css';
+import FloatingBadges from '@/components/FloatingBadges';
 
 export default function Page() {
   const featured = creators.slice(0, 4);
@@ -46,7 +47,7 @@ export default function Page() {
           </div>
         </div>
       </div>
+      <FloatingBadges />
     </section>
   );
 }
-

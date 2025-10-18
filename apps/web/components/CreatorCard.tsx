@@ -21,7 +21,7 @@ export default function CreatorCard(props: CreatorCardProps) {
   const shortKey = safeKey ? `${safeKey.slice(0, 6)}...${safeKey.slice(-4)}` : 'N/A';
 
   return (
-    <Reveal as="div" className="card creator-card" style={{ transitionDelay: '40ms' }}>
+    <Reveal as="div" className="card creator-card" style={{ transitionDelay: '40ms', position: 'relative', overflow: 'hidden' }}>
       <div className="row" style={{ alignItems: 'center' }}>
         <div style={{ position: 'relative' }}>
           <img
@@ -78,6 +78,12 @@ export default function CreatorCard(props: CreatorCardProps) {
           </a>
         </div>
       </div>
+
+      {typeof pricePerSlot === 'number' && (
+        <div style={{ position: 'absolute', right: 12, top: 12 }}>
+          <span className="badge" title="Price per slot">${pricePerSlot.toFixed(2)} / min</span>
+        </div>
+      )}
     </Reveal>
   );
 }

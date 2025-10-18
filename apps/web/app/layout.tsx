@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Providers from './providers';
 import WalletButton from '../components/WalletButton';
 import WalletStatus from '../components/WalletStatus';
+import SearchBar from '../components/SearchBar';
 
 export const metadata: Metadata = {
   title: 'TimeMarket',
@@ -19,6 +20,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" translate="no" suppressHydrationWarning>
       <head>
+        {/* Fonts for display + body */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@700;800;900&display=swap"
+          rel="stylesheet"
+        />
         <meta httpEquiv="Content-Language" content="en" />
         <Script id="no-translate-guard" strategy="beforeInteractive">{`
           try {
@@ -59,12 +67,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body suppressHydrationWarning>
         <Providers>
           <header className="container">
-            <nav className="nav">
+            <nav className="nav nav-rounded">
               <Link href="/" className="brand">TimeMarket</Link>
+              <SearchBar />
               <div className="spacer" />
               <Link href="/creators" className="link">Explore creators</Link>
-              <Link href="/creator/onboard" className="link">Become a creator</Link>
-              <div style={{ marginLeft: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 12 }}>
+                <Link href="/creator/onboard" className="btn btn-outline" style={{ padding: '6px 12px' }}>Get started</Link>
                 <WalletButton />
                 <WalletStatus />
               </div>
