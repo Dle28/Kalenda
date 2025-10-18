@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
   <defs>
     <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.14"/>
-      <stop offset="1" stop-color="#ffffff" stop-opacity="0.05"/>
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0.12"/>
     </linearGradient>
   </defs>
-  <g fill="none" stroke="url(#g)" stroke-width="1.5" opacity="0.8">
+  <g fill="none" stroke="url(#g)" stroke-width="2.4" opacity="0.9">
     <!-- hourglass-like chevron path -->
     <path d="M2 2 C18 12, 46 12, 62 2 M2 62 C18 52, 46 52, 62 62" />
     <path d="M2 2 C12 18, 12 46, 2 62 M62 2 C52 18, 52 46, 62 62" />
