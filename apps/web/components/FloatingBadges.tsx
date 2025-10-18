@@ -22,13 +22,9 @@ export default function FloatingBadges({ count = 2 }: { count?: number }) {
       className={`float-badge ${b.side}`}
       style={{ top: `${b.top}%` }}
     >
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
-        <path d="M12 2l7 10-7 10-7-10 7-10z" fill="currentColor"/>
-      </svg>
       <span>{b.value}%</span>
     </div>
   )), [badges]);
 
   return <>{nodes}</>;
 }
-

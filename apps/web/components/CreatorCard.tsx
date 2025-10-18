@@ -20,8 +20,13 @@ export default function CreatorCard(props: CreatorCardProps) {
   const safeKey = typeof pubkey === 'string' ? pubkey : '';
   const shortKey = safeKey ? `${safeKey.slice(0, 6)}...${safeKey.slice(-4)}` : 'N/A';
 
+  const isTop = displayRating >= 4.8;
+
   return (
     <Reveal as="div" className="card creator-card" style={{ transitionDelay: '40ms', position: 'relative', overflow: 'hidden' }}>
+      {isTop && (
+        <div className="ribbon">TOP</div>
+      )}
       <div className="row" style={{ alignItems: 'center' }}>
         <div style={{ position: 'relative' }}>
           <img
@@ -43,8 +48,8 @@ export default function CreatorCard(props: CreatorCardProps) {
             {rest > 0 && <span className="badge">+{rest} more</span>}
           </div>
         </div>
-        <span className="badge" title={`${displayRating.toFixed(2)} / 5.0`}>
-          &#9733; {displayRating.toFixed(1)}
+        <span className="badge" title={`Rating ${displayRating.toFixed(2)} / 5.0`}>
+          Rating {displayRating.toFixed(1)}
         </span>
       </div>
 
