@@ -1,3 +1,3 @@
-import myProgramIdl from "./my_program.json";
+import timemarketIdl from "./timemarket.json";
 
-export { myProgramIdl };
+export { timemarketIdl };

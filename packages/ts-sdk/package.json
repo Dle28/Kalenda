@@ -27,7 +27,7 @@
     }
   },
   "scripts": {
-    "build": "tsc -p .",
+    "build": "node ../../scripts/sync-idl.mjs copy-src && tsc -p . && node ../../scripts/sync-idl.mjs copy-dist",
     "prepublishOnly": "pnpm build"
   },
   "devDependencies": {

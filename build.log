@@ -1,2 +1,4 @@
-Using image "solanafoundation/anchor:v0.31.1"
-Run docker image
+error: no such command: `build-sbf`
+
+help: view all installed commands with `cargo --list`
+help: find a package to install `build-sbf` with `cargo search cargo-build-sbf`

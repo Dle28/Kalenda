@@ -1,0 +1,5 @@
+{
+  "name": "timemarket",
+  "address": "Gz7jdgqsn3R8mBrthEx5thAFYdM369kHN7wMTY3PKhty",
+  "note": "Placeholder IDL. Replace via build/sync with target/idl/timemarket.json"
+}

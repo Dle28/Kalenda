@@ -1,0 +1,4 @@
+color: true
+reporter: mocha-multi-reporters
+reporterOptions:
+  configFile: mocha-multi-reporters.config.js
