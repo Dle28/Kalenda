@@ -1,67 +1,84 @@
 "use client";
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { slots } from '@/lib/mock';
-import SlotCard from '@/components/SlotCard';
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { getProgram } from '@/lib/anchorClient';
+import BidRoom from '@/components/BidRoom';
+import PaymentBox from '@/components/PaymentBox';
+import '../styles.css';
 
 export default function SlotPage({ params }: { params: { id: string } }) {
   const id = decodeURIComponent(params.id);
   const s = slots.find((x) => x.id === id);
-  const { connection } = useConnection();
-  const wallet = useWallet();
-  const program = useMemo(() => {
-    if (!wallet.publicKey) return null;
-    return getProgram(connection, wallet as any);
-  }, [connection, wallet.publicKey]);
+  const durMin = useMemo(() => (s ? Math.round((new Date(s.end).getTime() - new Date(s.start).getTime()) / 60000) : 0), [s]);
 
-  const [status, setStatus] = useState<string>('');
+  if (!s) return <section className="slot-wrap"><div className="container"><div className="card">Slot not found.</div></div></section>;
 
-  if (!s) return <div>Không tìm thấy slot.</div>;
+  const start = new Date(s.start);
+  const end = new Date(s.end);
+  const label = `${start.toLocaleString()} → ${end.toLocaleTimeString()} (${durMin} min)`;
 
-  async function reserveStable() {
-    try {
-      setStatus('Đang gửi lệnh đặt chỗ...');
-      await new Promise((r) => setTimeout(r, 1000));
-      setStatus('Đã đặt chỗ (mô phỏng).');
-    } catch (e: any) {
-      setStatus(`Lỗi: ${e?.message || String(e)}`);
-    }
-  }
-
-  async function placeBid() {
-    try {
-      setStatus('Đang đặt bid...');
-      await new Promise((r) => setTimeout(r, 1000));
-      setStatus('Đã đặt bid (mô phỏng).');
-    } catch (e: any) {
-      setStatus(`Lỗi: ${e?.message || String(e)}`);
-    }
-  }
+  const priceDisplay = s.mode === 'EnglishAuction' ? (s.startPrice ?? 0) : (s.price ?? 0);
 
   return (
-    <section>
-      <h1 className="title" style={{ fontSize: 28 }}>Slot</h1>
-      <p className="muted">Creator: {s.creator.slice(0, 6)}...{s.creator.slice(-4)}</p>
-      <div style={{ marginTop: 12 }}>
-        <SlotCard
-          id={s.id}
-          mode={s.mode}
-          start={new Date(s.start)}
-          end={new Date(s.end)}
-          price={s.price}
-          startPrice={s.startPrice}
-        />
-      </div>
-      <div className="card" style={{ marginTop: 16, display:'grid', gap:12 }}>
-        <b>Hành động</b>
-        {s.mode === 'Stable' ? (
-          <button className="btn" disabled={!program} onClick={reserveStable}>Đặt ngay</button>
-        ) : (
-          <button className="btn btn-secondary" disabled={!program} onClick={placeBid}>Đặt bid</button>
-        )}
-        <span className="muted">{wallet.publicKey ? `Ví: ${wallet.publicKey.toBase58().slice(0,6)}...` : 'Chưa kết nối ví'}</span>
-        {status && <span className="muted">{status}</span>}
+    <section className="slot-wrap">
+      <div className="container two-col">
+        <div className="panel">
+          <h1 className="title" style={{ fontSize: 28 }}>Slot</h1>
+          <span className="muted">Creator: {s.creator.slice(0, 6)}...{s.creator.slice(-4)}</span>
+          <div className="card">
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <b>{s.mode === 'EnglishAuction' ? 'Auction' : 'Fixed price'}</b>
+              <span className="badge">{durMin} min</span>
+            </div>
+            <div className="stack" style={{ gap: 6 }}>
+              <span className="muted">{label}</span>
+              <div className="row" style={{ justifyContent: 'space-between' }}>
+                <span className="muted">{s.mode === 'EnglishAuction' ? 'Starting price' : 'Price'}</span>
+                <b>{priceDisplay} USDC</b>
+              </div>
+            </div>
+          </div>
+
+          {s.mode === 'EnglishAuction' ? (
+            <BidRoom
+              startPrice={s.startPrice ?? 0}
+              bidStep={1}
+              currency="USDC"
+              onPlaceBid={async () => { /* TODO integrate on-chain */ }}
+            />
+          ) : (
+            <div className="card" style={{ display: 'grid', gap: 10 }}>
+              <b>Reserve</b>
+              <div className="row" style={{ justifyContent: 'space-between' }}>
+                <span className="muted">Total minutes</span>
+                <span>{durMin}</span>
+              </div>
+              <div className="row" style={{ justifyContent: 'space-between' }}>
+                <span className="muted">Price</span>
+                <b>{s.price ?? 0} USDC</b>
+              </div>
+              <button className="btn btn-secondary" style={{ padding: '8px 12px' }}>Reserve now</button>
+            </div>
+          )}
+        </div>
+
+        <div className="panel">
+          <PaymentBox baseAmount={priceDisplay} defaultCurrency="USDC" feeBps={250} />
+
+          <div className="ticket">
+            <b>Ticket & Check-in</b>
+            <div className="row" style={{ gap: 12, alignItems: 'center' }}>
+              <div className="qr">QR</div>
+              <div className="stack">
+                <span className="muted">NFT Ticket preview</span>
+                <span className="badge">Status: Not checked-in</span>
+              </div>
+            </div>
+            <div className="row" style={{ gap: 8 }}>
+              <button className="btn btn-outline" style={{ padding: '6px 10px' }}>View NFT</button>
+              <button className="btn btn-outline" style={{ padding: '6px 10px' }}>Show QR</button>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

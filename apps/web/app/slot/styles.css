@@ -1,0 +1,10 @@
+.slot-wrap { padding: 20px 0 40px }
+.two-col { display: grid; grid-template-columns: 1.1fr .9fr; gap: 20px }
+.panel { display: grid; gap: 12px }
+.ticket {
+  display: grid; gap: 8px; border: 1px dashed var(--line); border-radius: 12px; padding: 12px;
+}
+.qr { width: 128px; height: 128px; border-radius: 8px; background: repeating-linear-gradient(45deg, #111, #111 6px, #222 6px, #222 12px); display:flex; align-items:center; justify-content:center; color:#999; font-size:12px }
+
+@media (max-width: 960px) { .two-col { grid-template-columns: 1fr } }
+
