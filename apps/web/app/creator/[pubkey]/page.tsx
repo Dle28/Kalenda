@@ -7,10 +7,16 @@ import '../profile.css';
 
 dayjs.extend(relativeTime);
 
-type Params = { params: { pubkey: string } };
+type RouteParams = { pubkey: string };
+type Params = { params: RouteParams | Promise<RouteParams> };
 
-export default function CreatorProfilePage({ params }: Params) {
-  const pubkey = decodeURIComponent(params.pubkey);
+function isPromise<T>(value: Promise<T> | T): value is Promise<T> {
+  return !!value && typeof (value as Promise<T>).then === 'function';
+}
+
+export default async function CreatorProfilePage({ params }: Params) {
+  const resolvedParams = isPromise(params) ? await params : params;
+  const pubkey = decodeURIComponent(resolvedParams?.pubkey ?? '');
   const creator = creators.find((c) => c.pubkey === pubkey);
 
   if (!creator) {
