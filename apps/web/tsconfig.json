@@ -1,10 +1,6 @@
-{
+﻿{
   "compilerOptions": {
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strictNullChecks": true,
@@ -18,16 +14,9 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"]
     },
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
-    "types": ["next", "next/image-types/global", "next/navigation-types/compat/navigation"],
+    "plugins": [{ "name": "next" }],
     "strict": false
   },
   "include": [
@@ -36,7 +25,5 @@
     "**/*.tsx",
     ".next/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }
