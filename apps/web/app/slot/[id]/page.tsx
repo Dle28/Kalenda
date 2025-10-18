@@ -1,14 +1,13 @@
-"use client";
-import { useMemo } from 'react';
 import { slots } from '@/lib/mock';
 import BidRoom from '@/components/BidRoom';
 import PaymentBox from '@/components/PaymentBox';
 import '../styles.css';
 
-export default function SlotPage({ params }: { params: { id: string } }) {
-  const id = decodeURIComponent(params.id);
-  const s = slots.find((x) => x.id === id);
-  const durMin = useMemo(() => (s ? Math.round((new Date(s.end).getTime() - new Date(s.start).getTime()) / 60000) : 0), [s]);
+export default async function SlotPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const decodedId = decodeURIComponent(id);
+  const s = slots.find((x) => x.id === decodedId);
+  const durMin = s ? Math.round((new Date(s.end).getTime() - new Date(s.start).getTime()) / 60000) : 0;
 
   if (!s) return <section className="slot-wrap"><div className="container"><div className="card">Slot not found.</div></div></section>;
 
@@ -83,4 +82,3 @@ export default function SlotPage({ params }: { params: { id: string } }) {
     </section>
   );
 }
-

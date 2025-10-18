@@ -78,3 +78,5 @@ html, body {
   .btn, .creator-card, .reveal, .page-enter { transition: none; animation: none }
 }
 
+/* Block auto-translate overlays */
+.translate-tooltip-mtz, .hidden_translate, .sm-root.translate { display: none !important; }

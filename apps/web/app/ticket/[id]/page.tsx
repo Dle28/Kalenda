@@ -1,8 +1,10 @@
 "use client";
 import { useMemo, useState } from 'react';
+import { useParams } from 'next/navigation';
 
-export default function TicketPage({ params }: { params: { id: string } }) {
-  const id = decodeURIComponent(params.id);
+export default function TicketPage() {
+  const { id: rawId } = useParams<{ id: string }>();
+  const id = decodeURIComponent(rawId);
   const [checkedIn, setCheckedIn] = useState(false);
   const url = useMemo(() => (typeof window !== 'undefined' ? `${location.origin}/ticket/${encodeURIComponent(id)}` : `ticket:${id}`), [id]);
 
@@ -29,4 +31,3 @@ export default function TicketPage({ params }: { params: { id: string } }) {
     </section>
   );
 }
-

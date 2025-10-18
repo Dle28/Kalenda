@@ -1,3 +1,4 @@
+"use client";
 import Link from 'next/link';
 import Countdown from './Countdown';
 
@@ -15,7 +16,7 @@ export default function SlotCard(props: {
     <div className={`slot ${mode === 'EnglishAuction' ? 'slot-auction' : ''}`}>
       <div className="row" style={{justifyContent:'space-between'}}>
         <div className="stack">
-          <b>{start.toLocaleString()}</b>
+          <b>{new Intl.DateTimeFormat('en-GB',{ year:'numeric', month:'short', day:'2-digit', hour:'2-digit', minute:'2-digit', hour12:false, timeZone:'UTC' }).format(start)}</b>
           <span className="muted">{durMin} min</span>
         </div>
         {mode === 'Stable' ? (
