@@ -26,7 +26,9 @@ html, body {
 .subtitle { color: var(--muted); margin: 0 0 20px }
 .cta { display: flex; gap: 12px }
 .btn { display:inline-block; padding: 10px 16px; border-radius:10px; text-decoration:none; color:#0b0c10; background: var(--accent); font-weight: 600; border:1px solid transparent }
+.btn { transition: transform .12s ease, filter .12s ease, background .2s ease, border-color .2s ease }
 .btn:hover { filter: brightness(1.06) }
+.btn:active { transform: translateY(1px) scale(0.99) }
 .btn-secondary { background: var(--accent2); color: white }
 .btn-outline { background: transparent; color: var(--fg); border-color: var(--line) }
 .btn-outline:hover { background: rgba(255,255,255,.06) }
@@ -46,4 +48,33 @@ html, body {
 /* Creator card tweaks for timefun-like layout */
 .creator-card { transition: transform .12s ease, box-shadow .12s ease }
 .creator-card:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(15,23,42,.06) }
+
+/* Animations: spinner, skeleton, reveal, page transitions */
+@keyframes spin { to { transform: rotate(360deg) } }
+.spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.2); border-top-color: rgba(255,255,255,.85); border-radius: 50%; animation: spin .9s linear infinite }
+
+@keyframes shimmer {
+  0% { background-position: -200% 0 }
+  100% { background-position: 200% 0 }
+}
+.skeleton {
+  position: relative;
+  background: linear-gradient(90deg, rgba(255,255,255,.06) 25%, rgba(255,255,255,.12) 37%, rgba(255,255,255,.06) 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+  border-radius: 8px;
+}
+
+.reveal { opacity: 0; transform: translateY(8px); transition: opacity .5s ease, transform .5s ease }
+.reveal.in { opacity: 1; transform: translateY(0) }
+
+@keyframes page-fade {
+  from { opacity: 0; transform: translateY(4px) }
+  to { opacity: 1; transform: translateY(0) }
+}
+.page-enter { animation: page-fade .28s ease both }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn, .creator-card, .reveal, .page-enter { transition: none; animation: none }
+}
 

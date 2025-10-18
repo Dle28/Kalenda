@@ -1,4 +1,6 @@
-export default function CreatorCard(props: {
+import Reveal from './Reveal';
+
+type CreatorCardProps = {
   pubkey: string;
   name: string;
   avatar?: string;
@@ -6,7 +8,9 @@ export default function CreatorCard(props: {
   rating?: number;
   bio?: string;
   pricePerSlot?: number;
-}) {
+};
+
+export default function CreatorCard(props: CreatorCardProps) {
   const { pubkey, name, avatar, fields, rating, bio, pricePerSlot } = props;
   const displayAvatar = avatar || 'https://placehold.co/96x96?text=User';
   const displayRating = Number.isFinite(Number(rating)) ? Number(rating) : 5.0;
@@ -14,10 +18,10 @@ export default function CreatorCard(props: {
   const shown = fieldList.slice(0, 3);
   const rest = Math.max(0, fieldList.length - shown.length);
   const safeKey = typeof pubkey === 'string' ? pubkey : '';
-  const shortKey = safeKey ? `${safeKey.slice(0,6)}...${safeKey.slice(-4)}` : 'N/A';
+  const shortKey = safeKey ? `${safeKey.slice(0, 6)}...${safeKey.slice(-4)}` : 'N/A';
 
   return (
-    <div className="card creator-card">
+    <Reveal as="div" className="card creator-card" style={{ transitionDelay: '40ms' }}>
       <div className="row" style={{ alignItems: 'center' }}>
         <div style={{ position: 'relative' }}>
           <img
@@ -32,12 +36,16 @@ export default function CreatorCard(props: {
           <b style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{name}</b>
           <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
             {shown.map((f) => (
-              <span key={f} className="badge">{f}</span>
+              <span key={f} className="badge">
+                {f}
+              </span>
             ))}
             {rest > 0 && <span className="badge">+{rest} more</span>}
           </div>
         </div>
-        <span className="badge" title={`${displayRating.toFixed(2)} / 5.0`}>★ {displayRating.toFixed(1)}</span>
+        <span className="badge" title={`${displayRating.toFixed(2)} / 5.0`}>
+          &#9733; {displayRating.toFixed(1)}
+        </span>
       </div>
 
       {bio && (
@@ -56,15 +64,20 @@ export default function CreatorCard(props: {
       )}
 
       <div className="row" style={{ justifyContent: 'space-between', marginTop: 8 }}>
-        <span className="muted" style={{ fontSize: 12 }}>{shortKey}</span>
+        <span className="muted" style={{ fontSize: 12 }}>
+          {shortKey}
+        </span>
         <div className="row" style={{ gap: 8 }}>
           {typeof pricePerSlot === 'number' && (
-            <span className="badge" title="Estimated price">From {pricePerSlot} USDC</span>
+            <span className="badge" title="Estimated price">
+              From {pricePerSlot} USDC
+            </span>
           )}
-          <a href={`/creator/${encodeURIComponent(safeKey)}`} className="btn btn-outline">View details</a>
+          <a href={`/creator/${encodeURIComponent(safeKey)}`} className="btn btn-outline">
+            View details
+          </a>
         </div>
       </div>
-    </div>
+    </Reveal>
   );
 }
-
