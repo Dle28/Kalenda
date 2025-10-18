@@ -27,6 +27,7 @@
         "name": "next"
       }
     ],
+    "types": ["next", "next/image-types/global", "next/navigation-types/compat/navigation"],
     "strict": false
   },
   "include": [
