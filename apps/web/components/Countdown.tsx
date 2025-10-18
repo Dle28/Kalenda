@@ -13,7 +13,12 @@ function fmt(ms: number) {
 
 export default function Countdown({ to }: { to: Date }) {
   const [left, setLeft] = useState(0);
-  useEffect(() => {\n  const tick = () => setLeft(to.getTime() - Date.now());\n  tick();\n  const id = setInterval(tick, 1000);\n  return () => clearInterval(id);\n}, [to]);
+  useEffect(() => {
+    const tick = () => setLeft(to.getTime() - Date.now());
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [to]);
   return <span className="muted">Ends in {fmt(left)}</span>;
 }
 
