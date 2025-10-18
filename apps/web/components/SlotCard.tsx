@@ -1,36 +1,31 @@
 "use client";
 import Link from 'next/link';
 import Countdown from './Countdown';
+import type { Slot } from '@/lib/mock';
 
-export default function SlotCard(props: {
-  id: string;
-  mode: 'Stable' | 'EnglishAuction';
-  start: Date;
-  end: Date;
-  price?: number;
-  startPrice?: number;
-}) {
-  const { id, mode, start, end, price, startPrice } = props;
-  const durMin = Math.round((end.getTime() - start.getTime()) / 60000);
+export default function SlotCard({ slot, fallbackPrice }: { slot: Slot; fallbackPrice?: number }) {
+  const start = new Date(slot.start);
+  const end = new Date(slot.end);
+  const isAuction = slot.mode === 'EnglishAuction';
+  const price = isAuction ? (slot.startPrice ?? 0) : (slot.price ?? fallbackPrice ?? 0);
+  const dateLabel = `${start.toLocaleDateString()} @ ${start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+  const durMin = Math.max(1, Math.round((end.getTime() - start.getTime()) / 60000));
+
   return (
-    <div className={`slot ${mode === 'EnglishAuction' ? 'slot-auction' : ''}`}>
-      <div className="row" style={{justifyContent:'space-between'}}>
-        <div className="stack">
-          <b>{new Intl.DateTimeFormat('en-GB',{ year:'numeric', month:'short', day:'2-digit', hour:'2-digit', minute:'2-digit', hour12:false, timeZone:'UTC' }).format(start)}</b>
-          <span className="muted">{durMin} min</span>
+    <div className={`day ${isAuction ? 'slot-auction' : ''}`}>
+      <div className="stack" style={{ gap: 6 }}>
+        <b>{dateLabel}</b>
+        <span className="muted">{durMin} phút • {isAuction ? 'Đấu giá' : 'Giá cố định'}</span>
+        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+          <span className="badge">{isAuction ? `Giá khởi điểm ${price} USDC` : `${price} USDC`}</span>
+          <Link href={`/slot/${encodeURIComponent(slot.id)}`} className={isAuction ? 'btn btn-outline' : 'btn btn-secondary'} style={{ padding: '6px 10px' }}>
+            {isAuction ? 'Tham gia đấu giá' : 'Đặt ngay'}
+          </Link>
         </div>
-        {mode === 'Stable' ? (
-          <div className="stack" style={{alignItems:'flex-end'}}>
-            <span><b>{price} USDC</b></span>
-            <Link href={`/slot/${encodeURIComponent(id)}`} className="btn">Book now</Link>
-          </div>
-        ) : (
-          <div className="stack" style={{alignItems:'flex-end'}}>
-            <span className="muted">Starting price</span>
-            <span><b>{startPrice} USDC</b></span>
-            <Countdown to={new Date(start.getTime() + 2 * 60 * 60 * 1000)} />
-            <Link href={`/slot/${encodeURIComponent(id)}`} className="btn btn-secondary">Join auction</Link>
-          </div>
+        {isAuction && (
+          <span className="muted" title={`Kết thúc lúc ${end.toLocaleTimeString()}`}>
+            <Countdown to={end} />
+          </span>
         )}
       </div>
     </div>
