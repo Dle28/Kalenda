@@ -5,7 +5,7 @@ import { PublicKey } from '@solana/web3.js';
 import type { CreatorUI, Slot } from './mock';
 import { creators, slots } from './mock';
 
-export type CreatorPublic = Pick<CreatorUI, 'pubkey' | 'name' | 'bio' | 'avatar' | 'pricePerSlot' | 'fields' | 'rating' | 'socials'>;
+export type CreatorPublic = Pick<CreatorUI, 'pubkey' | 'name' | 'bio' | 'avatar' | 'pricePerSlot' | 'fields' | 'rating' | 'socials' | 'location' | 'timezone' | 'meetingTypes'>;
 
 export async function getCreator(pubkey: string): Promise<CreatorPublic | null> {
   const k = decodeURIComponent(pubkey);
@@ -23,6 +23,9 @@ export async function getCreator(pubkey: string): Promise<CreatorPublic | null> 
         fields: c.fields,
         rating: c.rating,
         socials: c.socials,
+        location: c.location,
+        timezone: c.timezone,
+        meetingTypes: c.meetingTypes,
       }
     : null;
 }

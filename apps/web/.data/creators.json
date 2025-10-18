@@ -1,0 +1,25 @@
+{
+  "FLWfSH7ip9jukg3pDGAnheETpuYmm8W7XgDPXku7GYyf": {
+    "pubkey": "FLWfSH7ip9jukg3pDGAnheETpuYmm8W7XgDPXku7GYyf",
+    "name": "q",
+    "bio": "q",
+    "location": "q",
+    "timezone": "Asia/Bangkok",
+    "meetingTypes": [
+      "Video call"
+    ],
+    "session": {
+      "title": "Review prototype",
+      "description": "yes"
+    },
+    "defaults": {
+      "mode": "Stable",
+      "currency": "USDC",
+      "durationMin": "30",
+      "bufferMin": "10",
+      "price": "20",
+      "startPrice": "10",
+      "bidStep": "1"
+    }
+  }
+}

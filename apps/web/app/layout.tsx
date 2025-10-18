@@ -7,6 +7,7 @@ import Providers from './providers';
 import WalletButton from '../components/WalletButton';
 import WalletStatus from '../components/WalletStatus';
 import SearchBar from '../components/SearchBar';
+import ProfileSettings from '../components/ProfileSettings';
 
 export const metadata: Metadata = {
   title: 'TimeMarket',
@@ -73,6 +74,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div className="spacer" />
               <Link href="/creators" className="link">Explore creators</Link>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 12 }}>
+                <ProfileSettings />
                 <Link href="/creator/onboard" className="btn btn-outline" style={{ padding: '6px 12px' }}>Get started</Link>
                 <WalletButton />
                 <WalletStatus />

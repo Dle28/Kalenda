@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import '../profile.css';
+import AvatarRain from '@/components/AvatarRain';
 import Reveal from '@/components/Reveal';
 import { getCreator, getCreatorSlots } from '@/lib/data';
 import ReserveButton from '@/components/ReserveButton';
@@ -38,6 +39,8 @@ export default async function CreatorProfilePage({ params }: Params) {
   return (
     <section className="profile-wrap page-enter">
       <div className="container">
+        {/* Background avatar rain: shrinks and scrolls down in loop */}
+        <AvatarRain image={creator.avatar || undefined} />
         <div className="profile-hero">
           <Reveal className="hero-left" as="div">
             <div className="row" style={{ gap: 14, alignItems: 'center' }}>
@@ -91,9 +94,13 @@ export default async function CreatorProfilePage({ params }: Params) {
         </div>
 
         <div className="profile-main">
-          <Reveal className="col" as="div">
+          {/* Full-width slots section directly under hero for better prominence */}
+          <Reveal as="div" className="col" style={{ gridColumn: '1 / -1' }}>
             <h3 className="section-title">Available slots</h3>
-            <div className="calendar" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 14 }}>
+            <div
+              className="calendar"
+              style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}
+            >
               {list.length === 0 ? (
                 <div className="card muted">No slots yet.</div>
               ) : (
@@ -105,7 +112,10 @@ export default async function CreatorProfilePage({ params }: Params) {
                   const price = s.mode === 'EnglishAuction' ? (s.startPrice ?? 0) : (s.price ?? 0);
                   return (
                     <Reveal key={s.id} as="div" style={{ transitionDelay: `${idx * 60}ms` }}>
-                      <div className={`card day ${s.mode === 'EnglishAuction' ? 'slot-auction' : ''}`} style={{ display: 'grid', gap: 8 }}>
+                      <div
+                        className={`card day ${s.mode === 'EnglishAuction' ? 'slot-auction' : ''}`}
+                        style={{ display: 'grid', gap: 10, minHeight: 160, padding: 16 }}
+                      >
                         <b>{s.mode === 'EnglishAuction' ? 'Auction' : 'Fixed price'}</b>
                         <span className="muted">{label}</span>
                         <div className="row" style={{ justifyContent: 'space-between' }}>
@@ -115,7 +125,13 @@ export default async function CreatorProfilePage({ params }: Params) {
                         {s.mode === 'Stable' ? (
                           <ReserveButton slotId={s.id} mode={s.mode} price={s.price} />
                         ) : (
-                          <Link href={`/slot/${encodeURIComponent(s.id)}`} className="btn btn-secondary" style={{ padding: '8px 12px' }}>Reserve</Link>
+                          <Link
+                            href={`/slot/${encodeURIComponent(s.id)}`}
+                            className="btn btn-secondary"
+                            style={{ padding: '8px 12px' }}
+                          >
+                            Join auction
+                          </Link>
                         )}
                       </div>
                     </Reveal>
@@ -126,6 +142,19 @@ export default async function CreatorProfilePage({ params }: Params) {
           </Reveal>
 
           <Reveal className="col" as="div" delay={120}>
+            <h3 className="section-title">About</h3>
+            <div className="card" style={{ marginBottom: 16 }}>
+              <div className="stack" style={{ gap: 8 }}>
+                <p className="muted" style={{ margin: 0 }}>{creator.bio || 'No bio yet.'}</p>
+                <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
+                  {creator.location && <span className="chip">Location: {creator.location}</span>}
+                  {creator.timezone && <span className="chip">Timezone: {creator.timezone}</span>}
+                  {Array.isArray(creator.meetingTypes) && creator.meetingTypes.map((m) => (
+                    <span key={m} className="chip">{m}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
             <h3 className="section-title">Stats</h3>
             <div className="stats">
               <div className="stat"><span className="stat-label">Slots</span><span className="stat-value">{list.length}</span></div>

@@ -21,7 +21,8 @@
     "dayjs": "1.11.13",
     "next": "14.2.5",
     "react": "18.3.1",
-    "react-dom": "18.3.1"
+    "react-dom": "18.3.1",
+    "qrcode.react": "1.0.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.14",

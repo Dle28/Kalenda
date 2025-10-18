@@ -1,0 +1,12 @@
+{
+  "name": "MICA-E Ticket #1",
+  "symbol": "MICA",
+  "description": "Demo NFT ticket for event check-in.",
+  "image": "https://api.dicebear.com/7.x/shapes/svg?seed=Ticket",
+  "attributes": [
+    { "trait_type": "Event", "value": "MICA-E" },
+    { "trait_type": "Type", "value": "Ticket" },
+    { "trait_type": "Edition", "value": "1" }
+  ]
+}
+

@@ -15,15 +15,15 @@ export default function SlotCard({ slot, fallbackPrice }: { slot: Slot; fallback
     <div className={`day ${isAuction ? 'slot-auction' : ''}`}>
       <div className="stack" style={{ gap: 6 }}>
         <b>{dateLabel}</b>
-        <span className="muted">{durMin} phút • {isAuction ? 'Đấu giá' : 'Giá cố định'}</span>
+        <span className="muted">{durMin} min • {isAuction ? 'Auction' : 'Fixed price'}</span>
         <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-          <span className="badge">{isAuction ? `Giá khởi điểm ${price} USDC` : `${price} USDC`}</span>
+          <span className="badge">{isAuction ? `Start ${price} USDC` : `${price} USDC`}</span>
           <Link href={`/slot/${encodeURIComponent(slot.id)}`} className={isAuction ? 'btn btn-outline' : 'btn btn-secondary'} style={{ padding: '6px 10px' }}>
-            {isAuction ? 'Tham gia đấu giá' : 'Đặt ngay'}
+            {isAuction ? 'Join auction' : 'Book now'}
           </Link>
         </div>
         {isAuction && (
-          <span className="muted" title={`Kết thúc lúc ${end.toLocaleTimeString()}`}>
+          <span className="muted" title={`Ends at ${end.toLocaleTimeString()}`}>
             <Countdown to={end} />
           </span>
         )}
@@ -31,4 +31,3 @@ export default function SlotCard({ slot, fallbackPrice }: { slot: Slot; fallback
     </div>
   );
 }
-

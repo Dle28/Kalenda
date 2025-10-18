@@ -1,6 +1,7 @@
 import { slots } from '@/lib/mock';
 import BidRoom from '@/components/BidRoom';
 import PaymentBox from '@/components/PaymentBox';
+import TicketPanel from '@/components/TicketPanel';
 import Countdown from '@/components/Countdown';
 
 export default async function SlotPage({ params }: { params: Promise<{ id: string }> }) {
@@ -48,7 +49,7 @@ export default async function SlotPage({ params }: { params: Promise<{ id: strin
           </div>
 
           {s.mode === 'EnglishAuction' ? (
-            <BidRoom startPrice={s.startPrice ?? 0} bidStep={1} currency="USDC" onPlaceBid={async () => {}} />
+            <BidRoom startPrice={s.startPrice ?? 0} bidStep={1} currency="USDC" />
           ) : (
             <div className="card" style={{ display: 'grid', gap: 10 }}>
               <b>Reserve</b>
@@ -60,29 +61,15 @@ export default async function SlotPage({ params }: { params: Promise<{ id: strin
                 <span className="muted">Price</span>
                 <b>{s.price ?? 0} USDC</b>
               </div>
-              <button className="btn btn-secondary" style={{ padding: '8px 12px' }}>Đặt ngay</button>
+              <button className="btn btn-secondary" style={{ padding: '8px 12px' }}>Book now</button>
             </div>
           )}
         </div>
         <div className="panel">
           <PaymentBox baseAmount={priceDisplay} defaultCurrency="USDC" feeBps={250} />
-          <div className="ticket">
-            <b>Ticket & Check-in</b>
-            <div className="row" style={{ gap: 12, alignItems: 'center' }}>
-              <div className="qr">QR</div>
-              <div className="stack">
-                <span className="muted">NFT Ticket preview</span>
-                <span className="badge">Status: Not checked-in</span>
-              </div>
-            </div>
-            <div className="row" style={{ gap: 8 }}>
-              <button className="btn btn-outline" style={{ padding: '6px 10px' }}>View NFT</button>
-              <button className="btn btn-outline" style={{ padding: '6px 10px' }}>Show QR</button>
-            </div>
-          </div>
+          <TicketPanel slotId={decodedId} creator={s.creator} nftMint={(s as any).nftMint} nftUri={(s as any).nftUri} />
         </div>
       </div>
     </section>
   );
 }
-

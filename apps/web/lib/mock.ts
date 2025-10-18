@@ -19,6 +19,9 @@ export type CreatorUI = Creator & {
   rating?: number;
   socials: Socials;
   trend?: number; // percent change sample
+  location?: string;
+  timezone?: string;
+  meetingTypes?: string[]; // e.g., ['Video call', 'Audio call']
 };
 
 export type Slot = {
@@ -29,13 +32,15 @@ export type Slot = {
   mode: 'Stable' | 'EnglishAuction';
   price?: number; // USDC
   startPrice?: number; // auction
+  nftMint?: string; // optional minted ticket
+  nftUri?: string; // optional metadata URI
 };
 
 // Keep extra fields to satisfy existing UI while conforming to Creator
 export const creators: CreatorUI[] = [
-  { id: 'aiko', name: 'Aiko', bio: 'Anime illustrator • VTuber avatar artist', pricePerSlot: 8.2,  avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Aiko',  pubkey: 'Cr8t0rAiko1111111111111111111111111111111',  fields: ['Illustration','VTuber'], rating: 4.9, socials: { x: 'https://x.com/' }, trend: 0.99 },
-  { id: 'ren', name: 'Ren', bio: 'Pixel art • Twitch emotes',               pricePerSlot: 6.5,  avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Ren',   pubkey: 'Cr8t0rRen2222222222222222222222222222222',   fields: ['Pixel','Emotes'], rating: 4.7, socials: { x: 'https://x.com/' }, trend: 0.42 },
-  { id: 'kenta', name: 'Kenta', bio: 'Manga paneling and tones',              pricePerSlot: 9.8,  avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Kenta', pubkey: 'Cr8t0rKenta33333333333333333333333333333', fields: ['Manga','Inking'], rating: 4.8, socials: { x: 'https://x.com/' }, trend: 1.23 },
+  { id: 'aiko', name: 'Aiko', bio: 'Anime illustrator • VTuber avatar artist', pricePerSlot: 8.2,  avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Aiko',  pubkey: 'Cr8t0rAiko1111111111111111111111111111111',  fields: ['Illustration','VTuber'], rating: 4.9, socials: { x: 'https://x.com/' }, trend: 0.99, location: 'Remote', timezone: 'Asia/Tokyo', meetingTypes: ['Video call'] },
+  { id: 'ren', name: 'Ren', bio: 'Pixel art • Twitch emotes',               pricePerSlot: 6.5,  avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Ren',   pubkey: 'Cr8t0rRen2222222222222222222222222222222',   fields: ['Pixel','Emotes'], rating: 4.7, socials: { x: 'https://x.com/' }, trend: 0.42, location: 'Remote', timezone: 'Europe/Berlin', meetingTypes: ['Video call','Audio call'] },
+  { id: 'kenta', name: 'Kenta', bio: 'Manga paneling and tones',              pricePerSlot: 9.8,  avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Kenta', pubkey: 'Cr8t0rKenta33333333333333333333333333333', fields: ['Manga','Inking'], rating: 4.8, socials: { x: 'https://x.com/' }, trend: 1.23, location: 'Tokyo', timezone: 'Asia/Tokyo', meetingTypes: ['In-person','Video call'] },
   { id: 'sora', name: 'Sora', bio: 'Digital painter • Key visuals',           pricePerSlot: 12.2, avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Sora',  pubkey: 'Cr8t0rSora444444444444444444444444444444',  fields: ['Painting','Key Visual'], rating: 4.6, socials: { x: 'https://x.com/' }, trend: 0.37 },
   { id: 'yuki', name: 'Yuki', bio: 'Anime composer • BGMs',                   pricePerSlot: 10.5, avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Yuki',  pubkey: 'Cr8t0rYuki555555555555555555555555555555',  fields: ['Music','BGM'], rating: 4.8, socials: { x: 'https://x.com/' }, trend: 0.88 },
   { id: 'haru', name: 'Haru', bio: 'Storyboard & motion',                     pricePerSlot: 7.9,  avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Haru',  pubkey: 'Cr8t0rHaru666666666666666666666666666666',  fields: ['Storyboard','Motion'], rating: 4.5, socials: { x: 'https://x.com/' }, trend: 0.15 },
@@ -84,11 +89,18 @@ export const slots: Slot[] = (() => {
   };
   const c0 = (creators as any)[0].pubkey,
     c1 = (creators as any)[1].pubkey;
-  return [
+  const list = [
     mk(c0, 0, 10, 30, 'Stable', 25),
     mk(c0, 1, 14, 45, 'EnglishAuction', undefined, 10),
     mk(c1, 2, 9, 30, 'Stable', 30),
     mk(c1, 3, 15, 60, 'EnglishAuction', undefined, 12),
-  ];
+  ] as Slot[];
+  // Demo: attach sample NFT metadata to the first auction slot
+  const firstAuction = list.find((s) => s.mode === 'EnglishAuction');
+  if (firstAuction) {
+    firstAuction.nftMint = 'DemoMint111111111111111111111111111111111';
+    firstAuction.nftUri = '/sample/nft.json';
+  }
+  return list;
 })();
 
