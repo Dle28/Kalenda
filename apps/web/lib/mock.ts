@@ -18,6 +18,7 @@ export type CreatorUI = Creator & {
   fields: string[];
   rating?: number;
   socials: Socials;
+  trend?: number; // percent change sample
 };
 
 export type Slot = {
@@ -32,30 +33,26 @@ export type Slot = {
 
 // Keep extra fields to satisfy existing UI while conforming to Creator
 export const creators: CreatorUI[] = [
-  {
-    id: 'demo-1',
-    name: 'Alice',
-    bio: 'Product designer',
-    pricePerSlot: 25,
-    avatar: 'https://i.pravatar.cc/150?img=5',
-    // extra fields used by current UI
-    pubkey: 'Cr8t0rAlice111111111111111111111111111111',
-    fields: ['Design', 'UI/UX'],
-    rating: 4.9,
-    socials: { x: 'https://x.com/' },
-  },
-  {
-    id: 'demo-2',
-    name: 'Bob',
-    bio: 'Solana dev',
-    pricePerSlot: 40,
-    avatar: 'https://i.pravatar.cc/150?img=15',
-    // extra fields used by current UI
-    pubkey: 'Cr8t0rBob22222222222222222222222222222222',
-    fields: ['Blockchain', 'Solana'],
-    rating: 4.7,
-    socials: { x: 'https://x.com/' },
-  },
+  { id: 'aiko', name: 'Aiko', bio: 'Anime illustrator • VTuber avatar artist', pricePerSlot: 8.2,  avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Aiko',  pubkey: 'Cr8t0rAiko1111111111111111111111111111111',  fields: ['Illustration','VTuber'], rating: 4.9, socials: { x: 'https://x.com/' }, trend: 0.99 },
+  { id: 'ren', name: 'Ren', bio: 'Pixel art • Twitch emotes',               pricePerSlot: 6.5,  avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Ren',   pubkey: 'Cr8t0rRen2222222222222222222222222222222',   fields: ['Pixel','Emotes'], rating: 4.7, socials: { x: 'https://x.com/' }, trend: 0.42 },
+  { id: 'kenta', name: 'Kenta', bio: 'Manga paneling and tones',              pricePerSlot: 9.8,  avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Kenta', pubkey: 'Cr8t0rKenta33333333333333333333333333333', fields: ['Manga','Inking'], rating: 4.8, socials: { x: 'https://x.com/' }, trend: 1.23 },
+  { id: 'sora', name: 'Sora', bio: 'Digital painter • Key visuals',           pricePerSlot: 12.2, avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Sora',  pubkey: 'Cr8t0rSora444444444444444444444444444444',  fields: ['Painting','Key Visual'], rating: 4.6, socials: { x: 'https://x.com/' }, trend: 0.37 },
+  { id: 'yuki', name: 'Yuki', bio: 'Anime composer • BGMs',                   pricePerSlot: 10.5, avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Yuki',  pubkey: 'Cr8t0rYuki555555555555555555555555555555',  fields: ['Music','BGM'], rating: 4.8, socials: { x: 'https://x.com/' }, trend: 0.88 },
+  { id: 'haru', name: 'Haru', bio: 'Storyboard & motion',                     pricePerSlot: 7.9,  avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Haru',  pubkey: 'Cr8t0rHaru666666666666666666666666666666',  fields: ['Storyboard','Motion'], rating: 4.5, socials: { x: 'https://x.com/' }, trend: 0.15 },
+  { id: 'niko', name: 'Niko', bio: 'Chibi commissions',                       pricePerSlot: 5.8,  avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Niko',  pubkey: 'Cr8t0rNiko777777777777777777777777777777',  fields: ['Chibi','Commissions'], rating: 4.7, socials: { x: 'https://x.com/' }, trend: 1.02 },
+  { id: 'miku', name: 'Miku', bio: 'VTuber rigging (Live2D)',                 pricePerSlot: 18.2, avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Miku',  pubkey: 'Cr8t0rMiku888888888888888888888888888888',  fields: ['Rigging','Live2D'], rating: 4.9, socials: { x: 'https://x.com/' }, trend: 0.64 },
+  { id: 'riku', name: 'Riku', bio: 'Anime background artist',                 pricePerSlot: 11.0, avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Riku',  pubkey: 'Cr8t0rRiku999999999999999999999999999999',  fields: ['Backgrounds','Painting'], rating: 4.6, socials: { x: 'https://x.com/' }, trend: 0.21 },
+  { id: 'hana', name: 'Hana', bio: 'Character designer',                      pricePerSlot: 9.2,  avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Hana',  pubkey: 'Cr8t0rHana000000000000000000000000000000',  fields: ['Characters','Concept'], rating: 4.8, socials: { x: 'https://x.com/' }, trend: 0.73 },
+  { id: 'kira', name: 'Kira', bio: 'Colorist • cel shading',                  pricePerSlot: 7.2,  avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Kira',  pubkey: 'Cr8t0rKiraaaaaa1111111111111111111111111',  fields: ['Color','Cel'], rating: 4.6, socials: { x: 'https://x.com/' }, trend: 0.32 },
+  { id: 'toshi', name: 'Toshi', bio: 'Effects animation (2D)',                pricePerSlot: 13.5, avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Toshi', pubkey: 'Cr8t0rToshiBBBBBBBBBBBBBBBBBBBBBBBBBBBB',  fields: ['FX','Animation'], rating: 4.7, socials: { x: 'https://x.com/' }, trend: 0.58 },
+  { id: 'rina', name: 'Rina', bio: 'Logo & stream overlays',                  pricePerSlot: 6.9,  avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Rina',  pubkey: 'Cr8t0rRinaCCCCCCCCCCCCCCCCCCCCCCCCCCCC',    fields: ['Branding','Overlay'], rating: 4.5, socials: { x: 'https://x.com/' }, trend: 0.11 },
+  { id: 'kaoru', name: 'Kaoru', bio: 'Storyboard artist',                     pricePerSlot: 8.7,  avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Kaoru', pubkey: 'Cr8t0rKaoruDDDDDDDDDDDDDDDDDDDDDDDDDDD',   fields: ['Storyboard','Panels'], rating: 4.6, socials: { x: 'https://x.com/' }, trend: 0.36 },
+  { id: 'emi', name: 'Emi', bio: 'Chara pose / model sheets',                 pricePerSlot: 8.0,  avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Emi',   pubkey: 'Cr8t0rEmiEEEEEEEEEEEEEEEEEEEEEEEEEEEEE',    fields: ['Model Sheet','Pose'], rating: 4.8, socials: { x: 'https://x.com/' }, trend: 1.11 },
+  { id: 'akira', name: 'Akira', bio: 'Anime cover art',                       pricePerSlot: 14.3, avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Akira', pubkey: 'Cr8t0rAkiraFFFFFFFFFFFFFFFFFFFFFFFFFFFF',   fields: ['Cover','Poster'], rating: 4.7, socials: { x: 'https://x.com/' }, trend: 0.44 },
+  { id: 'kenji', name: 'Kenji', bio: 'VTuber logo & alerts',                  pricePerSlot: 9.1,  avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Kenji', pubkey: 'Cr8t0rKenjiGGGGGGGGGGGGGGGGGGGGGGGGGGG',   fields: ['Logo','Alerts'], rating: 4.6, socials: { x: 'https://x.com/' }, trend: 0.28 },
+  { id: 'mei', name: 'Mei', bio: 'Cute chibi art',                            pricePerSlot: 5.5,  avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Mei',   pubkey: 'Cr8t0rMeiHHHHHHHHHHHHHHHHHHHHHHHHHHHHH',    fields: ['Chibi','Cute'], rating: 4.9, socials: { x: 'https://x.com/' }, trend: 1.52 },
+  { id: 'daichi', name: 'Daichi', bio: 'Mecha designs • line art',            pricePerSlot: 12.9, avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Daichi',pubkey: 'Cr8t0rDaichiIIIIIIIIIIIIIIIIIIIIIIIIIII',  fields: ['Mecha','Line'], rating: 4.7, socials: { x: 'https://x.com/' }, trend: 0.66 },
+  { id: 'yume', name: 'Yume', bio: 'Backgrounds • night city vibes',          pricePerSlot: 11.6, avatar: 'https://api.dicebear.com/7.x/adventurer-neutral/svg?seed=Yume',  pubkey: 'Cr8t0rYumeJJJJJJJJJJJJJJJJJJJJJJJJJJJJ',    fields: ['Background','City'], rating: 4.8, socials: { x: 'https://x.com/' }, trend: 0.95 },
 ];
 
 export const slots: Slot[] = (() => {
