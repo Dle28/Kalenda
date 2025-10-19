@@ -81,7 +81,7 @@ export default function CalendarScheduler({
         <span className="muted">Timezone: {timezone}</span>
         <span className="muted">Drag to select hours</span>
       </div>
-      <style jsx>{`
+      <style>{`
         .scheduler { background: rgba(12,13,18,.6); border: 1px solid rgba(255,255,255,.12); border-radius: 14px; padding: 8px; }
         .scheduler-head { display: grid; grid-template-columns: 80px repeat(7, 1fr); gap: 6px; margin-bottom: 6px }
         .scheduler-body { display: grid; gap: 6px }
@@ -94,4 +94,3 @@ export default function CalendarScheduler({
     </div>
   );
 }
-

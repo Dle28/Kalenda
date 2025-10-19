@@ -3,7 +3,8 @@ import { useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 
 export default function TicketPage() {
-  const { id: rawId } = useParams<{ id: string }>();
+  const params = useParams<{ id?: string | string[] }>() as Readonly<{ id?: string | string[] }> | null;
+  const rawId = Array.isArray(params?.id) ? params?.id?.[0] : params?.id || '';
   const id = decodeURIComponent(rawId);
   const [checkedIn, setCheckedIn] = useState(false);
   const url = useMemo(() => (typeof window !== 'undefined' ? `${location.origin}/ticket/${encodeURIComponent(id)}` : `ticket:${id}`), [id]);

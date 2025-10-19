@@ -7,6 +7,13 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@solana/wallet-standard-features':
+        specifier: ^1.3.0
+        version: 1.3.0
+      '@wallet-standard/features':
+        specifier: ^1.1.0
+        version: 1.1.0
     devDependencies:
       '@coral-xyz/anchor':
         specifier: ^0.31.1
@@ -120,9 +127,24 @@ importers:
       dayjs:
         specifier: 1.11.13
         version: 1.11.13
+      lightningcss:
+        specifier: ^1.30.1
+        version: 1.30.1
+      lightningcss-linux-x64-gnu:
+        specifier: ^1.30.1
+        version: 1.30.1
+      lightningcss-wasm:
+        specifier: ^1.30.1
+        version: 1.30.2
       next:
         specifier: 14.2.5
         version: 14.2.5(@babel/core@7.28.4)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      picocolors:
+        specifier: ^1.0.0
+        version: 1.1.1
+      qrcode.react:
+        specifier: 1.0.1
+        version: 1.0.1(react@18.3.1)
       react:
         specifier: 18.3.1
         version: 18.3.1
@@ -150,7 +172,14 @@ importers:
         version: 4.1.14
 
   packages/ts-sdk:
+    dependencies:
+      '@solana/web3.js':
+        specifier: ^1.98.4
+        version: 1.98.4(bufferutil@4.0.9)(typescript@5.6.2)(utf-8-validate@5.0.10)
     devDependencies:
+      '@types/node':
+        specifier: ^20.19.22
+        version: 20.19.22
       typescript:
         specifier: 5.6.2
         version: 5.6.2
@@ -3404,6 +3433,12 @@ packages:
     engines: {node: '>= 12.0.0'}
     cpu: [x64]
     os: [linux]
+
+  lightningcss-wasm@1.30.2:
+    resolution: {integrity: sha512-3QB24h07oFTwiXI/wItgEv5De1prsmrZFWluuTyLO7/CFk4kEC5zgG7V6qQNGLBB5+QhSnGMixUALWHXj+J3Ug==}
+    engines: {node: '>= 12.0.0'}
+    bundledDependencies:
+      - napi-wasm
 
   lightningcss-win32-arm64-msvc@1.30.1:
     resolution: {integrity: sha512-mSL4rqPi4iXq5YVqzSsJgMVFENoa4nGTT/GjO2c0Yl9OuQfPsIfncvLrEW6RbbB24WtZ3xP/2CCmI3tNkNV4oA==}
@@ -9476,11 +9511,12 @@ snapshots:
   lightningcss-linux-arm64-musl@1.30.1:
     optional: true
 
-  lightningcss-linux-x64-gnu@1.30.1:
-    optional: true
+  lightningcss-linux-x64-gnu@1.30.1: {}
 
   lightningcss-linux-x64-musl@1.30.1:
     optional: true
+
+  lightningcss-wasm@1.30.2: {}
 
   lightningcss-win32-arm64-msvc@1.30.1:
     optional: true
