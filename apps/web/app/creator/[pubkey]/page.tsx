@@ -3,7 +3,9 @@ import '../profile.css';
 import AvatarRain from '@/components/AvatarRain';
 import Reveal from '@/components/Reveal';
 import { getCreator, getCreatorSlots } from '@/lib/data';
-import ReserveButton from '@/components/ReserveButton';
+import OwnerEditOnProfile from '@/components/OwnerEditOnProfile';
+import OwnerSlotQuickAdd from '@/components/OwnerSlotQuickAdd';
+import WeekCalendar from '@/components/WeekCalendar';
 
 type RouteParams = { pubkey: string };
 type Params = { params: RouteParams | Promise<RouteParams> };
@@ -37,10 +39,12 @@ export default async function CreatorProfilePage({ params }: Params) {
   const shortKey = `${pubkey.slice(0, 6)}...${pubkey.slice(-4)}`;
 
   return (
-    <section className="profile-wrap page-enter">
+    <section className="profile-wrap page-enter" style={{ position: 'relative' }}>
       <div className="container">
         {/* Background avatar rain: shrinks and scrolls down in loop */}
         <AvatarRain image={creator.avatar || undefined} />
+        <Link href="/creators" className="back-icon" aria-label="Back to creators">←</Link>
+        <OwnerEditOnProfile pubkey={pubkey} />
         <div className="profile-hero">
           <Reveal className="hero-left" as="div">
             <div className="row" style={{ gap: 14, alignItems: 'center' }}>
@@ -67,11 +71,11 @@ export default async function CreatorProfilePage({ params }: Params) {
               </div>
             </div>
             {creator.bio && <p className="pf-bio">{creator.bio}</p>}
-            <div className="row ctas">
-              <Link href="/creators" className="btn btn-outline">
-                Back
-              </Link>
+            {/* Compact calendar next to large hero card */}
+            <div className="hero-calendar">
+              <WeekCalendar slots={list as any} defaultInterval={60} compact creatorPubkey={pubkey} />
             </div>
+            {/* back button moved to top-left icon */}
           </Reveal>
 
           <Reveal className="hero-card" as="div" delay={120}>
@@ -94,54 +98,10 @@ export default async function CreatorProfilePage({ params }: Params) {
         </div>
 
         <div className="profile-main">
-          {/* Full-width slots section directly under hero for better prominence */}
-          <Reveal as="div" className="col" style={{ gridColumn: '1 / -1' }}>
-            <h3 className="section-title">Available slots</h3>
-            <div
-              className="calendar"
-              style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}
-            >
-              {list.length === 0 ? (
-                <div className="card muted">No slots yet.</div>
-              ) : (
-                list.map((s, idx) => {
-                  const start = new Date(s.start);
-                  const end = new Date(s.end);
-                  const dur = Math.round((end.getTime() - start.getTime()) / 60000);
-                  const label = `${start.toLocaleString()} - ${end.toLocaleTimeString()} (${dur} min)`;
-                  const price = s.mode === 'EnglishAuction' ? (s.startPrice ?? 0) : (s.price ?? 0);
-                  return (
-                    <Reveal key={s.id} as="div" style={{ transitionDelay: `${idx * 60}ms` }}>
-                      <div
-                        className={`card day ${s.mode === 'EnglishAuction' ? 'slot-auction' : ''}`}
-                        style={{ display: 'grid', gap: 10, minHeight: 160, padding: 16 }}
-                      >
-                        <b>{s.mode === 'EnglishAuction' ? 'Auction' : 'Fixed price'}</b>
-                        <span className="muted">{label}</span>
-                        <div className="row" style={{ justifyContent: 'space-between' }}>
-                          <span className="muted">{s.mode === 'EnglishAuction' ? 'Starting price' : 'Price'}</span>
-                          <b>{price} USDC</b>
-                        </div>
-                        {s.mode === 'Stable' ? (
-                          <ReserveButton slotId={s.id} mode={s.mode} price={s.price} />
-                        ) : (
-                          <Link
-                            href={`/slot/${encodeURIComponent(s.id)}`}
-                            className="btn btn-secondary"
-                            style={{ padding: '8px 12px' }}
-                          >
-                            Join auction
-                          </Link>
-                        )}
-                      </div>
-                    </Reveal>
-                  );
-                })
-              )}
-            </div>
-          </Reveal>
+          {/* Calendar moved into hero-left; keep below for spacing consistency if needed */}
 
-          <Reveal className="col" as="div" delay={120}>
+          {/* About + Stats placed right below calendar (right column) */}
+          <Reveal className="col" as="div" style={{ gridColumn: '2', alignSelf: 'start' }}>
             <h3 className="section-title">About</h3>
             <div className="card" style={{ marginBottom: 16 }}>
               <div className="stack" style={{ gap: 8 }}>
@@ -161,6 +121,11 @@ export default async function CreatorProfilePage({ params }: Params) {
               <div className="stat"><span className="stat-label">Price/min</span><span className="stat-value">{creator?.pricePerSlot ?? '-'} USDC</span></div>
               <div className="stat"><span className="stat-label">Rating</span><span className="stat-value">{creator?.rating ?? '-'}</span></div>
             </div>
+          </Reveal>
+
+          {/* Owner-only quick add (no public available-slots list) */}
+          <Reveal as="div" className="col">
+            <OwnerSlotQuickAdd creatorPubkey={pubkey} />
           </Reveal>
         </div>
       </div>

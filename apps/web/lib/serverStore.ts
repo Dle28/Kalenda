@@ -27,6 +27,12 @@ export async function loadCreatorProfile(pubkey: string) {
   return map[pubkey] || null;
 }
 
+export async function listCreatorProfiles() {
+  await ensure();
+  const map = JSON.parse(await fs.readFile(creatorsPath, 'utf-8') || '{}');
+  return Object.values(map || {});
+}
+
 export type ServerSlot = {
   id: string;
   creator: string;
@@ -51,4 +57,18 @@ export async function getSlotsByCreator(pubkey: string) {
   await ensure();
   const list: ServerSlot[] = JSON.parse(await fs.readFile(slotsPath, 'utf-8') || '[]');
   return list.filter((x) => x.creator === pubkey);
+}
+
+export async function getSlotById(id: string) {
+  await ensure();
+  const list: ServerSlot[] = JSON.parse(await fs.readFile(slotsPath, 'utf-8') || '[]');
+  return list.find((x) => x.id === id) || null;
+}
+
+export async function deleteSlotById(id: string) {
+  await ensure();
+  const list: ServerSlot[] = JSON.parse(await fs.readFile(slotsPath, 'utf-8') || '[]');
+  const next = list.filter((x) => x.id !== id);
+  await fs.writeFile(slotsPath, JSON.stringify(next, null, 2), 'utf-8');
+  return { ok: true };
 }

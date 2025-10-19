@@ -2,9 +2,14 @@
   position: relative;
   isolation: isolate;
   min-height: 100vh;
-  background: radial-gradient(1200px 500px at 10% -10%, rgba(255, 0, 120, 0.08), transparent 60%),
-              radial-gradient(900px 400px at 90% 10%, rgba(120, 200, 255, 0.08), transparent 60%),
-              #0b0c10;
+  /* Themed multi-accent backdrop layered for depth */
+  background:
+    radial-gradient(1200px 520px at 10% -10%, color-mix(in oklab, var(--accent) 18%, transparent), transparent 60%),
+    radial-gradient(1000px 460px at 90% 10%, color-mix(in oklab, var(--accent2) 16%, transparent), transparent 60%),
+    radial-gradient(1200px 560px at 15% 110%, color-mix(in oklab, var(--accent3) 14%, transparent), transparent 66%),
+    radial-gradient(900px 520px at 85% 100%, color-mix(in oklab, var(--accent4) 12%, transparent), transparent 66%),
+    radial-gradient(1200px 560px at 50% -18%, color-mix(in oklab, var(--accentWarm) 10%, transparent), transparent 72%),
+    var(--bg);
   color: #e5e7eb;
   animation: profile-fade-in .5s ease both;
 }
@@ -45,8 +50,12 @@
   position: absolute;
   inset: -35% -20% auto;
   height: 140%;
-  background: radial-gradient(800px 800px at 20% 20%, rgba(239, 132, 189, 0.18), transparent 60%),
-              radial-gradient(600px 600px at 80% 30%, rgba(59, 130, 246, 0.12), transparent 70%);
+  background:
+    radial-gradient(900px 760px at 20% 20%, color-mix(in oklab, var(--accent) 28%, transparent), transparent 62%),
+    radial-gradient(760px 580px at 80% 30%, color-mix(in oklab, var(--accent2) 22%, transparent), transparent 70%),
+    radial-gradient(700px 560px at 30% 80%, color-mix(in oklab, var(--accent3) 18%, transparent), transparent 70%),
+    radial-gradient(820px 620px at 70% 80%, color-mix(in oklab, var(--accent4) 16%, transparent), transparent 74%),
+    radial-gradient(980px 640px at 50% 10%, color-mix(in oklab, var(--accentWarm) 12%, transparent), transparent 76%);
   filter: blur(40px);
   opacity: 0.8;
   z-index: -1;
@@ -55,10 +64,9 @@
 
 .profile-hero {
   display: grid;
-  grid-template-columns: 1.1fr .9fr;
-  gap: 24px;
-  padding: 36px 0 8px;
-  row-gap: 32px;
+  grid-template-columns: 1fr; /* avoid parallel layout with calendar */
+  gap: 18px;
+  padding: 16px 0 0;
   position: relative;
   z-index: 1;
 }
@@ -125,13 +133,23 @@
 }
 
 .hero-card {
-  position: relative;
-  border-radius: 24px;
+  position: absolute; /* float in corner, not parallel to calendar */
+  top: 50px;
+  right: 32px;
+  width: 500px;
+  border-radius: 28px; /* bigger corner radius */
   overflow: hidden;
   border: 1px solid rgba(255,255,255,.12);
   background: rgba(255,255,255,.02);
   box-shadow: inset 0 0 0 1px rgba(255,255,255,.03), 0 12px 40px rgba(0,0,0,.35);
   transition: transform .4s ease, box-shadow .4s ease, border-color .4s ease;
+  z-index: 2;
+}
+
+/* calendar inside hero-left */
+.hero-calendar { margin-top: 6px; max-width: 760px; }
+@media (max-width: 960px) {
+  .hero-calendar { max-width: 100%; }
 }
 .hero-media {
   width: 100%;
@@ -183,11 +201,30 @@
   display: grid;
   grid-template-columns: 1.2fr .8fr;
   gap: 24px;
-  padding: 20px 0 48px;
-  row-gap: 32px;
+  padding: 0 0 32px;
+  row-gap: 24px;
   position: relative;
   z-index: 1;
 }
+
+/* top-left back icon */
+.back-icon {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 36px; height: 36px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.08);
+  color: #e5e7eb; text-decoration: none;
+  box-shadow: 0 10px 26px rgba(0,0,0,.45);
+  backdrop-filter: blur(6px);
+  z-index: 5;
+  transition: transform .15s ease, background .2s ease, border-color .2s ease;
+}
+.back-icon:hover { transform: translateY(-1px); background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.2) }
+.back-icon:active { transform: translateY(0) }
 .section-title {
   margin: 0 0 12px;
   font-size: 20px;
@@ -370,6 +407,7 @@
   .profile-hero, .profile-main { grid-template-columns: 1fr }
   .profile-wrap::before { inset: -40% -40% auto; height: 160%; }
   .profile-loading .skeleton-grid { grid-template-columns: 1fr; }
+  .hero-card { display: none; }
 }
 
 @keyframes profile-fade-in {

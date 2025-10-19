@@ -1,12 +1,14 @@
 {
   "FLWfSH7ip9jukg3pDGAnheETpuYmm8W7XgDPXku7GYyf": {
     "pubkey": "FLWfSH7ip9jukg3pDGAnheETpuYmm8W7XgDPXku7GYyf",
-    "name": "q",
-    "bio": "q",
-    "location": "q",
+    "name": "Dũng Lê",
+    "bio": "qdawdawd",
+    "location": "qdwadawdawdwad",
     "timezone": "Asia/Bangkok",
     "meetingTypes": [
-      "Video call"
+      "Video call",
+      "Audio call",
+      "In-person"
     ],
     "session": {
       "title": "Review prototype",
@@ -20,6 +22,7 @@
       "price": "20",
       "startPrice": "10",
       "bidStep": "1"
-    }
+    },
+    "avatar": "/uploads/1760884928285-_nh_ch_p_m_n_h_nh_2025-10-18_191527.png"
   }
 }

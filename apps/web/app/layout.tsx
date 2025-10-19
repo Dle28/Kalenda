@@ -7,10 +7,10 @@ import Providers from './providers';
 import WalletButton from '../components/WalletButton';
 import WalletStatus from '../components/WalletStatus';
 import SearchBar from '../components/SearchBar';
-import ProfileSettings from '../components/ProfileSettings';
+import HeaderProfile from '../components/HeaderProfile';
 
 export const metadata: Metadata = {
-  title: 'TimeMarket',
+  title: 'Kalenda',
   description: 'Smart time booking on Solana',
   other: {
     google: 'notranslate',
@@ -69,12 +69,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           <header className="container">
             <nav className="nav nav-rounded">
-              <Link href="/" className="brand">TimeMarket</Link>
+              <Link href="/" className="brand">Kalenda</Link>
               <SearchBar />
               <div className="spacer" />
               <Link href="/creators" className="link">Explore creators</Link>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 12 }}>
-                <ProfileSettings />
+                <HeaderProfile />
                 <Link href="/creator/onboard" className="btn btn-outline" style={{ padding: '6px 12px' }}>Get started</Link>
                 <WalletButton />
                 <WalletStatus />

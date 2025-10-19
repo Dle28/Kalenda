@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { upsertSlots, type ServerSlot, getSlotsByCreator } from '@/lib/serverStore';
+import { upsertSlots, type ServerSlot, getSlotsByCreator, deleteSlotById } from '@/lib/serverStore';
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -15,6 +15,14 @@ export async function POST(req: Request) {
   if (!input.length) return NextResponse.json({ error: 'slots required' }, { status: 400 });
   const merged = await upsertSlots(input);
   return NextResponse.json({ slots: merged });
+}
+
+export async function DELETE(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get('id') || '';
+  if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 });
+  await deleteSlotById(id);
+  return NextResponse.json({ ok: true });
 }
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';

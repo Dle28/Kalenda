@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 
-export default function ProfileSettings() {
+export default function ProfileSettings({ buttonLabel = 'Settings', buttonStyle, onSaved }: { buttonLabel?: string; buttonStyle?: React.CSSProperties; onSaved?: () => void }) {
   const wallet = useWallet();
   const pubkey = wallet.publicKey?.toBase58() || '';
   const [open, setOpen] = useState(false);
@@ -67,15 +67,19 @@ export default function ProfileSettings() {
       .map(([k]) => ({ video: 'Video call', audio: 'Audio call', inperson: 'In-person' } as any)[k] || k);
     const body = { pubkey, name, bio, location, timezone, avatar, meetingTypes };
     const res = await fetch('/api/creator/profile', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    if (res.ok) setStatus('Saved');
-    else setStatus('Save failed');
+    if (res.ok) {
+      setStatus('Saved');
+      if (typeof onSaved === 'function') onSaved();
+    } else {
+      setStatus('Save failed');
+    }
     setTimeout(() => setStatus(null), 1500);
   }
 
   return (
     <>
-      <button className="btn btn-outline" style={{ padding: '6px 12px' }} onClick={() => setOpen(true)}>
-        Settings
+      <button className="btn btn-outline" style={{ padding: '6px 12px', ...(buttonStyle || {}) }} onClick={() => setOpen(true)}>
+        {buttonLabel}
       </button>
 
       {open && (

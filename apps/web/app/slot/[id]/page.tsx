@@ -1,4 +1,4 @@
-import { slots } from '@/lib/mock';
+import { getSlot } from '@/lib/data';
 import BidRoom from '@/components/BidRoom';
 import PaymentBox from '@/components/PaymentBox';
 import TicketPanel from '@/components/TicketPanel';
@@ -7,7 +7,7 @@ import Countdown from '@/components/Countdown';
 export default async function SlotPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const decodedId = decodeURIComponent(id);
-  const s = slots.find((x) => x.id === decodedId);
+  const s = await getSlot(decodedId);
   const durMin = s ? Math.round((new Date(s.end).getTime() - new Date(s.start).getTime()) / 60000) : 0;
   if (!s)
     return (
