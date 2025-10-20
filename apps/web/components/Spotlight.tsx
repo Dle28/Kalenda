@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import styles from '@/app/home.module.css';
@@ -16,7 +16,7 @@ export default function Spotlight({ list, intervalMs = 7000 }: { list: C[]; inte
   const c = pool[idx];
   if (!c) return null;
   return (
-    <Link href={`/creator/${encodeURIComponent(c.pubkey)}`} className={styles.spotlight}>
+    <Link href={`/creator/${encodeURIComponent(c.pubkey)}`} className={styles.spotlight} data-reveal data-float="0.03">
       <div className={styles.spotMedia} style={{ backgroundImage: `url(${c.avatar || 'https://placehold.co/640x640'})` }} />
       <div className={styles.spotOverlay}>
         <div className="row" style={{ justifyContent: 'space-between', width: '100%' }}>

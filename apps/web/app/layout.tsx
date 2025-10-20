@@ -1,14 +1,12 @@
-import './globals.css';
+﻿import './globals.css';
 import '@solana/wallet-adapter-react-ui/styles.css';
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import Link from 'next/link';
 import Providers from './providers';
 import WalletButton from '../components/WalletButton';
-import WalletStatus from '../components/WalletStatus';
 import SearchBar from '../components/SearchBar';
-import HeaderProfile from '../components/HeaderProfile';
-
+import CombinedHeaderProfile from '../components/CombinedHeaderProfile';\r?\n
 export const metadata: Metadata = {
   title: 'Kalenda',
   description: 'Smart time booking on Solana',
@@ -74,15 +72,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div className="spacer" />
               <Link href="/creators" className="link">Explore creators</Link>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 12 }}>
-                <HeaderProfile />
+                <CombinedHeaderProfile />
                 <Link href="/creator/onboard" className="btn btn-outline" style={{ padding: '6px 12px' }}>Get started</Link>
                 <WalletButton />
-                <WalletStatus />
+                
               </div>
             </nav>
           </header>
           <main className="container">{children}</main>
-          <footer className="container muted">© <span suppressHydrationWarning>{new Date().getFullYear()}</span> TimeMarket</footer>
+          <footer className="container muted">Â© <span suppressHydrationWarning>{new Date().getFullYear()}</span> TimeMarket</footer>
         </Providers>
       </body>
     </html>

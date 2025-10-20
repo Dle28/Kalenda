@@ -1,16 +1,19 @@
-"use client";
+﻿"use client";
 import { useEffect, useState } from "react";
-import styles from '@/app/home.module.css';
+import styles from "@/app/home.module.css";
 
 const DATA = [
-  { q: '“Tư vấn 30 phút nhưng tiết kiệm cho team cả tuần.”', a: 'Minh, Startup VN' },
-  { q: '“Giá hợp lý, lịch linh hoạt, tài liệu sau buổi rất rõ ràng.”', a: 'Lan, PM' },
-  { q: '“Chốt deal brand nhanh hơn nhờ gợi ý thực tế từ creator.”', a: 'Huy, Marketing' },
+  { q: "Thirty minutes of advice saved our team a week.", a: "Minh, Startup founder" },
+  { q: "Fair pricing, flexible schedule, and clear follow-up materials.", a: "Lan, Product Manager" },
+  { q: "Closed brand deals faster thanks to practical tips from creators.", a: "Huy, Marketing" },
 ];
 
 export default function Testimonials() {
   const [i, setI] = useState(0);
-  useEffect(() => { const t = setInterval(()=> setI((x)=> (x+1)%DATA.length), 6000); return ()=>clearInterval(t) }, []);
+  useEffect(() => {
+    const t = setInterval(() => setI((x) => (x + 1) % DATA.length), 6000);
+    return () => clearInterval(t);
+  }, []);
   const it = DATA[i];
   return (
     <section className={styles.testimonials}>
@@ -23,4 +26,3 @@ export default function Testimonials() {
     </section>
   );
 }
-
