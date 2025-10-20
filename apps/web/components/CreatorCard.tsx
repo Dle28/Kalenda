@@ -67,8 +67,11 @@ export default function CreatorCard(props: CreatorCardProps) {
           ))}
           {rest > 0 && <span className="chip">+{rest} more</span>}
           <span className="muted" style={{ marginLeft: 'auto', fontSize: 12 }}>{shortKey}</span>
+          <NextAvailableBadge creatorPubkey={safeKey} />
         </div>
       </div>
     </Reveal>
   );
 }
+import dynamic from 'next/dynamic';
+const NextAvailableBadge = dynamic(() => import('./NextAvailableBadge'), { ssr: false });

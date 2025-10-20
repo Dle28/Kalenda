@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Providers from './providers';
 import WalletButton from '../components/WalletButton';
 import SearchBar from '../components/SearchBar';
-import CombinedHeaderProfile from '../components/CombinedHeaderProfile';\r?\n
+import CombinedHeaderProfile from '../components/CombinedHeaderProfile';
 export const metadata: Metadata = {
   title: 'Kalenda',
   description: 'Smart time booking on Solana',

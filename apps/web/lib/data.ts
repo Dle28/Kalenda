@@ -4,7 +4,7 @@
 import { PublicKey } from '@solana/web3.js';
 import type { CreatorUI, Slot } from './mock';
 import { creators, slots } from './mock';
-import { loadCreatorProfile, getSlotsByCreator, getSlotById } from './serverStore';
+import { loadCreatorProfile, getSlotsByCreator, getSlotById, getAvailabilityByCreator } from './serverStore';
 
 export type CreatorPublic = Pick<CreatorUI, 'pubkey' | 'name' | 'bio' | 'avatar' | 'pricePerSlot' | 'fields' | 'rating' | 'socials' | 'location' | 'timezone' | 'meetingTypes'>;
 
@@ -48,4 +48,12 @@ export async function getSlot(id: string): Promise<Slot | null> {
   if (persisted) return persisted as any;
   const fromMock = slots.find((s) => s.id === decoded) as any;
   return fromMock || null;
+}
+
+export type Availability = { id: string; creator: string; start: string; end: string };
+
+export async function getCreatorAvailability(pubkey: string): Promise<Availability[]> {
+  const k = decodeURIComponent(pubkey);
+  const list = await getAvailabilityByCreator(k).catch(() => [] as any[]);
+  return list as any;
 }

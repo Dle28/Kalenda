@@ -3,11 +3,14 @@ import '../profile.css';
 import dynamic from 'next/dynamic';
 const AvatarRain = dynamic(() => import('@/components/AvatarRain'), { ssr: false });
 import Reveal from '@/components/Reveal';
-import { getCreator, getCreatorSlots } from '@/lib/data';
+import { getCreator, getCreatorSlots, getCreatorAvailability } from '@/lib/data';
 import OwnerEditOnProfile from '@/components/OwnerEditOnProfile';
 import OwnerSlotQuickAdd from '@/components/OwnerSlotQuickAdd';
+import OwnerAvailabilityQuickAdd from '@/components/OwnerAvailabilityQuickAdd';
 import WeekCalendar from '@/components/WeekCalendar';
 import CreatorBalance from '@/components/CreatorBalance';
+import AvailabilityManager from '@/components/AvailabilityManager';
+import RequestsPanel from '@/components/RequestsPanel';
 
 type RouteParams = { pubkey: string };
 type Params = { params: RouteParams | Promise<RouteParams> };
@@ -20,9 +23,10 @@ export default async function CreatorProfilePage({ params }: Params) {
   const resolved = isPromise(params) ? await params : params;
   const rawKey = resolved?.pubkey ?? '';
   const pubkey = decodeURIComponent(rawKey);
-  const [creator, list] = await Promise.all([
+  const [creator, list, availability] = await Promise.all([
     getCreator(pubkey),
     getCreatorSlots(pubkey),
+    getCreatorAvailability(pubkey),
   ]);
 
   if (!creator) {
@@ -75,10 +79,15 @@ export default async function CreatorProfilePage({ params }: Params) {
             {creator.bio && <p className="pf-bio">{creator.bio}</p>}
             {/* Compact calendar next to large hero card */}
             <div className="hero-calendar">
-              <WeekCalendar slots={list as any} defaultInterval={60} compact creatorPubkey={pubkey} />
+              <WeekCalendar slots={list as any} avail={(availability as any) || []} defaultInterval={60} compact creatorPubkey={pubkey} />
             </div>
             {/* Owner-only quick add placed right below calendar */}
-            <div style={{ marginTop: 10 }}><OwnerSlotQuickAdd creatorPubkey={pubkey} /></div>
+            <div style={{ marginTop: 10 }}>
+              <OwnerSlotQuickAdd creatorPubkey={pubkey} />
+            </div>
+            <div style={{ marginTop: 8 }}>
+              <OwnerAvailabilityQuickAdd creatorPubkey={pubkey} />
+            </div>
             {/* back button moved to top-left icon */}
           </Reveal>
 
@@ -123,7 +132,12 @@ export default async function CreatorProfilePage({ params }: Params) {
           </Reveal>
         </div>
 
-        {/* Removed old profile-main side rail; About + Stats now live in hero-card */}
+        {/* Owner management panels under hero-left (calendar area) */}
+        <div style={{ maxWidth: '760px', marginTop: 12 }}>
+          {/* Only show to owner via component internal gating */}
+          <AvailabilityManager creatorPubkey={pubkey} />
+          <RequestsPanel creatorPubkey={pubkey} pricePerMin={creator?.pricePerSlot} />
+        </div>
       </div>
       <div className="scroll-cue" aria-hidden="true">
         <span />
