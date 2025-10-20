@@ -34,7 +34,7 @@ export default function AvailabilityCalendar({ slots, days = 14 }: { slots: Slot
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push(s);
     }
-    for (const [k, list] of map) list.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+    map.forEach((list) => list.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()));
     return map;
   }, [slots]);
 
@@ -97,4 +97,3 @@ export default function AvailabilityCalendar({ slots, days = 14 }: { slots: Slot
     </div>
   );
 }
-

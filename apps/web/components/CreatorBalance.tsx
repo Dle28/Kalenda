@@ -1,77 +1,223 @@
-"use client";
-import { useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { LAMPORTS_PER_SOL } from '@solana/web3.js';
-import WalletButton from './WalletButton';
+﻿"use client";
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 
 export default function CreatorBalance({ creatorPubkey }: { creatorPubkey: string }) {
   const { connection } = useConnection();
-  const { publicKey, connected } = useWallet();
+  const { publicKey } = useWallet();
   const isOwner = useMemo(() => publicKey?.toBase58() === creatorPubkey, [publicKey, creatorPubkey]);
-  const [lamports, setLamports] = useState<number | null>(null);
-  const [loading, setLoading] = useState(false);
 
+  const [lamports, setLamports] = useState<number | null>(null);
+  const [loadingSol, setLoadingSol] = useState(false);
+  const [usdc, setUsdc] = useState<number | null>(null);
+  const [tokenBal, setTokenBal] = useState<number | null>(null);
+  const [calBal, setCalBal] = useState<number | null>(null);
+  const [customMint, setCustomMint] = useState<string>("");
+  const [view, setView] = useState<"SOL" | "USDC" | "CAL" | "TOKEN">("SOL");
+  const [solUsd, setSolUsd] = useState<number | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<number | null>(null);
+
+  async function refreshAll() {
+    try {
+      if (publicKey) {
+        const bal = await connection.getBalance(publicKey);
+        setLamports(bal);
+      }
+      if (publicKey) {
+        const endpoint = process.env.NEXT_PUBLIC_RPC_ENDPOINT || "";
+        const cluster = endpoint.includes("devnet") ? "devnet" : (endpoint.includes("testnet") ? "testnet" : "mainnet");
+        const MINT = cluster === "mainnet" ? "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" : "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr";
+        const tokenProgram = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+        const resp = await connection.getParsedTokenAccountsByOwner(publicKey, { programId: tokenProgram });
+        let total = 0;
+        for (const it of resp.value) {
+          const info = (it.account.data as any).parsed?.info;
+          if (!info) continue;
+          if (info.mint !== MINT) continue;
+          const amt = info.tokenAmount?.uiAmount;
+          total += Number(amt || 0);
+        }
+        setUsdc(total);
+      }
+      try {
+        const r = await fetch("https://price.jup.ag/v4/price?ids=SOL", { cache: "no-store" });
+        const j = await r.json();
+        const p = Number(j?.data?.SOL?.price);
+        if (Number.isFinite(p)) setSolUsd(p);
+      } catch {}
+      if (publicKey && customMint) {
+        try {
+          const MINT = new PublicKey(customMint);
+          const tokenProgram = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+          const resp2 = await connection.getParsedTokenAccountsByOwner(publicKey, { programId: tokenProgram });
+          let sum = 0;
+          for (const it of resp2.value) {
+            const info = (it.account.data as any).parsed?.info;
+            if (!info) continue;
+            if (info.mint !== MINT.toBase58()) continue;
+            const amt = info.tokenAmount?.uiAmount;
+            sum += Number(amt || 0);
+          }
+          setTokenBal(sum);
+        } catch {
+          setTokenBal(null);
+        }
+      }
+      // Refresh CAL token if configured
+      const calMint = process.env.NEXT_PUBLIC_CAL_MINT || "";
+      if (publicKey && calMint) {
+        try {
+          const tokenProgram = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+          const r3 = await connection.getParsedTokenAccountsByOwner(publicKey, { programId: tokenProgram });
+          let sum2 = 0;
+          for (const it of r3.value) {
+            const info = (it.account.data as any).parsed?.info;
+            if (!info) continue;
+            if (info.mint !== calMint) continue;
+            const amt = info.tokenAmount?.uiAmount;
+            sum2 += Number(amt || 0);
+          }
+          setCalBal(sum2);
+        } catch {
+          setCalBal(null);
+        }
+      }
+    } finally {
+      setLastUpdated(Date.now());
+    }
+  }
+
+  // SOL: initial load + subscribe
   useEffect(() => {
-    let sub = 0;
+    let sub: number | null = null;
     let active = true;
     async function load() {
       try {
         if (!publicKey) return setLamports(null);
-        setLoading(true);
+        setLoadingSol(true);
         const bal = await connection.getBalance(publicKey);
         if (!active) return;
         setLamports(bal);
+        setLastUpdated(Date.now());
       } finally {
-        if (active) setLoading(false);
+        if (active) setLoadingSol(false);
       }
     }
     load();
     if (publicKey) {
-      sub = connection.onAccountChange(publicKey, (acc) => {
-        setLamports(acc.lamports);
-      });
+      try {
+        sub = connection.onAccountChange(publicKey, (acc) => {
+          setLamports(acc.lamports);
+          setLastUpdated(Date.now());
+        });
+      } catch {}
     }
-    return () => {
-      active = false;
-      if (sub) connection.removeAccountChangeListener(sub);
-    };
+    return () => { if (sub !== null) { try { connection.removeAccountChangeListener(sub); } catch {} } active = false; };
   }, [connection, publicKey]);
 
-  if (!connected || !isOwner) {
-    return (
-      <div className="card" style={{ marginTop: 12 }}>
-        <h3 className="section-title" style={{ marginTop: 0 }}>Balance</h3>
-        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-          <span className="muted">Connect your wallet to view balance</span>
-          <WalletButton />
-        </div>
-      </div>
-    );
-  }
+  // USDC polling (5s)
+  useEffect(() => {
+    let timer: any;
+    let active = true;
+    async function loadUSDC() {
+      try {
+        if (!publicKey) return setUsdc(null);
+        const endpoint = process.env.NEXT_PUBLIC_RPC_ENDPOINT || "";
+        const cluster = endpoint.includes("devnet") ? "devnet" : (endpoint.includes("testnet") ? "testnet" : "mainnet");
+        const MINT = cluster === "mainnet" ? "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" : "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr";
+        const tokenProgram = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+        const resp = await connection.getParsedTokenAccountsByOwner(publicKey, { programId: tokenProgram });
+        let total = 0;
+        for (const it of resp.value) {
+          const info = (it.account.data as any).parsed?.info;
+          if (!info) continue;
+          if (info.mint !== MINT) continue;
+          const amt = info.tokenAmount?.uiAmount;
+          total += Number(amt || 0);
+        }
+        if (active) { setUsdc(total); setLastUpdated(Date.now()); }
+      } catch {
+        if (active) setUsdc(null);
+      }
+    }
+    loadUSDC();
+    timer = setInterval(loadUSDC, 5000);
+    return () => { if (timer) clearInterval(timer); active = false; };
+  }, [connection, publicKey]);
+
+  // SOL price polling (5s)
+  useEffect(() => {
+    let timer: any;
+    let active = true;
+    async function loadPrice() {
+      try {
+        const r = await fetch("https://price.jup.ag/v4/price?ids=SOL", { cache: "no-store" });
+        const j = await r.json();
+        const p = Number(j?.data?.SOL?.price);
+        if (!Number.isFinite(p)) return;
+        if (active) { setSolUsd(p); setLastUpdated(Date.now()); }
+      } catch {}
+    }
+    loadPrice();
+    timer = setInterval(loadPrice, 5000);
+    return () => { if (timer) clearInterval(timer); active = false; };
+  }, []);
+
+  if (!isOwner) return null;
 
   const base58 = publicKey!.toBase58();
-  const short = `${base58.slice(0, 6)}...${base58.slice(-4)}`;
-  const sol = typeof lamports === 'number' ? lamports / LAMPORTS_PER_SOL : null;
-  const cluster = (process.env.NEXT_PUBLIC_RPC_ENDPOINT || '').includes('devnet') ? 'devnet' : (process.env.NEXT_PUBLIC_RPC_ENDPOINT || '').includes('testnet') ? 'testnet' : undefined;
-  const explorer = `https://explorer.solana.com/address/${encodeURIComponent(base58)}${cluster ? `?cluster=${cluster}` : ''}`;
+  const sol = typeof lamports === "number" ? lamports / LAMPORTS_PER_SOL : null;
+  const endpoint = process.env.NEXT_PUBLIC_RPC_ENDPOINT || "";
+  const cluster = endpoint.includes("devnet") ? "devnet" : (endpoint.includes("testnet") ? "testnet" : undefined);
+  const explorer = `https://explorer.solana.com/address/${encodeURIComponent(base58)}${cluster ? `?cluster=${cluster}` : ""}`;
+
+  const label = view === "SOL" ? "SOL balance" : (view === "USDC" ? "USDC balance" : (view === "CAL" ? "CAL balance" : "Token balance"));
+  const value = view === "SOL" ? (sol !== null ? sol.toFixed(4) : "-") : (view === "USDC" ? (usdc !== null ? usdc.toFixed(2) : "-") : (view === "CAL" ? (calBal !== null ? calBal.toFixed(6) : "-") : (tokenBal !== null ? tokenBal.toFixed(6) : "-")));
+  const rateLine = solUsd ? `1 SOL ~ ${solUsd.toFixed(2)} USDC | 1 USDC ~ ${(1 / solUsd).toFixed(6)} SOL` : "Fetching price...";
 
   return (
     <div className="card" style={{ marginTop: 12 }}>
       <h3 className="section-title" style={{ marginTop: 0 }}>Balance</h3>
-      <div className="stats" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
-        <div className="stat">
-          <span className="stat-label">SOL</span>
-          <span className="stat-value">{loading ? '…' : (sol !== null ? sol.toFixed(4) : '-')}</span>
-        </div>
-        <div className="stat" title={base58}>
-          <span className="stat-label">Wallet</span>
-          <Link className="one-line" href={explorer} target="_blank" rel="noreferrer" style={{ color: '#e5e7eb', textDecoration: 'none' }}>
-            {short}
-          </Link>
-        </div>
+      <div className="row" style={{ gap: 6, marginBottom: 8, alignItems: "center" }}>
+        <button className="chip" onClick={() => setView("SOL")} style={{ color: "#fff", background: view === "SOL" ? "rgba(255,255,255,.16)" : "rgba(255,255,255,.06)" }}>SOL</button>
+        <button className="chip" onClick={() => setView("USDC")} style={{ color: "#fff", background: view === "USDC" ? "rgba(255,255,255,.16)" : "rgba(255,255,255,.06)" }}>USDC</button>
+        <button className="chip" onClick={() => setView("CAL")} style={{ color: "#fff", background: view === "CAL" ? "rgba(255,255,255,.16)" : "rgba(255,255,255,.06)" }}>CAL</button>
+        <button className="chip" onClick={() => setView("TOKEN")} style={{ color: "#fff", background: view === "TOKEN" ? "rgba(255,255,255,.16)" : "rgba(255,255,255,.06)" }}>Token</button>
+        <span className="muted" style={{ marginLeft: "auto", fontSize: 12 }}>Last updated: {lastUpdated ? new Date(lastUpdated).toLocaleTimeString() : "-"}</span>
+        <button className="btn btn-outline" style={{ padding: "6px 10px" }} onClick={refreshAll}>Refresh</button>
       </div>
+      {view === "CAL" && (
+        <div className="row" style={{ gap: 8, margin: "4px 0 8px" }}>
+          <span className="muted" style={{ fontSize: 12 }}>CAL mint: {process.env.NEXT_PUBLIC_CAL_MINT ? `${String(process.env.NEXT_PUBLIC_CAL_MINT).slice(0,6)}...${String(process.env.NEXT_PUBLIC_CAL_MINT).slice(-4)}` : '(set NEXT_PUBLIC_CAL_MINT)'}</span>
+        </div>
+      )}
+      {view === "TOKEN" && (
+        <div className="row" style={{ gap: 8, margin: "4px 0 8px" }}>
+          <input placeholder="Paste token mint (SPL)" value={customMint} onChange={(e) => setCustomMint(e.target.value.trim())} style={{ flex: 1, background: "rgba(255,255,255,.06)", color: "#e5e7eb", border: "1px solid rgba(255,255,255,.12)", borderRadius: 10, padding: "6px 8px" }} />
+          <button className="btn btn-outline" style={{ padding: "6px 10px" }} onClick={refreshAll}>Load</button>
+        </div>
+      )}
+      {view !== "TOKEN" && (
+        <div className="row" style={{ gap: 8, margin: "4px 0 8px" }}>
+          <span className="muted" style={{ fontSize: 12 }}>{rateLine}</span>
+        </div>
+      )}
+      <Link href={explorer} target="_blank" rel="noreferrer" style={{ textDecoration: "none", color: "inherit" }} title={base58}>
+        <div className="stat" style={{ cursor: "pointer" }}>
+          <span className="stat-label">{label}</span>
+          <span className="stat-value">{(loadingSol && view === "SOL") ? "..." : value}</span>
+          {solUsd && (
+            <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>
+              {view === "SOL" && typeof sol === "number" ? `≈ ${(sol * solUsd).toFixed(2)} USDC` : null}
+              {view === "USDC" && typeof usdc === "number" ? `≈ ${(usdc / solUsd).toFixed(6)} SOL` : null}
+            </div>
+          )}
+        </div>
+      </Link>
     </div>
   );
 }
+
 

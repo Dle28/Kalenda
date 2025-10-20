@@ -7,6 +7,7 @@ import { getCreator, getCreatorSlots } from '@/lib/data';
 import OwnerEditOnProfile from '@/components/OwnerEditOnProfile';
 import OwnerSlotQuickAdd from '@/components/OwnerSlotQuickAdd';
 import WeekCalendar from '@/components/WeekCalendar';
+import CreatorBalance from '@/components/CreatorBalance';
 
 type RouteParams = { pubkey: string };
 type Params = { params: RouteParams | Promise<RouteParams> };
@@ -117,6 +118,7 @@ export default async function CreatorProfilePage({ params }: Params) {
                 <div className="stat"><span className="stat-label">Price/min</span><span className="stat-value">{creator?.pricePerSlot ?? '-'} USDC</span></div>
                 <div className="stat"><span className="stat-label">Rating</span><span className="stat-value">{creator?.rating ?? '-'}</span></div>
               </div>
+              <CreatorBalance creatorPubkey={pubkey} />
             </div>
           </Reveal>
         </div>

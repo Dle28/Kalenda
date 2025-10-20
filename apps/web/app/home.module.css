@@ -1,4 +1,4 @@
-.wrap { color: #e5e7eb; }
+﻿.wrap { color: #e5e7eb; }
 
 .hero {
   display: grid;
@@ -7,14 +7,14 @@
   padding: 40px 0 20px;
 }
 
-.left {}
+.left { position: relative }
 .heading { margin: 0 0 8px; font-size: 48px; line-height: 1.06; letter-spacing: .2px; font-family: var(--display); font-weight: 900 }
 .sub { margin: 0 0 18px; color: #cbd5e1; font-size: 18px }
 
 .right {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 12px; /* denser grid */
   padding: 0;
   height: clamp(640px, 86vh, 980px);
   overflow: hidden;
@@ -32,15 +32,13 @@
 }
 
 .col { position: relative; overflow: hidden; }
-.colLeft {}
-.colRight {}
-.track { display: flex; flex-direction: column; gap: 16px; animation: scrollDown var(--scroll-dur) ease-in-out infinite alternate; will-change: transform }
+.track { display: flex; flex-direction: column; gap: 12px; /* denser grid */ animation: scrollDown var(--scroll-dur) ease-in-out infinite alternate; will-change: transform }
 .colRight .track { animation-delay: calc(var(--scroll-offset) * -1); animation-direction: alternate-reverse }
 .colLeft .track { animation-delay: 0s }
 
 .tile {
   position: relative;
-  border-radius: 24px;
+  border-radius: 18px; /* tighter corners for density */
   overflow: hidden;
   border: 1px solid rgba(255,255,255,.12);
   background: transparent; /* blend with unified surface */
@@ -49,8 +47,8 @@
   transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
   /* surfaces tinted only; global wallpaper lives on body */
 }
-.media { width: 100%; padding-top: 90%; background-size: cover; background-position: center; filter: saturate(.95) contrast(1.05); transition: transform .5s ease, filter .3s ease }
-.overlay { position: absolute; left:0; right:0; bottom:0; padding: 12px 14px; background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.6) 60%, rgba(0,0,0,.86) 100%); transition: backdrop-filter .25s ease }
+.media { width: 100%; padding-top: 78%; background-size: cover; background-position: center; filter: saturate(.95) contrast(1.05); transition: transform .5s ease, filter .3s ease }
+.overlay { position: absolute; left:0; right:0; bottom:0; padding: 10px 12px; background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.6) 60%, rgba(0,0,0,.86) 100%); transition: backdrop-filter .25s ease }
 .tile:hover { transform: translateY(-2px); border-color: rgba(239,132,189,.3); box-shadow: inset 0 0 0 1px rgba(255,255,255,.05) }
 .tile:hover .media { transform: scale(1.04); filter: saturate(1.05) contrast(1.1) }
 
@@ -77,3 +75,50 @@
 @media (prefers-reduced-motion: reduce) {
   .track { animation: none !important; }
 }
+
+
+/* Filters chips and How-it-works */
+.filters { display:flex; gap:6px; flex-wrap:wrap; margin: 10px 0 4px }
+.filters .chip { font-size: 11px !important; padding: 2px 8px !important; border-radius: 999px; line-height: 1.2 }
+.how { display:grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 12px }
+.step { display:flex; gap:10px; align-items:flex-start; padding:10px 12px; border:1px solid rgba(255,255,255,.12); border-radius: 12px; background: rgba(255,255,255,.04) }
+.stepIcon { width:26px; height:26px; border-radius:999px; background: rgba(239,132,189,.85); color:#0b0c10; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:12px }
+.stepText b { display:block; margin-bottom: 2px }
+.stepText span { display:block; font-size: 12px }
+
+/* Subtle particles on the left side */
+.particlesWrap { position: absolute; left: 0; top: 0; width: 50%; height: 60vh; pointer-events: none; z-index: 0 }
+.particle { position: absolute; border-radius: 999px; background: rgba(255,255,255,.1); opacity: .08; filter: blur(0.5px); animation: floatUp 16s ease-in-out infinite alternate }
+@keyframes floatUp { 0% { transform: translateY(0) } 100% { transform: translateY(-18px) } }
+
+.footer { margin-top: 24px; padding: 16px 0; border-top: 1px solid rgba(255,255,255,.08); background: transparent }
+
+
+/* Spotlight */
+.spotlight { position: relative; display:block; margin: 12px 0; border-radius: 16px; overflow:hidden; border:1px solid rgba(255,255,255,.12); box-shadow: inset 0 0 0 1px rgba(255,255,255,.03) }
+.spotMedia { width: 100%; padding-top: 42%; background-size: cover; background-position: center; filter: saturate(.95) contrast(1.05) }
+.spotOverlay { position:absolute; left:0; right:0; bottom:0; padding: 10px 12px; background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.6) 60%, rgba(0,0,0,.86) 100%) }
+
+/* Mini Top week column */
+.colMini { display:flex; flex-direction:column; gap:8px; }
+.miniHeader { font-weight:700; letter-spacing:.2px; opacity:.9 }
+.miniList { display:flex; flex-direction:column; gap:8px; overflow:auto }
+.miniItem { display:grid; grid-template-columns: 36px 1fr auto; align-items:center; gap:8px; text-decoration:none; color:#e5e7eb; padding:8px 10px; border:1px solid rgba(255,255,255,.12); border-radius:12px; background: rgba(255,255,255,.04) }
+.miniItem img { width:36px; height:36px; border-radius:10px; border:1px solid rgba(255,255,255,.12) }
+.miniMeta { display:flex; flex-direction:column; gap:2px }
+.pos { color:#22c55e }
+.neg { color:#ef4444 }
+
+/* Testimonials */
+.testimonials { padding: 16px 0 8px }
+.quote { border:1px solid rgba(255,255,255,.12); border-radius: 14px; padding: 12px; background: rgba(255,255,255,.04); max-width: 880px }
+.quote p { margin: 0 0 6px; font-size: 16px }
+
+/* Events */
+.events { padding: 6px 0 16px }
+.eventsGrid { display:grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap: 10px }
+.eventCard { display:grid; grid-template-columns: 56px 1fr auto; align-items:center; gap:10px; text-decoration:none; color:#e5e7eb; border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:10px; background: rgba(255,255,255,.04) }
+.eventCard img { width:56px; height:56px; border-radius:12px; border:1px solid rgba(255,255,255,.12) }
+.eventBody { display:flex; flex-direction:column; gap:2px }
+.badgeMode { font-size: 12px; opacity: .85 }
+.eventCta { font-weight:600; border:1px solid rgba(255,255,255,.18); border-radius:10px; padding:4px 8px }
