@@ -4,11 +4,14 @@
   min-height: 100vh;
   /* Themed multi-accent backdrop layered for depth */
   background:
-    radial-gradient(1200px 520px at 10% -10%, color-mix(in oklab, var(--accent) 18%, transparent), transparent 60%),
-    radial-gradient(1000px 460px at 90% 10%, color-mix(in oklab, var(--accent2) 16%, transparent), transparent 60%),
-    radial-gradient(1200px 560px at 15% 110%, color-mix(in oklab, var(--accent3) 14%, transparent), transparent 66%),
-    radial-gradient(900px 520px at 85% 100%, color-mix(in oklab, var(--accent4) 12%, transparent), transparent 66%),
-    radial-gradient(1200px 560px at 50% -18%, color-mix(in oklab, var(--accentWarm) 10%, transparent), transparent 72%),
+    /* Darken overlay for stronger contrast */
+    linear-gradient(180deg, rgba(6, 10, 20, 0.66) 0%, rgba(6, 10, 20, 0.78) 40%, rgba(6, 10, 20, 0.92) 100%),
+    /* Enlarged accent blobs */
+    radial-gradient(1440px 620px at 10% -10%, color-mix(in oklab, var(--accent) 20%, transparent), transparent 62%),
+    radial-gradient(1180px 560px at 90% 10%, color-mix(in oklab, var(--accent2) 18%, transparent), transparent 62%),
+    radial-gradient(1420px 660px at 15% 110%, color-mix(in oklab, var(--accent3) 16%, transparent), transparent 68%),
+    radial-gradient(1080px 600px at 85% 100%, color-mix(in oklab, var(--accent4) 14%, transparent), transparent 68%),
+    radial-gradient(1380px 660px at 50% -18%, color-mix(in oklab, var(--accentWarm) 12%, transparent), transparent 74%),
     var(--bg);
   color: #e5e7eb;
   animation: profile-fade-in .5s ease both;
@@ -24,8 +27,8 @@
 .avatar-drop {
   position: absolute;
   top: -80px;
-  width: var(--size, 40px);
-  height: var(--size, 40px);
+  width: var(--size, 48px);
+  height: var(--size, 48px);
   border-radius: 12px;
   border: 1px solid rgba(255,255,255,.08);
   background-size: cover;
@@ -52,13 +55,13 @@
   inset: -35% -20% auto;
   height: 140%;
   background:
-    radial-gradient(900px 760px at 20% 20%, color-mix(in oklab, var(--accent) 28%, transparent), transparent 62%),
-    radial-gradient(760px 580px at 80% 30%, color-mix(in oklab, var(--accent2) 22%, transparent), transparent 70%),
-    radial-gradient(700px 560px at 30% 80%, color-mix(in oklab, var(--accent3) 18%, transparent), transparent 70%),
-    radial-gradient(820px 620px at 70% 80%, color-mix(in oklab, var(--accent4) 16%, transparent), transparent 74%),
-    radial-gradient(980px 640px at 50% 10%, color-mix(in oklab, var(--accentWarm) 12%, transparent), transparent 76%);
-  filter: blur(40px);
-  opacity: 0.8;
+    radial-gradient(1080px 860px at 20% 20%, color-mix(in oklab, var(--accent) 30%, transparent), transparent 64%),
+    radial-gradient(920px 680px at 80% 30%, color-mix(in oklab, var(--accent2) 24%, transparent), transparent 72%),
+    radial-gradient(860px 660px at 30% 80%, color-mix(in oklab, var(--accent3) 20%, transparent), transparent 72%),
+    radial-gradient(980px 720px at 70% 80%, color-mix(in oklab, var(--accent4) 18%, transparent), transparent 76%),
+    radial-gradient(1140px 740px at 50% 10%, color-mix(in oklab, var(--accentWarm) 14%, transparent), transparent 78%);
+  filter: blur(52px);
+  opacity: 0.88;
   z-index: -1;
   animation: ambient-flow 18s ease-in-out infinite alternate;
 }
