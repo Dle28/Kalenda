@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useRouter } from 'next/navigation';
 
@@ -35,12 +35,13 @@ function fmtTime(d: Date) {
 }
 
 export default function WeekCalendar({ slots, defaultInterval = 60, compact = false, creatorPubkey }: { slots: SlotView[]; defaultInterval?: number; compact?: boolean; creatorPubkey?: string }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const [weekStart, setWeekStart] = useState<Date>(() => startOfWeek(new Date()));
   const [interval, setInterval] = useState<number>(INTERVALS.includes(defaultInterval) ? defaultInterval : 60);
   const wallet = useWallet();
   const router = useRouter();
-
-  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const tz = mounted ? Intl.DateTimeFormat().resolvedOptions().timeZone : '';
 
   const days = useMemo(() => Array.from({ length: 7 }, (_, i) => addMinutes(weekStart, i * 24 * 60)), [weekStart]);
   const rows = useMemo(() => 1440 / interval, [interval]);
@@ -72,6 +73,18 @@ export default function WeekCalendar({ slots, defaultInterval = 60, compact = fa
     return { cls: 'unavail', text: 'Unavailable' };
   }
 
+  if (!mounted) {
+    return (
+      <div className="weekcal">
+        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <div className="skeleton" style={{ width: 220, height: 28 }} />
+          <div className="skeleton" style={{ width: 200, height: 20 }} />
+        </div>
+        <div className="skeleton" style={{ width: '100%', height: 260, borderRadius: 12 }} />
+      </div>
+    );
+  }
+
   return (
     <div className="weekcal">
       <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
@@ -85,7 +98,7 @@ export default function WeekCalendar({ slots, defaultInterval = 60, compact = fa
           <button className="btn btn-outline" style={{ padding: '6px 10px' }} onClick={() => setWeekStart(addMinutes(weekStart, 7 * 24 * 60))}>{'>'}</button>
         </div>
         <div className="row" style={{ gap: 10, alignItems: 'center' }}>
-          <span className="muted" style={{ fontSize: 12 }}>Timezone: {tz}</span>
+          <span className="muted" style={{ fontSize: 12 }} suppressHydrationWarning>Timezone: {tz}</span>
           <label className="row" style={{ gap: 6, alignItems: 'center' }}>
             <span className="muted" style={{ fontSize: 12 }}>Interval</span>
             <select value={interval} onChange={(e) => setInterval(Number(e.target.value))}>
@@ -162,10 +175,17 @@ export default function WeekCalendar({ slots, defaultInterval = 60, compact = fa
         .wk-dot { width: ${compact ? 8 : 10}px; height: ${compact ? 8 : 10}px; border-radius: 999px; background: currentColor; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) }
         .wk-cell.fixed .wk-dot { color: #60a5fa }
         .wk-cell.auction .wk-dot { color: #f472b6 }
+        /* Ripple effect on calendar cells (stronger) */
+        .wk-cell::before { content:""; position:absolute; left:50%; top:50%; width:30px; height:30px; border-radius:999px; background: radial-gradient(circle, rgba(255,255,255,.35) 0%, rgba(255,255,255,0) 60%); transform: translate(-50%, -50%) scale(.2); opacity: 0; transition: transform .5s ease, opacity .5s ease; pointer-events:none }
+        .wk-cell:hover::before { opacity: .38; transform: translate(-50%, -50%) scale(7); }
+        .wk-cell:active::before { opacity: .45; transform: translate(-50%, -50%) scale(8); }
         .dot { width:10px; height:10px; border-radius:999px; display:inline-block }
         .dot.fixed { background:#60a5fa }
         .dot.auction { background:#f472b6 }
         .dot.unavail { background:#64748b }
+        @media (prefers-reduced-motion: reduce) {
+          .wk-cell::before { transition: none; }
+        }
         @media (max-width: 960px) {
           .wk-grid { grid-template-columns: ${compact ? 46 : 52}px repeat(7, 1fr) }
           .wk-time { font-size: ${compact ? 11 : 12}px }

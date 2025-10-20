@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import '../profile.css';
-import AvatarRain from '@/components/AvatarRain';
+import dynamic from 'next/dynamic';
+const AvatarRain = dynamic(() => import('@/components/AvatarRain'), { ssr: false });
 import Reveal from '@/components/Reveal';
 import { getCreator, getCreatorSlots } from '@/lib/data';
 import OwnerEditOnProfile from '@/components/OwnerEditOnProfile';
@@ -43,7 +44,7 @@ export default async function CreatorProfilePage({ params }: Params) {
       <div className="container">
         {/* Background avatar rain: shrinks and scrolls down in loop */}
         <AvatarRain image={creator.avatar || undefined} />
-        <Link href="/creators" className="back-icon" aria-label="Back to creators">←</Link>
+        <Link href="/creators" className="back-icon" aria-label="Back to creators">{'<'}</Link>
         <OwnerEditOnProfile pubkey={pubkey} />
         <div className="profile-hero">
           <Reveal className="hero-left" as="div">
@@ -75,36 +76,32 @@ export default async function CreatorProfilePage({ params }: Params) {
             <div className="hero-calendar">
               <WeekCalendar slots={list as any} defaultInterval={60} compact creatorPubkey={pubkey} />
             </div>
+            {/* Owner-only quick add placed right below calendar */}
+            <div style={{ marginTop: 10 }}><OwnerSlotQuickAdd creatorPubkey={pubkey} /></div>
             {/* back button moved to top-left icon */}
           </Reveal>
 
           <Reveal className="hero-card" as="div" delay={120}>
-            <div
-              className="hero-media"
-              style={{ backgroundImage: `url(${creator.avatar || 'https://placehold.co/640x640'})` }}
-            />
-            <div className="hero-overlay">
-              <div className="row" style={{ justifyContent: 'space-between', width: '100%' }}>
-                <b>{creator.name}</b>
-                {typeof creator.pricePerSlot === 'number' && (
-                  <span>
-                    ${creator.pricePerSlot.toFixed(2)} <span className="muted">/ slot</span>
-                  </span>
-                )}
+            <div className="hero-media-wrap">
+              <div
+                className="hero-media"
+                style={{ backgroundImage: `url(${creator.avatar || 'https://placehold.co/640x640'})` }}
+              />
+              <div className="hero-overlay">
+                <div className="row" style={{ justifyContent: 'space-between', width: '100%' }}>
+                  <b>{creator.name}</b>
+                  {typeof creator.pricePerSlot === 'number' && (
+                    <span>
+                      ${creator.pricePerSlot.toFixed(2)} <span className="muted">/ slot</span>
+                    </span>
+                  )}
+                </div>
+                {creator.bio && <div className="muted one-line">{creator.bio}</div>}
               </div>
-              {creator.bio && <div className="muted one-line">{creator.bio}</div>}
             </div>
-          </Reveal>
-        </div>
-
-        <div className="profile-main">
-          {/* Calendar moved into hero-left; keep below for spacing consistency if needed */}
-
-          {/* About + Stats placed right below calendar (right column) */}
-          <Reveal className="col" as="div" style={{ gridColumn: '2', alignSelf: 'start' }}>
-            <h3 className="section-title">About</h3>
-            <div className="card" style={{ marginBottom: 16 }}>
-              <div className="stack" style={{ gap: 8 }}>
+            <div className="hero-card-body">
+              <h3 className="section-title">About</h3>
+              <div className="stack" style={{ gap: 8, marginBottom: 12 }}>
                 <p className="muted" style={{ margin: 0 }}>{creator.bio || 'No bio yet.'}</p>
                 <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
                   {creator.location && <span className="chip">Location: {creator.location}</span>}
@@ -114,20 +111,17 @@ export default async function CreatorProfilePage({ params }: Params) {
                   ))}
                 </div>
               </div>
+              <h3 className="section-title">Stats</h3>
+              <div className="stats">
+                <div className="stat"><span className="stat-label">Slots</span><span className="stat-value">{list.length}</span></div>
+                <div className="stat"><span className="stat-label">Price/min</span><span className="stat-value">{creator?.pricePerSlot ?? '-'} USDC</span></div>
+                <div className="stat"><span className="stat-label">Rating</span><span className="stat-value">{creator?.rating ?? '-'}</span></div>
+              </div>
             </div>
-            <h3 className="section-title">Stats</h3>
-            <div className="stats">
-              <div className="stat"><span className="stat-label">Slots</span><span className="stat-value">{list.length}</span></div>
-              <div className="stat"><span className="stat-label">Price/min</span><span className="stat-value">{creator?.pricePerSlot ?? '-'} USDC</span></div>
-              <div className="stat"><span className="stat-label">Rating</span><span className="stat-value">{creator?.rating ?? '-'}</span></div>
-            </div>
-          </Reveal>
-
-          {/* Owner-only quick add (no public available-slots list) */}
-          <Reveal as="div" className="col">
-            <OwnerSlotQuickAdd creatorPubkey={pubkey} />
           </Reveal>
         </div>
+
+        {/* Removed old profile-main side rail; About + Stats now live in hero-card */}
       </div>
       <div className="scroll-cue" aria-hidden="true">
         <span />

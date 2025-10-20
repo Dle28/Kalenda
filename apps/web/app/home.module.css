@@ -8,8 +8,8 @@
 }
 
 .left {}
-.heading { margin: 0 0 8px; font-size: 40px; line-height: 1.06; letter-spacing: .2px; font-family: var(--display); font-weight: 900 }
-.sub { margin: 0 0 18px; color: #cbd5e1 }
+.heading { margin: 0 0 8px; font-size: 48px; line-height: 1.06; letter-spacing: .2px; font-family: var(--display); font-weight: 900 }
+.sub { margin: 0 0 18px; color: #cbd5e1; font-size: 18px }
 
 .right {
   display: grid;
@@ -71,7 +71,7 @@
   .hero { grid-template-columns: 1fr }
   .right { grid-template-columns: 1fr 1fr }
   .right { height: min(70vh, 640px); --scroll-dur: 16s; --scroll-offset: calc(var(--scroll-dur) * .5); }
-  .heading { font-size: 36px }
+  .heading { font-size: 40px }
 }
 
 @media (prefers-reduced-motion: reduce) {

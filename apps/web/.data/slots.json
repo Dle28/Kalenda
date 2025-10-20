@@ -88,22 +88,6 @@
     "price": 10
   },
   {
-    "id": "FLWfSH7ip9jukg3pDGAnheETpuYmm8W7XgDPXku7GYyf-2025-10-22T08:00:00.000Z",
-    "creator": "FLWfSH7ip9jukg3pDGAnheETpuYmm8W7XgDPXku7GYyf",
-    "start": "2025-10-22T08:00:00.000Z",
-    "end": "2025-10-22T08:30:00.000Z",
-    "mode": "Stable",
-    "price": 10
-  },
-  {
-    "id": "FLWfSH7ip9jukg3pDGAnheETpuYmm8W7XgDPXku7GYyf-2025-10-24T02:00:00.000Z",
-    "creator": "FLWfSH7ip9jukg3pDGAnheETpuYmm8W7XgDPXku7GYyf",
-    "start": "2025-10-24T02:00:00.000Z",
-    "end": "2025-10-24T02:30:00.000Z",
-    "mode": "Stable",
-    "price": 10
-  },
-  {
     "id": "FLWfSH7ip9jukg3pDGAnheETpuYmm8W7XgDPXku7GYyf-2025-10-24T03:00:00.000Z",
     "creator": "FLWfSH7ip9jukg3pDGAnheETpuYmm8W7XgDPXku7GYyf",
     "start": "2025-10-24T03:00:00.000Z",

@@ -11,6 +11,7 @@ export default function OwnerSlotQuickAdd({ creatorPubkey }: { creatorPubkey: st
   const mine = publicKey?.toBase58() === creatorPubkey;
   const [quick, setQuick] = useState({ date: '', start: '', durationMin: '30', mode: 'Stable' as PricingMode, price: '20', startPrice: '10', bidStep: '1' });
   const [saving, setSaving] = useState(false);
+  const [open, setOpen] = useState(false);
   if (!mine) return null;
 
   async function addSlot() {
@@ -32,14 +33,28 @@ export default function OwnerSlotQuickAdd({ creatorPubkey }: { creatorPubkey: st
       await fetch('/api/slots', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(s) });
       router.refresh();
       setQuick((q) => ({ ...q, date: '', start: '' }));
+      setOpen(false);
     } finally {
       setSaving(false);
     }
   }
 
+  if (!open) {
+    return (
+      <div className="row" style={{ marginBottom: 16 }}>
+        <button className="btn btn-secondary" style={{ padding: '8px 12px' }} onClick={() => setOpen(true)}>
+          Add a slot
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="card" style={{ marginBottom: 16 }}>
-      <h3 className="section-title">Add a slot</h3>
+      <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+        <h3 className="section-title" style={{ margin: 0 }}>Add a slot</h3>
+        <button className="btn btn-outline" style={{ padding: '6px 10px' }} onClick={() => setOpen(false)}>Close</button>
+      </div>
       <div className="row" style={{ gap: 10, flexWrap: 'wrap' }}>
         <label className="stack" style={{ minWidth: 160 }}>
           <span className="muted">Date</span>
@@ -71,7 +86,8 @@ export default function OwnerSlotQuickAdd({ creatorPubkey }: { creatorPubkey: st
             <input type="number" inputMode="decimal" min={0} step={0.01} value={quick.startPrice} onChange={(e) => setQuick({ ...quick, startPrice: e.target.value })} />
           </label>
         )}
-        <div className="row" style={{ alignItems: 'end' }}>
+        <div className="row" style={{ alignItems: 'end', gap: 8 }}>
+          <button className="btn btn-outline" style={{ padding: '8px 12px' }} onClick={() => setOpen(false)}>Cancel</button>
           <button className="btn btn-secondary" style={{ padding: '8px 12px' }} disabled={saving} onClick={addSlot}>
             {saving ? 'Saving…' : 'Add slot'}
           </button>
