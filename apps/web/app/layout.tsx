@@ -74,10 +74,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/creators" className="link">Explore creators</Link>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 12 }}>
                 <CombinedHeaderProfile />
-                <Link href="/profile" className="btn btn-outline" style={{ padding: '6px 12px' }}>My Profile</Link>
                 <WalletButton />
-                {/* WalletStatus shows small avatar/initials when connected */}
-                <WalletStatus />
               </div>
             </nav>
           </header>
