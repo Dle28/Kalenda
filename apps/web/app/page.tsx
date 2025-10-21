@@ -9,6 +9,7 @@ import Spotlight from '@/components/Spotlight';
 import Testimonials from '@/components/Testimonials';
 import EventsStrip from '@/components/EventsStrip';
 import ScrollEffects from '@/components/ScrollEffects';
+import UpcomingAppointments from '@/components/UpcomingAppointments';
 import { summarizeSlotsByCreator } from '@/lib/slotSummary';
 
 export default function Page() {
@@ -117,6 +118,11 @@ export default function Page() {
         </div>
 
         <FloatingBadges />
+
+        {/* Upcoming Appointments Section */}
+        <div className="container">
+          <UpcomingAppointments slots={slots} creators={enrichedCreators} />
+        </div>
 
         {/* Below-hero sections */}
         <section className={styles.below}>

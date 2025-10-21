@@ -1,0 +1,431 @@
+/* Upcoming Appointments Component */
+.container {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 20px 0;
+  backdrop-filter: blur(10px);
+}
+
+.header {
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  color: #e5e7eb;
+  letter-spacing: 0.3px;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 20px;
+}
+
+/* Mini Calendar */
+.calendarPanel {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  height: fit-content;
+}
+
+.calendarHeader {
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.calendarTitle {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+  color: #e5e7eb;
+  letter-spacing: 0.2px;
+}
+
+.weekdayRow {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.weekdayCell {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: #9ca3af;
+  padding: 4px 0;
+  letter-spacing: 0.1px;
+}
+
+.calendarGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.dateCell {
+  aspect-ratio: 1;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #e5e7eb;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.dateCell:hover:not(:disabled) {
+  border-color: rgba(239, 132, 189, 0.4);
+  background: rgba(239, 132, 189, 0.08);
+  transform: scale(1.05);
+}
+
+.dateCell:disabled {
+  color: #6b7280;
+  cursor: default;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.dateNumber {
+  position: relative;
+  z-index: 1;
+}
+
+.otherMonth {
+  opacity: 0.3;
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.today {
+  border-color: rgba(34, 197, 94, 0.5);
+  background: rgba(34, 197, 94, 0.1);
+  font-weight: 700;
+  color: #22c55e;
+}
+
+.hasAppointments {
+  border-color: rgba(239, 132, 189, 0.3);
+  background: rgba(239, 132, 189, 0.06);
+}
+
+.dotIndicator {
+  position: absolute;
+  bottom: 2px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(239, 132, 189, 0.8);
+}
+
+/* Appointments Panel */
+.appointmentsPanel {
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+}
+
+.appointmentsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  max-height: 480px;
+  padding-right: 6px;
+}
+
+.appointmentsList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.appointmentsList::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 3px;
+}
+
+.appointmentsList::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.appointmentsList::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.dateGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dateGroupHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.slotCount {
+  background: rgba(239, 132, 189, 0.15);
+  color: rgba(239, 132, 189, 0.9);
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.appointmentCards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.appointmentCard {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  text-decoration: none;
+  color: #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.appointmentCard:hover {
+  background: rgba(239, 132, 189, 0.08);
+  border-color: rgba(239, 132, 189, 0.3);
+  transform: translateX(2px);
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.appointmentDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.creatorName {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e5e7eb;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.field {
+  font-size: 11px;
+  color: #9ca3af;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.timeBlock {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.time {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  letter-spacing: 0.1px;
+}
+
+.countdown {
+  font-size: 10px;
+  color: rgba(34, 197, 94, 0.8);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1px;
+  margin-left: 6px;
+}
+
+.appointmentMeta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-align: right;
+}
+
+.priceTag {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  text-align: right;
+}
+
+.label {
+  font-size: 10px;
+  color: #9ca3af;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.price {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(239, 132, 189, 0.9);
+}
+
+.arrow {
+  font-size: 16px;
+  color: rgba(239, 132, 189, 0.6);
+  margin-left: 4px;
+}
+
+/* Empty State */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 48px;
+  opacity: 0.6;
+}
+
+.emptyText {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #e5e7eb;
+}
+
+.emptySubtext {
+  margin: 0;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.exploreLink {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 8px 16px;
+  background: rgba(239, 132, 189, 0.2);
+  border: 1px solid rgba(239, 132, 189, 0.3);
+  border-radius: 8px;
+  color: rgba(239, 132, 189, 0.9);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  letter-spacing: 0.1px;
+}
+
+.exploreLink:hover {
+  background: rgba(239, 132, 189, 0.3);
+  border-color: rgba(239, 132, 189, 0.5);
+  transform: scale(1.02);
+}
+
+/* Responsive */
+@media (max-width: 960px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .calendarPanel {
+    height: auto;
+  }
+
+  .appointmentsList {
+    max-height: none;
+    padding-right: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 16px;
+    margin: 16px 0;
+  }
+
+  .header {
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .subtitle {
+    font-size: 12px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .appointmentCard {
+    grid-template-columns: 40px 1fr auto;
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  .avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .creatorName {
+    font-size: 12px;
+  }
+
+  .price {
+    font-size: 11px;
+  }
+}
