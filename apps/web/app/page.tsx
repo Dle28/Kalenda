@@ -9,6 +9,7 @@ import Spotlight from '@/components/Spotlight';
 import Testimonials from '@/components/Testimonials';
 import EventsStrip from '@/components/EventsStrip';
 import ScrollEffects from '@/components/ScrollEffects';
+<<<<<<< HEAD
 import UpcomingAppointments from '@/components/UpcomingAppointments';
 import { summarizeSlotsByCreator } from '@/lib/slotSummary';
 
@@ -32,6 +33,36 @@ export default function Page() {
     if (cat === 'All') return enrichedCreators;
     return enrichedCreators.filter((c: any) => (c.fields || []).includes(cat));
   }, [cat, enrichedCreators]);
+=======
+import CategoryBar, { type CatItem } from '@/components/CategoryBar';
+import CalendarInfographic from '@/components/CalendarInfographic';
+
+export default function Page() {
+  // Fixed category list resembling the reference UI
+  const catItems: CatItem[] = [
+    { key: 'All', label: 'All Creators', icon: '◻️' },
+    { key: 'Top', label: 'Top Creators', icon: '🔥' },
+    { key: 'Founders', label: 'Founders', icon: '🏢' },
+    { key: 'Influencers', label: 'Influencers', icon: '⭐' },
+    { key: 'Investors', label: 'Investors', icon: '💼' },
+    { key: 'UI/UX Design', label: 'UI/UX Design', icon: '🧩' },
+    { key: 'Athletes', label: 'Athletes', icon: '🏃' },
+    { key: 'Solana', label: 'Solana', icon: '💠' },
+    { key: 'Musicians', label: 'Musicians', icon: '🎤' },
+    { key: 'Media & Marketing', label: 'Media & Marketing', icon: '🎯' },
+  ];
+
+  const [cat, setCat] = useState<string>('All');
+  const filtered = useMemo(() => {
+    const list = creators as any[];
+    if (cat === 'All') return list;
+    if (cat === 'Top') {
+      return [...list].sort((a: any, b: any) => (Number(b.rating || 0) - Number(a.rating || 0)) || (Number(b.trend || 0) - Number(a.trend || 0))).slice(0, 12);
+    }
+    const needle = cat.toLowerCase();
+    return list.filter((c: any) => (c.fields || []).some((f: string) => String(f).toLowerCase().includes(needle)) || String(c.bio || '').toLowerCase().includes(needle));
+  }, [cat]);
+>>>>>>> 4a71766c3bce61de1d5d941478ccb2c7ad93fa35
 
   const featured = filtered.slice(0, 8);
   const leftItems = featured.filter((_, i) => i % 2 === 0);
@@ -48,6 +79,8 @@ export default function Page() {
       <ScrollEffects />
       <section className={styles.wrap}>
         <div className="container">
+          {/* Category bar */}
+          <CategoryBar items={catItems} active={cat} onChange={(k) => setCat(k)} />
           <div className={styles.hero}>
             <div className={styles.left}>
               <h1 className={styles.heading}>TIME IS MONEY.</h1>
@@ -127,14 +160,31 @@ export default function Page() {
         {/* Below-hero sections */}
         <section className={styles.below}>
           <div className="container">
+            <div style={{ margin: '8px 0 12px' }}>
+              <CalendarInfographic />
+            </div>
             <div className={styles.belowGrid}>
               <div className={styles.belowMain}>
+<<<<<<< HEAD
                 <Spotlight list={enrichedCreators as any} intervalMs={9000} />
                 <div className={styles.filters}>
                   {allCategories.map((f) => (
                     <button key={f} className="chip" onClick={() => setCat(f)} style={{ background: cat === f ? 'rgba(255,255,255,.16)' : 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.12)', color: '#e5e7eb' }}>{f}</button>
                   ))}
+=======
+                {/* Section header similar to reference */}
+                <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center', margin: '10px 0 6px' }}>
+                  <div className="row" style={{ gap: 10, alignItems: 'center' }}>
+                    <div style={{ width: 36, height: 36, borderRadius: 12, background: 'rgba(239,132,189,.15)', border: '1px solid rgba(239,132,189,.35)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>🔥</div>
+                    <div className="stack" style={{ gap: 2 }}>
+                      <b style={{ fontSize: 18 }}>Top Creators</b>
+                      <span className="muted" style={{ fontSize: 12 }}>Featured Creators</span>
+                    </div>
+                  </div>
+                  <Link href="/creators" className="btn btn-outline" style={{ padding: '6px 10px' }}>See all</Link>
+>>>>>>> 4a71766c3bce61de1d5d941478ccb2c7ad93fa35
                 </div>
+                <Spotlight list={filtered as any} intervalMs={9000} />
                 <div className={styles.how}>
                   <div className={styles.step}>
                     <div className={styles.stepIcon}>1</div>
@@ -198,4 +248,3 @@ export default function Page() {
     </>
   );
 }
-
