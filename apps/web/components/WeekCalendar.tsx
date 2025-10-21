@@ -53,9 +53,9 @@ export default function WeekCalendar({ slots, avail = [], defaultInterval = 60, 
   const days = useMemo(() => Array.from({ length: 7 }, (_, i) => addMinutes(weekStart, i * 24 * 60)), [weekStart]);
   const rows = useMemo(() => 1440 / interval, [interval]);
   const headerH = compact ? 36 : 44;
-  const rowH = compact ? 26 : 34;
-  const rowGap = 2; // smaller gap to make bands more continuous visually
-  const timeColW = compact ? 58 : 70;
+  const rowH = compact ? 28 : 36;
+  const rowGap = compact ? 4 : 6;
+  const timeColW = compact ? 66 : 80;
 
   const slotsInWeek = useMemo(() => {
     const start = weekStart.getTime();
@@ -69,26 +69,85 @@ export default function WeekCalendar({ slots, avail = [], defaultInterval = 60, 
     return (avail || []).filter((s) => new Date(s.end).getTime() > start && new Date(s.start).getTime() < end);
   }, [avail, weekStart]);
 
-  function classify(cellStart: Date, cellEnd: Date) {
-    const overlapping = slotsInWeek.filter((s) => {
-      const ss = new Date(s.start).getTime();
-      const ee = new Date(s.end).getTime();
-      return ss < cellEnd.getTime() && ee > cellStart.getTime();
+  const slotsByDay = useMemo(() => days.map((day) => {
+    const start = new Date(day);
+    const end = addMinutes(start, 24 * 60);
+    return slotsInWeek
+      .filter((s) => new Date(s.end) > start && new Date(s.start) < end)
+      .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+  }), [days, slotsInWeek]);
+
+  const availabilityByDay = useMemo(() => days.map((day) => {
+    const start = new Date(day);
+    const end = addMinutes(start, 24 * 60);
+    return availInWeek
+      .filter((a) => new Date(a.end) > start && new Date(a.start) < end)
+      .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+  }), [days, availInWeek]);
+
+  type CellMeta = { cls: 'unavail' | 'fixed' | 'auction' | 'avail'; text: string; slot: SlotView | null };
+
+  const cellMatrix = useMemo(() => {
+    const initial: CellMeta[][] = Array.from({ length: rows }, () => Array.from({ length: 7 }, () => ({ cls: 'unavail', text: 'Unavailable', slot: null })));
+    const cellDurationMs = interval * 60000;
+
+    slotsByDay.forEach((daySlots, dayIndex) => {
+      const dayStart = new Date(days[dayIndex]).getTime();
+      const dayEnd = dayStart + 24 * 60 * 60000;
+
+      daySlots.forEach((slot) => {
+        const slotStartMs = Math.max(new Date(slot.start).getTime(), dayStart);
+        const slotEndMs = Math.min(new Date(slot.end).getTime(), dayEnd);
+        if (slotEndMs <= slotStartMs) return;
+
+        let startRow = Math.floor((slotStartMs - dayStart) / cellDurationMs);
+        let endRow = Math.ceil((slotEndMs - dayStart) / cellDurationMs);
+        if (endRow <= 0 || startRow >= rows) return;
+        startRow = Math.max(0, startRow);
+        endRow = Math.min(rows, endRow);
+
+        const priceValue = slot.mode === 'EnglishAuction' ? Number(slot.startPrice ?? slot.price ?? 0) : Number(slot.price ?? slot.startPrice ?? 0);
+        const priceLabel = slot.mode === 'EnglishAuction' ? `Auction $${priceValue.toFixed(2)}` : `$${priceValue.toFixed(2)}`;
+
+        for (let r = startRow; r < endRow; r++) {
+          const current = initial[r][dayIndex];
+          const replace = !current.slot
+            || (current.slot.mode !== 'EnglishAuction' && slot.mode === 'EnglishAuction')
+            || (current.slot.mode === slot.mode && priceValue < Number(current.slot.startPrice ?? current.slot.price ?? Number.POSITIVE_INFINITY));
+
+          if (replace) {
+            initial[r][dayIndex] = { cls: slot.mode === 'EnglishAuction' ? 'auction' : 'fixed', text: priceLabel, slot };
+          }
+        }
+      });
     });
-    if (!overlapping.length) return { cls: 'unavail', text: 'Unavailable' };
-    // Prefer auction if any auction slot overlaps
-    const auction = overlapping.filter((s) => s.mode === 'EnglishAuction');
-    if (auction.length) {
-      const min = Math.min(...auction.map((s) => Number(s.startPrice || 0)));
-      return { cls: 'auction', text: `Auction $${min.toFixed(2)}` };
-    }
-    const stable = overlapping.filter((s) => s.mode === 'Stable');
-    if (stable.length) {
-      const min = Math.min(...stable.map((s) => Number(s.price || 0)));
-      return { cls: 'fixed', text: `$${min.toFixed(2)}` };
-    }
-    return { cls: 'unavail', text: 'Unavailable' };
-  }
+
+    availabilityByDay.forEach((dayAvail, dayIndex) => {
+      const dayStart = new Date(days[dayIndex]).getTime();
+      const dayEnd = dayStart + 24 * 60 * 60000;
+
+      dayAvail.forEach((block) => {
+        const blockStartMs = Math.max(new Date(block.start).getTime(), dayStart);
+        const blockEndMs = Math.min(new Date(block.end).getTime(), dayEnd);
+        if (blockEndMs <= blockStartMs) return;
+
+        let startRow = Math.floor((blockStartMs - dayStart) / cellDurationMs);
+        let endRow = Math.ceil((blockEndMs - dayStart) / cellDurationMs);
+        if (endRow <= 0 || startRow >= rows) return;
+        startRow = Math.max(0, startRow);
+        endRow = Math.min(rows, endRow);
+
+        for (let r = startRow; r < endRow; r++) {
+          const current = initial[r][dayIndex];
+          if (!current.slot) {
+            initial[r][dayIndex] = { cls: 'avail', text: 'Available', slot: null };
+          }
+        }
+      });
+    });
+
+    return initial;
+  }, [rows, interval, slotsByDay, availabilityByDay, days]);
 
   if (!mounted) {
     return (
@@ -106,15 +165,22 @@ export default function WeekCalendar({ slots, avail = [], defaultInterval = 60, 
     <div className="weekcal">
       <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
         <div className="row" style={{ gap: 8, alignItems: 'center' }}>
-          <button className="btn btn-outline" style={{ padding: '6px 10px' }} onClick={() => setWeekStart(addMinutes(weekStart, -7 * 24 * 60))}>{'<'}</button>
-          <b>
+          <button className="nav-pill" aria-label="Previous week" onClick={() => setWeekStart(addMinutes(weekStart, -7 * 24 * 60))}>
+            <span aria-hidden>‹</span>
+          </button>
+          <div className="row" style={{ gap: 6, alignItems: 'baseline' }}>
+            <b style={{ fontSize: compact ? 16 : 18 }}>
             {days[0].toLocaleDateString([], { month: 'short', day: 'numeric' })}
             {' – '}
             {days[6].toLocaleDateString([], { month: 'short', day: 'numeric' })}
-          </b>
-          <button className="btn btn-outline" style={{ padding: '6px 10px' }} onClick={() => setWeekStart(addMinutes(weekStart, 7 * 24 * 60))}>{'>'}</button>
+            </b>
+            <span className="muted" style={{ fontSize: 12 }}>({days[0].toLocaleDateString([], { weekday: 'short' })} - {days[6].toLocaleDateString([], { weekday: 'short' })})</span>
+          </div>
+          <button className="nav-pill" aria-label="Next week" onClick={() => setWeekStart(addMinutes(weekStart, 7 * 24 * 60))}>
+            <span aria-hidden>›</span>
+          </button>
         </div>
-        <div className="row" style={{ gap: 10, alignItems: 'center' }}>
+        <div className="row" style={{ gap: 12, alignItems: 'center' }}>
           <span className="muted" style={{ fontSize: 12 }} suppressHydrationWarning>Timezone: {tz}</span>
           <label className="row" style={{ gap: 6, alignItems: 'center' }}>
             <span className="muted" style={{ fontSize: 12 }}>Interval</span>
@@ -124,11 +190,11 @@ export default function WeekCalendar({ slots, avail = [], defaultInterval = 60, 
               ))}
             </select>
           </label>
-          <div className="row" style={{ gap: 8, alignItems: 'center' }}>
-            <span className="dot fixed" /> <span className="muted" style={{ fontSize: 12 }}>Fixed</span>
-            <span className="dot auction" /> <span className="muted" style={{ fontSize: 12 }}>Auction</span>
-            <span className="dot avail" /> <span className="muted" style={{ fontSize: 12 }}>Free time</span>
-            <span className="dot unavail" /> <span className="muted" style={{ fontSize: 12 }}>Unavailable</span>
+          <div className="row" style={{ gap: 14, alignItems: 'center' }}>
+            <span className="legend"><span className="dot fixed" />Fixed</span>
+            <span className="legend"><span className="dot auction" />Auction</span>
+            <span className="legend"><span className="dot avail" />Free</span>
+            <span className="legend"><span className="dot unavail" />Unavailable</span>
           </div>
         </div>
       </div>
@@ -136,8 +202,8 @@ export default function WeekCalendar({ slots, avail = [], defaultInterval = 60, 
         <div className="wk-head">{/* time column empty */}</div>
         {days.map((d, i) => (
           <div key={i} className="wk-head day">
-            <span className="muted">{d.toLocaleDateString([], { weekday: 'short' })}</span>
-            <b>{d.toLocaleDateString([], { month: 'short', day: 'numeric' })}</b>
+            <span className="muted" style={{ fontSize: 12 }}>{d.toLocaleDateString([], { weekday: 'short' })}</span>
+            <b style={{ fontSize: 16 }}>{d.toLocaleDateString([], { month: 'short', day: 'numeric' })}</b>
           </div>
         ))}
         {Array.from({ length: rows }).map((_, r) => {
@@ -149,13 +215,8 @@ export default function WeekCalendar({ slots, avail = [], defaultInterval = 60, 
               {days.map((d, c) => {
                 const cellStart = addMinutes(d, r * interval);
                 const cellEnd = addMinutes(cellStart, interval);
-                const { cls, text } = classify(cellStart, cellEnd);
-                const list = slotsInWeek.filter((s) => {
-                  const ss = new Date(s.start).getTime();
-                  const ee = new Date(s.end).getTime();
-                  return ss < cellEnd.getTime() && ee > cellStart.getTime();
-                }).sort((a,b)=> new Date(a.start).getTime() - new Date(b.start).getTime());
-                const first = list[0];
+                const meta = cellMatrix[r][c];
+                const first = meta.slot;
                 const onClick = () => {
                   if (!first) return;
                   const isOwner = !!wallet.publicKey && wallet.publicKey.toBase58() === creatorPubkey;
@@ -165,13 +226,13 @@ export default function WeekCalendar({ slots, avail = [], defaultInterval = 60, 
                 return (
                   <div
                     key={`c-${r}-${c}`}
-                    className={`wk-cell ${cls}`}
-                    title={`${fmtTime(cellStart)}–${fmtTime(cellEnd)} ${text}`}
+                    className={`wk-cell ${meta.cls}`}
+                    title={`${fmtTime(cellStart)}–${fmtTime(cellEnd)} ${meta.text}`}
                     onClick={onClick}
                     style={{ cursor: first ? 'pointer' : 'default' }}
                   >
-                    {interval >= 60 && cls !== 'unavail' ? <span className="wk-tag">{text}</span> : null}
-                    {interval < 60 && cls !== 'unavail' ? <span className="wk-dot" /> : null}
+                    {interval >= 60 && meta.cls !== 'unavail' ? <span className="wk-tag">{meta.text}</span> : null}
+                    {interval < 60 && meta.cls !== 'unavail' ? <span className="wk-dot" /> : null}
                   </div>
                 );
               })}
@@ -202,7 +263,7 @@ export default function WeekCalendar({ slots, avail = [], defaultInterval = 60, 
             );
           };
           const slotBands: React.ReactNode[] = [];
-          const daySlots = slotsInWeek.filter((x) => new Date(x.end) > dayStart && new Date(x.start) < dayEnd);
+          const daySlots = slotsByDay[i];
           for (const s of daySlots) {
             const clipped = clipToDay(new Date(s.start), new Date(s.end));
             if (!clipped) continue;
@@ -218,7 +279,7 @@ export default function WeekCalendar({ slots, avail = [], defaultInterval = 60, 
             slotBands.push(mkBand(clipped.s, clipped.e, cls as any, label, onClick));
           }
           const availBands: React.ReactNode[] = [];
-          const dayAvail = availInWeek.filter((x) => new Date(x.end) > dayStart && new Date(x.start) < dayEnd);
+          const dayAvail = availabilityByDay[i];
           for (const a of dayAvail) {
             const clipped = clipToDay(new Date(a.start), new Date(a.end));
             if (!clipped) continue;
@@ -270,7 +331,8 @@ export default function WeekCalendar({ slots, avail = [], defaultInterval = 60, 
                     await fetch('/api/requests', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ creator: creatorPubkey, start: s.toISOString(), end: e.toISOString(), from: wallet.publicKey?.toBase58?.() }) });
                     alert('Request sent!');
                     setReqOpen(null);
-                  } catch (e) {
+                  } catch (err) {
+                    console.error('Failed to send request:', err);
                     alert('Failed to send request');
                   }
                 }}>
@@ -281,42 +343,51 @@ export default function WeekCalendar({ slots, avail = [], defaultInterval = 60, 
         </div>
       )}
       <style>{`
-        .weekcal { }
-        .wk-grid { display: grid; grid-template-columns: var(--wk-timew) repeat(7, 1fr); column-gap: 10px; row-gap: var(--wk-row-gap); align-items: stretch; grid-auto-rows: var(--wk-row-h); position: relative }
-        .wk-head { height: ${headerH}px }
-        .wk-head.day { display:flex; align-items:center; justify-content:space-between; border:1px solid rgba(255,255,255,.12); border-radius:10px; padding:6px 8px; background: rgba(255,255,255,.04) }
-        .wk-time { height: ${rowH}px; font-size: ${compact ? 12 : 14}px; color: #94a3b8; text-align: right; padding-right: 6px; display:flex; align-items:center; justify-content:flex-end }
-        .wk-cell { height: ${rowH}px; border-radius: 6px; border: 1px solid rgba(255,255,255,.06); background: rgba(255,255,255,.02); position: relative; overflow:hidden }
+  .weekcal { display: grid; gap: 14px }
+  .wk-grid { display: grid; grid-template-columns: var(--wk-timew) repeat(7, 1fr); column-gap: 12px; row-gap: var(--wk-row-gap); align-items: stretch; grid-auto-rows: var(--wk-row-h); position: relative; padding: 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 16px; background: rgba(15,23,42,.48); box-shadow: inset 0 0 0 1px rgba(255,255,255,.04) }
+  .wk-head { height: ${headerH}px }
+  .wk-head.day { display:flex; flex-direction:column; align-items:flex-start; justify-content:center; border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:8px 10px; background: radial-gradient(120% 120% at 100% 0%, rgba(96,165,250,.18), transparent 60%), rgba(255,255,255,.02) }
+  .wk-time { height: ${rowH}px; font-size: ${compact ? 12 : 13}px; color: #94a3b8; text-align: right; padding-right: 8px; display:flex; align-items:center; justify-content:flex-end }
+  .wk-cell { height: ${rowH}px; border-radius: 10px; border: 1px solid rgba(148,163,184,.18); background: rgba(15,23,42,.66); position: relative; overflow:hidden; transition: transform .2s ease, box-shadow .2s ease }
         .wk-cell.unavail { opacity: .5 }
-        .wk-cell.fixed { background: rgba(59,130,246,.12); border-color: rgba(59,130,246,.28) }
-        .wk-cell.auction { background: rgba(239,132,189,.14); border-color: rgba(239,132,189,.32) }
-        .wk-tag { font-size: ${compact ? 12 : 13}px; color: #e5e7eb; padding: 0 6px; white-space: nowrap }
+  .wk-cell.fixed { background: linear-gradient(135deg, rgba(59,130,246,.24), rgba(37,99,235,.28)); border-color: rgba(59,130,246,.4) }
+  .wk-cell.auction { background: linear-gradient(135deg, rgba(236,72,153,.24), rgba(244,114,182,.28)); border-color: rgba(236,72,153,.4) }
+  .wk-cell.avail { background: linear-gradient(135deg, rgba(16,185,129,.18), rgba(45,212,191,.24)); border-color: rgba(34,197,94,.38) }
+  .wk-cell:hover { transform: translateY(-2px); box-shadow: 0 16px 32px rgba(15,23,42,.38) }
+  .wk-tag { font-size: ${compact ? 12 : 13}px; color: #f8fafc; padding: 0 6px; white-space: nowrap }
         .wk-dot { width: ${compact ? 8 : 10}px; height: ${compact ? 8 : 10}px; border-radius: 999px; background: currentColor; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) }
         .wk-cell.fixed .wk-dot { color: #60a5fa }
         .wk-cell.auction .wk-dot { color: #f472b6 }
+  .wk-cell.avail .wk-dot { color: #34d399 }
         /* Ripple effect on calendar cells (stronger) */
         .wk-cell::before { content:""; position:absolute; left:50%; top:50%; width:30px; height:30px; border-radius:999px; background: radial-gradient(circle, rgba(255,255,255,.35) 0%, rgba(255,255,255,0) 60%); transform: translate(-50%, -50%) scale(.2); opacity: 0; transition: transform .5s ease, opacity .5s ease; pointer-events:none }
         .wk-cell:hover::before { opacity: .38; transform: translate(-50%, -50%) scale(7); }
         .wk-cell:active::before { opacity: .45; transform: translate(-50%, -50%) scale(8); }
-        .dot { width:10px; height:10px; border-radius:999px; display:inline-block }
+  .legend { display:flex; align-items:center; gap:6px; font-size:12px; color:#cbd5f5; background:rgba(15,23,42,.6); border:1px solid rgba(148,163,184,.24); padding:4px 8px; border-radius:999px }
+  .dot { width:10px; height:10px; border-radius:999px; display:inline-block }
         .dot.fixed { background:#60a5fa }
         .dot.auction { background:#f472b6 }
         .dot.avail { background:#34d399 }
         .dot.unavail { background:#64748b }
         /* Overlay bands */
-        .wk-over-col { position: relative; z-index: 3; pointer-events: none }
-        .wk-band { position: absolute; left: 6px; width: calc(100% - 12px); box-sizing: border-box; border-radius: 10px; border: 1px solid; display: flex; align-items: center; padding: 2px 8px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.18); pointer-events: auto; min-height: 20px }
-        .wk-band.fixed { background: rgba(59,130,246,.22); border-color: rgba(59,130,246,.45); color: #e8f0ff }
-        .wk-band.auction { background: rgba(239,132,189,.26); border-color: rgba(239,132,189,.48); color: #fff0fb }
-        .wk-band.avail { background: rgba(52,211,153,.18); border-color: rgba(52,211,153,.48); color: #eafff7 }
-        .wk-band-label { font-size: ${compact ? 11 : 12}px; text-shadow: 0 1px 0 rgba(0,0,0,.2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; pointer-events: none }
+  .wk-over-col { position: relative; z-index: 3; pointer-events: none }
+  .wk-band { position: absolute; left: 8px; width: calc(100% - 16px); box-sizing: border-box; border-radius: 12px; border: 1px solid; display: flex; align-items: center; padding: 4px 10px; cursor: pointer; box-shadow: 0 6px 18px rgba(15,23,42,.24); pointer-events: auto; min-height: 24px; backdrop-filter: blur(6px) }
+  .wk-band.fixed { background: rgba(96,165,250,.24); border-color: rgba(59,130,246,.55); color: #f8fafc }
+  .wk-band.auction { background: rgba(244,114,182,.28); border-color: rgba(236,72,153,.54); color: #fff7fb }
+  .wk-band.avail { background: rgba(45,212,191,.22); border-color: rgba(34,197,94,.5); color: #ecfdf5 }
+  .wk-band:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(15,23,42,.32) }
+  .wk-band-label { font-size: ${compact ? 11 : 12}px; text-shadow: 0 1px 0 rgba(15,23,42,.36); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; pointer-events: none }
         @media (prefers-reduced-motion: reduce) {
           .wk-cell::before { transition: none; }
         }
+        .nav-pill { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:999px; background:rgba(148,163,184,.16); border:1px solid rgba(148,163,184,.28); color:#e2e8f0; font-size:16px; cursor:pointer; transition: background .2s ease, transform .2s ease }
+        .nav-pill:hover { background:rgba(148,163,184,.28); transform: translateY(-1px) }
+        .nav-pill:active { transform: translateY(0) }
         @media (max-width: 960px) {
-          .wk-grid { grid-template-columns: ${compact ? 46 : 52}px repeat(7, 1fr) }
+          .wk-grid { grid-template-columns: ${compact ? 52 : 60}px repeat(7, minmax(0, 1fr)); padding: 10px; column-gap: 8px }
           .wk-time { font-size: ${compact ? 11 : 12}px }
-          .wk-cell { height: ${compact ? 22 : 26}px }
+          .wk-cell { height: ${compact ? 24 : 28}px }
+          .legend { font-size:11px }
         }
       `}</style>
     </div>

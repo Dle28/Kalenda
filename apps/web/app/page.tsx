@@ -9,9 +9,10 @@ import Spotlight from '@/components/Spotlight';
 import Testimonials from '@/components/Testimonials';
 import EventsStrip from '@/components/EventsStrip';
 import ScrollEffects from '@/components/ScrollEffects';
-<<<<<<< HEAD
 import UpcomingAppointments from '@/components/UpcomingAppointments';
 import { summarizeSlotsByCreator } from '@/lib/slotSummary';
+import CategoryBar, { type CatItem } from '@/components/CategoryBar';
+import CalendarInfographic from '@/components/CalendarInfographic';
 
 export default function Page() {
   const enrichedCreators = useMemo(() => {
@@ -23,46 +24,44 @@ export default function Page() {
   }, []);
 
   const allCategories = useMemo(() => {
-    const s = new Set<string>();
-    enrichedCreators.forEach((c: any) => (c.fields || []).forEach((f: string) => s.add(f)));
-    return ['All', ...Array.from(s)];
+    const collected = new Set<string>();
+    enrichedCreators.forEach((c: any) => (c.fields || []).forEach((f: string) => collected.add(f)));
+    const dynamic = Array.from(collected).filter((key) => key !== 'All' && key !== 'Top').sort((a, b) => a.localeCompare(b));
+    return ['All', 'Top', ...dynamic];
   }, [enrichedCreators]);
+
+  const catItems = useMemo<CatItem[]>(() => {
+    const iconMap: Record<string, string> = {
+      All: '◻️',
+      Top: '🔥',
+      Founders: '🏢',
+      Influencers: '⭐',
+      Investors: '💼',
+      'UI/UX Design': '🧩',
+      Athletes: '🏃',
+      Solana: '💠',
+      Musicians: '🎤',
+      'Media & Marketing': '🎯',
+    };
+
+    return allCategories.map((key) => ({
+      key,
+      label: key === 'All' ? 'All Creators' : key === 'Top' ? 'Top Creators' : key,
+      icon: iconMap[key] ?? '�️',
+    }));
+  }, [allCategories]);
 
   const [cat, setCat] = useState<string>('All');
   const filtered = useMemo(() => {
     if (cat === 'All') return enrichedCreators;
-    return enrichedCreators.filter((c: any) => (c.fields || []).includes(cat));
-  }, [cat, enrichedCreators]);
-=======
-import CategoryBar, { type CatItem } from '@/components/CategoryBar';
-import CalendarInfographic from '@/components/CalendarInfographic';
-
-export default function Page() {
-  // Fixed category list resembling the reference UI
-  const catItems: CatItem[] = [
-    { key: 'All', label: 'All Creators', icon: '◻️' },
-    { key: 'Top', label: 'Top Creators', icon: '🔥' },
-    { key: 'Founders', label: 'Founders', icon: '🏢' },
-    { key: 'Influencers', label: 'Influencers', icon: '⭐' },
-    { key: 'Investors', label: 'Investors', icon: '💼' },
-    { key: 'UI/UX Design', label: 'UI/UX Design', icon: '🧩' },
-    { key: 'Athletes', label: 'Athletes', icon: '🏃' },
-    { key: 'Solana', label: 'Solana', icon: '💠' },
-    { key: 'Musicians', label: 'Musicians', icon: '🎤' },
-    { key: 'Media & Marketing', label: 'Media & Marketing', icon: '🎯' },
-  ];
-
-  const [cat, setCat] = useState<string>('All');
-  const filtered = useMemo(() => {
-    const list = creators as any[];
-    if (cat === 'All') return list;
     if (cat === 'Top') {
-      return [...list].sort((a: any, b: any) => (Number(b.rating || 0) - Number(a.rating || 0)) || (Number(b.trend || 0) - Number(a.trend || 0))).slice(0, 12);
+      return [...enrichedCreators]
+        .sort((a: any, b: any) => (Number(b.rating || 0) - Number(a.rating || 0)) || (Number(b.trend || 0) - Number(a.trend || 0)))
+        .slice(0, 12);
     }
     const needle = cat.toLowerCase();
-    return list.filter((c: any) => (c.fields || []).some((f: string) => String(f).toLowerCase().includes(needle)) || String(c.bio || '').toLowerCase().includes(needle));
-  }, [cat]);
->>>>>>> 4a71766c3bce61de1d5d941478ccb2c7ad93fa35
+    return enrichedCreators.filter((c: any) => (c.fields || []).some((f: string) => String(f).toLowerCase().includes(needle)) || String(c.bio || '').toLowerCase().includes(needle));
+  }, [cat, enrichedCreators]);
 
   const featured = filtered.slice(0, 8);
   const leftItems = featured.filter((_, i) => i % 2 === 0);
@@ -84,10 +83,10 @@ export default function Page() {
           <div className={styles.hero}>
             <div className={styles.left}>
               <h1 className={styles.heading}>TIME IS MONEY.</h1>
-              <p className={styles.sub}>Get instant access to and invest in your favorite creators & experts.</p>
+              <p className={styles.sub}>Get instant access and invest in your favorite creators and experts.</p>
               <div className="cta">
                 <Link className="btn btn-secondary" href="/creators">Explore creators</Link>
-                <Link className="btn btn-outline" href="/creator/onboard">Get paid for your time</Link>
+                <Link className="btn btn-outline" href="/creator/onboard">Get paid for your expertise</Link>
               </div>
               <SubtleParticles />
             </div>
@@ -165,24 +164,16 @@ export default function Page() {
             </div>
             <div className={styles.belowGrid}>
               <div className={styles.belowMain}>
-<<<<<<< HEAD
-                <Spotlight list={enrichedCreators as any} intervalMs={9000} />
-                <div className={styles.filters}>
-                  {allCategories.map((f) => (
-                    <button key={f} className="chip" onClick={() => setCat(f)} style={{ background: cat === f ? 'rgba(255,255,255,.16)' : 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.12)', color: '#e5e7eb' }}>{f}</button>
-                  ))}
-=======
                 {/* Section header similar to reference */}
                 <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center', margin: '10px 0 6px' }}>
                   <div className="row" style={{ gap: 10, alignItems: 'center' }}>
                     <div style={{ width: 36, height: 36, borderRadius: 12, background: 'rgba(239,132,189,.15)', border: '1px solid rgba(239,132,189,.35)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>🔥</div>
                     <div className="stack" style={{ gap: 2 }}>
                       <b style={{ fontSize: 18 }}>Top Creators</b>
-                      <span className="muted" style={{ fontSize: 12 }}>Featured Creators</span>
+                      <span className="muted" style={{ fontSize: 12 }}>Featured creators handpicked this week</span>
                     </div>
                   </div>
                   <Link href="/creators" className="btn btn-outline" style={{ padding: '6px 10px' }}>See all</Link>
->>>>>>> 4a71766c3bce61de1d5d941478ccb2c7ad93fa35
                 </div>
                 <Spotlight list={filtered as any} intervalMs={9000} />
                 <div className={styles.how}>
@@ -196,21 +187,21 @@ export default function Page() {
                   <div className={styles.step}>
                     <div className={styles.stepIcon}>2</div>
                     <div className={styles.stepText}>
-                      <b>Book & pay</b>
+                      <b>Book & Pay</b>
                       <span className="muted">Secure your spot with USDC</span>
                     </div>
                   </div>
                   <div className={styles.step}>
                     <div className={styles.stepIcon}>3</div>
                     <div className={styles.stepText}>
-                      <b>Meet & get materials</b>
-                      <span className="muted">Join the call and receive follow-ups</span>
+                      <b>Meet & Receive Materials</b>
+                      <span className="muted">Join the call and get timely follow-ups</span>
                     </div>
                   </div>
                 </div>
               </div>
               <aside className={styles.belowSide}>
-                <div className={styles.miniHeader}>Top Week</div>
+                <div className={styles.miniHeader}>Top This Week</div>
                 <div className={styles.miniList}>
                   {(topWeek as any[]).map((c: any) => (
                     <Link key={c.pubkey} href={`/creator/${encodeURIComponent(c.pubkey)}`} className={styles.miniItem}>
@@ -220,7 +211,7 @@ export default function Page() {
                         <b className="one-line" title={c.name}>{c.name}</b>
                         <span className="muted">* {Number(c.rating || 0).toFixed(1)} - {c.saleSummary?.headline || 'Schedule coming soon'}</span>
                       </div>
-                      <span className="muted" style={{ fontSize: 12 }}>{c.saleSummary?.window || 'Waiting for next slot'}</span>
+                      <span className="muted" style={{ fontSize: 12 }}>{c.saleSummary?.window || 'Waiting for the next slot'}</span>
                     </Link>
                   ))}
                 </div>
