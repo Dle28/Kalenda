@@ -90,8 +90,6 @@ header.container { padding-top: 8px }
 .pill { position: absolute; left: 12px; bottom: 12px; padding: 6px 12px; border-radius: 999px; border:1px solid rgba(255,255,255,.12); font-weight: 600; font-size: 13px; backdrop-filter: blur(4px) }
 .pill-pink { background: rgba(239,132,189,.85); color: #0b0c10 }
 .verified-badge { display:inline-block; padding:2px 8px; border-radius:999px; background: rgba(59,130,246,.15); color:#dbeafe; border:1px solid rgba(59,130,246,.35); font-size: 12px }
-.trend-pos { color: #22c55e }
-.trend-neg { color: #ef4444 }
 .stretched-link { position: absolute; inset: 0; z-index: 5; text-decoration: none; color: inherit }
 
 @media (max-width: 640px) {

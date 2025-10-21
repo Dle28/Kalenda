@@ -1,11 +1,18 @@
-﻿"use client";
+"use client";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import styles from '@/app/home.module.css';
+import type { SaleSummary } from "@/lib/slotSummary";
 
-type C = { pubkey: string; name: string; avatar?: string; pricePerSlot?: number; rating?: number; bio?: string };
+type SpotlightItem = {
+  pubkey: string;
+  name: string;
+  avatar?: string;
+  saleSummary?: SaleSummary | null;
+  bio?: string;
+};
 
-export default function Spotlight({ list, intervalMs = 7000 }: { list: C[]; intervalMs?: number }) {
+export default function Spotlight({ list, intervalMs = 7000 }: { list: SpotlightItem[]; intervalMs?: number }) {
   const pool = useMemo(() => (list || []).slice(0, 6), [list]);
   const [idx, setIdx] = useState(0);
   useEffect(() => {
@@ -21,11 +28,14 @@ export default function Spotlight({ list, intervalMs = 7000 }: { list: C[]; inte
       <div className={styles.spotOverlay}>
         <div className="row" style={{ justifyContent: 'space-between', width: '100%' }}>
           <b>{c.name}</b>
-          {typeof c.pricePerSlot === 'number' && <span>${c.pricePerSlot.toFixed(2)} <span className="muted">/ min</span></span>}
         </div>
-        {c.bio && <div className="muted one-line">{c.bio}</div>}
+        {c.saleSummary?.headline ? (
+          <div className="muted one-line">{c.saleSummary.headline}</div>
+        ) : (
+          c.bio && <div className="muted one-line">{c.bio}</div>
+        )}
+        {c.saleSummary?.window && <div className="muted one-line" style={{ fontSize: 12 }}>{c.saleSummary.window}</div>}
       </div>
     </Link>
   );
 }
-

@@ -1,4 +1,5 @@
 import Reveal from './Reveal';
+import type { SaleSummary } from '@/lib/slotSummary';
 
 type CreatorCardProps = {
   pubkey: string;
@@ -7,12 +8,11 @@ type CreatorCardProps = {
   fields: string[];
   rating?: number;
   bio?: string;
-  pricePerSlot?: number;
-  trend?: number;
+  saleSummary?: SaleSummary | null;
 };
 
 export default function CreatorCard(props: CreatorCardProps) {
-  const { pubkey, name, avatar, fields, rating, bio, pricePerSlot, trend } = props;
+  const { pubkey, name, avatar, fields, rating, bio, saleSummary } = props;
   const displayAvatar = avatar || 'https://placehold.co/600x600?text=Creator';
   const displayRating = Number.isFinite(Number(rating)) ? Number(rating) : 5.0;
   const fieldList = Array.isArray(fields) ? fields : [];
@@ -21,12 +21,8 @@ export default function CreatorCard(props: CreatorCardProps) {
   const safeKey = typeof pubkey === 'string' ? pubkey : '';
   const shortKey = safeKey ? `${safeKey.slice(0, 6)}...${safeKey.slice(-4)}` : 'N/A';
   const isTop = displayRating >= 4.8;
-  const stableTrend = (() => {
-    if (typeof trend === 'number') return trend;
-    let h = 0;
-    for (let i = 0; i < safeKey.length; i++) h = (h * 31 + safeKey.charCodeAt(i)) >>> 0;
-    return Number(((h % 300) / 100).toFixed(2)); // 0.00 -> 2.99
-  })();
+  const headline = saleSummary?.headline || 'Scheduling soon';
+  const window = saleSummary?.window;
 
   return (
     <Reveal as="div" className="card creator-card" style={{ transitionDelay: '40ms', position: 'relative', overflow: 'hidden' }}>
@@ -50,15 +46,9 @@ export default function CreatorCard(props: CreatorCardProps) {
           <p className="muted" style={{ margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any, overflow: 'hidden' }}>{bio}</p>
         )}
 
-        <div className="row" style={{ justifyContent: 'space-between', marginTop: 4 }}>
-          {typeof pricePerSlot === 'number' ? (
-            <span><b>${pricePerSlot.toFixed(2)}</b> <span className="muted">/ min</span></span>
-          ) : (
-            <span className="muted">Price on request</span>
-          )}
-          <span className={stableTrend >= 0 ? 'trend-pos' : 'trend-neg'}>
-            {(stableTrend >= 0 ? '+' : '')}{stableTrend.toFixed(2)}%
-          </span>
+        <div className="stack" style={{ gap: 2, marginTop: 4 }}>
+          <span className="muted" style={{ fontSize: 13 }}>{headline}</span>
+          {window && <span className="muted" style={{ fontSize: 12 }}>{window}</span>}
         </div>
 
         <div className="row" style={{ gap: 6, flexWrap: 'wrap', marginTop: 4 }}>

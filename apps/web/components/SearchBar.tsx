@@ -1,10 +1,12 @@
 "use client";
 import { useEffect, useMemo, useState } from 'react';
-import { creators } from '@/lib/mock';
+import { creators, slots } from '@/lib/mock';
+import { summarizeSlotsByCreator } from '@/lib/slotSummary';
 
 export default function SearchBar() {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
+  const summaryIndex = useMemo(() => summarizeSlotsByCreator(slots as any), []);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -66,8 +68,10 @@ export default function SearchBar() {
                       <b className="one-line">{c.name}</b>
                       <span className="muted one-line" style={{ fontSize: 12 }}>{c.bio || (c.fields || []).join(', ')}</span>
                     </div>
-                    {typeof c.pricePerSlot === 'number' && (
-                      <span className="badge">${c.pricePerSlot.toFixed(2)}/min</span>
+                    {summaryIndex[c.pubkey]?.headline ? (
+                      <span className="badge">{summaryIndex[c.pubkey]?.headline}</span>
+                    ) : (
+                      <span className="badge">Schedule coming soon</span>
                     )}
                   </a>
                 ))

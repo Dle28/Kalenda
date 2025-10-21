@@ -1,7 +1,7 @@
 "use client";
 import Link from 'next/link';
 import { useMemo, useState } from 'react';
-import { creators } from '@/lib/mock';
+import { creators, slots } from '@/lib/mock';
 import styles from './home.module.css';
 import FloatingBadges from '@/components/FloatingBadges';
 import SubtleParticles from '@/components/SubtleParticles';
@@ -9,31 +9,38 @@ import Spotlight from '@/components/Spotlight';
 import Testimonials from '@/components/Testimonials';
 import EventsStrip from '@/components/EventsStrip';
 import ScrollEffects from '@/components/ScrollEffects';
+import { summarizeSlotsByCreator } from '@/lib/slotSummary';
 
 export default function Page() {
+  const enrichedCreators = useMemo(() => {
+    const index = summarizeSlotsByCreator(slots as any);
+    return (creators as any[]).map((c: any) => ({
+      ...c,
+      saleSummary: index[c.pubkey] ?? null,
+    }));
+  }, []);
+
   const allCategories = useMemo(() => {
     const s = new Set<string>();
-    (creators as any[]).forEach((c: any) => (c.fields || []).forEach((f: string) => s.add(f)));
+    enrichedCreators.forEach((c: any) => (c.fields || []).forEach((f: string) => s.add(f)));
     return ['All', ...Array.from(s)];
-  }, []);
+  }, [enrichedCreators]);
 
   const [cat, setCat] = useState<string>('All');
   const filtered = useMemo(() => {
-    if (cat === 'All') return creators as any[];
-    return (creators as any[]).filter((c: any) => (c.fields || []).includes(cat));
-  }, [cat]);
+    if (cat === 'All') return enrichedCreators;
+    return enrichedCreators.filter((c: any) => (c.fields || []).includes(cat));
+  }, [cat, enrichedCreators]);
 
   const featured = filtered.slice(0, 8);
   const leftItems = featured.filter((_, i) => i % 2 === 0);
   const rightItems = featured.filter((_, i) => i % 2 === 1);
 
   const topWeek = useMemo(() => {
-    return [...(creators as any[])]
-      .sort(
-        (a: any, b: any) => (Number(b.rating || 0) - Number(a.rating || 0)) || (Number(b.trend || 0) - Number(a.trend || 0))
-      )
+    return [...enrichedCreators]
+      .sort((a: any, b: any) => Number(b.rating || 0) - Number(a.rating || 0))
       .slice(0, 6);
-  }, []);
+  }, [enrichedCreators]);
 
   return (
     <>
@@ -61,14 +68,16 @@ export default function Page() {
                         <div className={styles.overlay}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
                             <b>{c.name}</b>
-                            {typeof c.pricePerSlot === 'number' && (
-                              <span>
-                                ${c.pricePerSlot.toFixed(2)} <span className="muted">/ min</span>
-                              </span>
-                            )}
                           </div>
-                          {c.bio && (
-                            <div className="muted" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.bio}</div>
+                          {c.saleSummary?.headline && (
+                            <div className="muted" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.saleSummary.headline}</div>
+                          )}
+                          {c.saleSummary?.window ? (
+                            <div className="muted" style={{ fontSize: 12 }}>{c.saleSummary.window}</div>
+                          ) : (
+                            c.bio && (
+                              <div className="muted" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.bio}</div>
+                            )
                           )}
                         </div>
                       </Link>
@@ -86,14 +95,16 @@ export default function Page() {
                         <div className={styles.overlay}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
                             <b>{c.name}</b>
-                            {typeof c.pricePerSlot === 'number' && (
-                              <span>
-                                ${c.pricePerSlot.toFixed(2)} <span className="muted">/ min</span>
-                              </span>
-                            )}
                           </div>
-                          {c.bio && (
-                            <div className="muted" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.bio}</div>
+                          {c.saleSummary?.headline && (
+                            <div className="muted" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.saleSummary.headline}</div>
+                          )}
+                          {c.saleSummary?.window ? (
+                            <div className="muted" style={{ fontSize: 12 }}>{c.saleSummary.window}</div>
+                          ) : (
+                            c.bio && (
+                              <div className="muted" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.bio}</div>
+                            )
                           )}
                         </div>
                       </Link>
@@ -112,7 +123,7 @@ export default function Page() {
           <div className="container">
             <div className={styles.belowGrid}>
               <div className={styles.belowMain}>
-                <Spotlight list={creators as any} intervalMs={9000} />
+                <Spotlight list={enrichedCreators as any} intervalMs={9000} />
                 <div className={styles.filters}>
                   {allCategories.map((f) => (
                     <button key={f} className="chip" onClick={() => setCat(f)} style={{ background: cat === f ? 'rgba(255,255,255,.16)' : 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.12)', color: '#e5e7eb' }}>{f}</button>
@@ -151,9 +162,9 @@ export default function Page() {
                       <img src={c.avatar || 'https://placehold.co/64x64'} alt={c.name} width={36} height={36} />
                       <div className={styles.miniMeta}>
                         <b className="one-line" title={c.name}>{c.name}</b>
-                        <span className="muted">* {Number(c.rating || 0).toFixed(1)} . {typeof c.pricePerSlot === 'number' ? `$${c.pricePerSlot.toFixed(2)}/min` : '-'}</span>
+                        <span className="muted">* {Number(c.rating || 0).toFixed(1)} - {c.saleSummary?.headline || 'Schedule coming soon'}</span>
                       </div>
-                      <span className={Number(c.trend || 0) >= 0 ? styles.pos : styles.neg}>{Number(c.trend || 0) >= 0 ? '+' : ''}{Number(c.trend || 0).toFixed(2)}%</span>
+                      <span className="muted" style={{ fontSize: 12 }}>{c.saleSummary?.window || 'Waiting for next slot'}</span>
                     </Link>
                   ))}
                 </div>
