@@ -61,7 +61,7 @@ export default async function SlotPage({ params }: { params: Promise<{ id: strin
                 <span className="muted">Price</span>
                 <b>{s.price ?? 0} USDC</b>
               </div>
-              <button className="btn btn-secondary" style={{ padding: '8px 12px' }}>Book now</button>
+              <button className="btn btn-secondary" style={{ padding: '8px 12px' }}>Reserve now</button>
             </div>
           )}
         </div>

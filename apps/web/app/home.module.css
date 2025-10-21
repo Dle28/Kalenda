@@ -1,22 +1,24 @@
 ﻿.wrap { color: #e5e7eb; position: relative; isolation: isolate }
 
+
 .hero {
   display: grid;
   grid-template-columns: 1.2fr .8fr; /* make scroller narrower */
   gap: 24px;
   padding: 40px 0 20px;
+  align-items: center; /* vertically center left vs right */
 }
 
-.left { position: relative }
-.heading { margin: 0 0 8px; font-size: 48px; line-height: 1.06; letter-spacing: .2px; font-family: var(--display); font-weight: 900 }
-.sub { margin: 0 0 18px; color: #cbd5e1; font-size: 18px }
+.left { position: relative; display:flex; flex-direction:column; justify-content:center; min-height: clamp(720px, 92vh, 1120px) }
+.heading { margin: 0 0 10px; font-size: 76px; line-height: 1.02; letter-spacing: .4px; font-family: var(--display); font-weight: 900 }
+.sub { margin: 0 0 20px; color: #cbd5e1; font-size: 20px }
 
 .right {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px; /* denser grid */
+  gap: 80px; /* denser grid */
   padding: 0;
-  height: clamp(720px, 92vh, 1120px);
+  height: clamp(820px, 100vh, 1100px);
   overflow: hidden;
   position: relative;
   background: transparent; /* blend into global wallpaper */
@@ -28,7 +30,7 @@
   mask-image: linear-gradient(to bottom, transparent 0, #000 3%, #000 97%, transparent 100%);
   padding-bottom: env(safe-area-inset-bottom, 0px); /* reach to bottom touch area safely */
   --scroll-dur: 28s;
-  --scroll-offset: 9s; /* stagger between columns */
+  --scroll-offset: 1s; /* stagger between columns */
   --scroll-dur-left: 26s;
   --scroll-dur-right: 32s;
 }
@@ -71,7 +73,9 @@
   .hero { grid-template-columns: 1fr }
   .right { grid-template-columns: 1fr 1fr }
   .right { height: min(70vh, 640px); --scroll-dur: 16s; --scroll-offset: calc(var(--scroll-dur) * .5); }
-  .heading { font-size: 40px }
+  .left { min-height: auto }
+  .heading { font-size: 44px; line-height: 1.06 }
+  .sub { font-size: 16px }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -137,3 +141,7 @@
 .wrap::before { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,.28); pointer-events: none; z-index: -1 }
 .reveal { opacity: 0; transform: translateY(14px) scale(.98); transition: opacity .6s ease, transform .6s ease; will-change: transform, opacity }
 .reveal.in { opacity: 1; transform: translateY(calc(var(--float-y, 0px))) scale(1) }
+/* Stronger CTA sizing */
+.cta { display:flex; gap: 10px; margin: 8px 0 6px }
+.cta .btn { font-size: 16px !important; padding: 12px 18px !important; border-radius: 14px }
+.cta .btn-secondary { font-weight: 700 }
