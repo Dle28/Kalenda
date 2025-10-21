@@ -52,7 +52,7 @@ export default function OnboardPage() {
 
   return (
     <section>
-      <h1 className="title" style={{ fontSize: 28 }}>Creator Onboarding</h1>
+      <h1 className="title" style={{ fontSize: 28 }}>Become a Creator</h1>
       <p className="muted">Follow 3 steps to start selling your time.</p>
 
       <div className="card" style={{ marginTop: 16, display: 'grid', gap: 14 }}>

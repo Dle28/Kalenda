@@ -190,7 +190,7 @@ export default function CreatorDashboard() {
       <div className="dashboard-shell" style={{ display: 'grid', gridTemplateColumns: '1.1fr .9fr', gap: 16 }}>
         {/* Left pane: profile + listing setup */}
         <div className="panel" style={{ display: 'grid', gap: 12 }}>
-          <h1 className="title" style={{ fontSize: 26, margin: 0 }}>Creator Studio</h1>
+          <h1 className="title" style={{ fontSize: 26, margin: 0 }}>Creator Dashboard</h1>
           <p className="muted">Set up your profile and availability, then publish slots.</p>
 
           <div className="card" style={{ display: 'grid', gap: 10 }}>
@@ -360,7 +360,7 @@ export default function CreatorDashboard() {
                     }
                   }}
                 >
-                  Add slot
+                  New slot
                 </button>
               </div>
             </div>

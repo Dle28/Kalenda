@@ -9,7 +9,11 @@ const nextConfig = {
     // Disable Lightning CSS optimization to avoid native binary requirement on WSL
     optimizeCss: false,
   },
-  webpack: (config) => {
+  webpack: (config, { dev }) => {
+    // Silence occasional webpack pack cache warnings on Windows by avoiding persistent disk cache in dev
+    if (dev) {
+      config.cache = { type: 'memory' };
+    }
     // Ignore optional pretty printer pulled by pino in some transitive deps
     config.resolve = config.resolve || {};
     config.resolve.alias = config.resolve.alias || {};

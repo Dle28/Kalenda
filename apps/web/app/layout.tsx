@@ -7,6 +7,7 @@ import Providers from './providers';
 import WalletButton from '../components/WalletButton';
 import SearchBar from '../components/SearchBar';
 import CombinedHeaderProfile from '../components/CombinedHeaderProfile';
+import WalletStatus from '../components/WalletStatus';
 export const metadata: Metadata = {
   title: 'Kalenda',
   description: 'Smart time booking on Solana',
@@ -75,7 +76,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <CombinedHeaderProfile />
                 <Link href="/creator/onboard" className="btn btn-outline" style={{ padding: '6px 12px' }}>Get started</Link>
                 <WalletButton />
-                
+                {/* WalletStatus shows small avatar/initials when connected */}
+                <WalletStatus />
               </div>
             </nav>
           </header>

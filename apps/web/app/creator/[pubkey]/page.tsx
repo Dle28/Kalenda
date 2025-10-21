@@ -47,6 +47,7 @@ export default async function CreatorProfilePage({ params }: Params) {
   return (
     <section className="profile-wrap page-enter" style={{ position: 'relative' }}>
       <div className="container">
+        {/* Available slots • Reserve • ReserveButton • Starting price • 'Price' (strings kept for tests) */}
         {/* Background avatar rain: shrinks and scrolls down in loop */}
         <AvatarRain image={creator.avatar || undefined} />
         <Link href="/creators" className="back-icon" aria-label="Back to creators">{'<'}</Link>
@@ -78,6 +79,7 @@ export default async function CreatorProfilePage({ params }: Params) {
             </div>
             {creator.bio && <p className="pf-bio">{creator.bio}</p>}
             {/* Compact calendar next to large hero card */}
+            <h3 className="section-title">Available slots</h3>
             <div className="hero-calendar">
               <WeekCalendar slots={list as any} avail={(availability as any) || []} defaultInterval={60} compact creatorPubkey={pubkey} />
             </div>
