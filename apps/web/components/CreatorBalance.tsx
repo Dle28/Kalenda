@@ -17,6 +17,7 @@ export default function CreatorBalance({ creatorPubkey }: { creatorPubkey: strin
   const [customMint, setCustomMint] = useState<string>("");
   const [view, setView] = useState<"SOL" | "USDC" | "CAL" | "TOKEN">("SOL");
   const [solUsd, setSolUsd] = useState<number | null>(null);
+  const PRICE_FETCH_ENABLED = process.env.NEXT_PUBLIC_ENABLE_PRICE_FETCH !== 'false';
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
 
   async function refreshAll() {
@@ -147,23 +148,34 @@ export default function CreatorBalance({ creatorPubkey }: { creatorPubkey: strin
     return () => { if (timer) clearInterval(timer); active = false; };
   }, [connection, publicKey]);
 
-  // SOL price polling (5s)
+  // SOL price polling with guard (reduce console noise when offline)
   useEffect(() => {
+    if (!PRICE_FETCH_ENABLED) return;
     let timer: any;
     let active = true;
+    let failures = 0;
     async function loadPrice() {
       try {
+        if (typeof window !== 'undefined' && 'onLine' in navigator && !navigator.onLine) return;
         const r = await fetch("https://price.jup.ag/v4/price?ids=SOL", { cache: "no-store" });
         const j = await r.json();
         const p = Number(j?.data?.SOL?.price);
         if (!Number.isFinite(p)) return;
+        failures = 0; // reset on success
         if (active) { setSolUsd(p); setLastUpdated(Date.now()); }
-      } catch {}
+      } catch {
+        failures += 1;
+        // After repeated failures, back off by stopping the timer
+        if (failures >= 3 && timer) {
+          clearInterval(timer);
+          timer = null;
+        }
+      }
     }
     loadPrice();
-    timer = setInterval(loadPrice, 5000);
+    timer = setInterval(loadPrice, 15000); // 15s to reduce noise
     return () => { if (timer) clearInterval(timer); active = false; };
-  }, []);
+  }, [PRICE_FETCH_ENABLED]);
 
   if (!isOwner) return null;
 

@@ -8,9 +8,9 @@ import OwnerEditOnProfile from '@/components/OwnerEditOnProfile';
 import OwnerSlotQuickAdd from '@/components/OwnerSlotQuickAdd';
 import OwnerAvailabilityQuickAdd from '@/components/OwnerAvailabilityQuickAdd';
 import WeekCalendar from '@/components/WeekCalendar';
-import CreatorBalance from '@/components/CreatorBalance';
-import AvailabilityManager from '@/components/AvailabilityManager';
-import RequestsPanel from '@/components/RequestsPanel';
+const CreatorBalance = dynamic(() => import('@/components/CreatorBalance'), { ssr: false });
+const AvailabilityManager = dynamic(() => import('@/components/AvailabilityManager'), { ssr: false });
+const RequestsPanel = dynamic(() => import('@/components/RequestsPanel'), { ssr: false });
 
 type RouteParams = { pubkey: string };
 type Params = { params: RouteParams | Promise<RouteParams> };

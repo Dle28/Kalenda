@@ -9,31 +9,6 @@ import Spotlight from '@/components/Spotlight';
 import Testimonials from '@/components/Testimonials';
 import EventsStrip from '@/components/EventsStrip';
 import ScrollEffects from '@/components/ScrollEffects';
-<<<<<<< HEAD
-import UpcomingAppointments from '@/components/UpcomingAppointments';
-import { summarizeSlotsByCreator } from '@/lib/slotSummary';
-
-export default function Page() {
-  const enrichedCreators = useMemo(() => {
-    const index = summarizeSlotsByCreator(slots as any);
-    return (creators as any[]).map((c: any) => ({
-      ...c,
-      saleSummary: index[c.pubkey] ?? null,
-    }));
-  }, []);
-
-  const allCategories = useMemo(() => {
-    const s = new Set<string>();
-    enrichedCreators.forEach((c: any) => (c.fields || []).forEach((f: string) => s.add(f)));
-    return ['All', ...Array.from(s)];
-  }, [enrichedCreators]);
-
-  const [cat, setCat] = useState<string>('All');
-  const filtered = useMemo(() => {
-    if (cat === 'All') return enrichedCreators;
-    return enrichedCreators.filter((c: any) => (c.fields || []).includes(cat));
-  }, [cat, enrichedCreators]);
-=======
 import CategoryBar, { type CatItem } from '@/components/CategoryBar';
 import CalendarInfographic from '@/components/CalendarInfographic';
 
@@ -62,17 +37,16 @@ export default function Page() {
     const needle = cat.toLowerCase();
     return list.filter((c: any) => (c.fields || []).some((f: string) => String(f).toLowerCase().includes(needle)) || String(c.bio || '').toLowerCase().includes(needle));
   }, [cat]);
->>>>>>> 4a71766c3bce61de1d5d941478ccb2c7ad93fa35
 
   const featured = filtered.slice(0, 8);
   const leftItems = featured.filter((_, i) => i % 2 === 0);
   const rightItems = featured.filter((_, i) => i % 2 === 1);
 
   const topWeek = useMemo(() => {
-    return [...enrichedCreators]
+    return [...(creators as any[])]
       .sort((a: any, b: any) => Number(b.rating || 0) - Number(a.rating || 0))
       .slice(0, 6);
-  }, [enrichedCreators]);
+  }, []);
 
   return (
     <>
@@ -152,11 +126,6 @@ export default function Page() {
 
         <FloatingBadges />
 
-        {/* Upcoming Appointments Section */}
-        <div className="container">
-          <UpcomingAppointments slots={slots} creators={enrichedCreators} />
-        </div>
-
         {/* Below-hero sections */}
         <section className={styles.below}>
           <div className="container">
@@ -165,13 +134,6 @@ export default function Page() {
             </div>
             <div className={styles.belowGrid}>
               <div className={styles.belowMain}>
-<<<<<<< HEAD
-                <Spotlight list={enrichedCreators as any} intervalMs={9000} />
-                <div className={styles.filters}>
-                  {allCategories.map((f) => (
-                    <button key={f} className="chip" onClick={() => setCat(f)} style={{ background: cat === f ? 'rgba(255,255,255,.16)' : 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.12)', color: '#e5e7eb' }}>{f}</button>
-                  ))}
-=======
                 {/* Section header similar to reference */}
                 <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center', margin: '10px 0 6px' }}>
                   <div className="row" style={{ gap: 10, alignItems: 'center' }}>
@@ -182,7 +144,6 @@ export default function Page() {
                     </div>
                   </div>
                   <Link href="/creators" className="btn btn-outline" style={{ padding: '6px 10px' }}>See all</Link>
->>>>>>> 4a71766c3bce61de1d5d941478ccb2c7ad93fa35
                 </div>
                 <Spotlight list={filtered as any} intervalMs={9000} />
                 <div className={styles.how}>
