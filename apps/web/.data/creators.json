@@ -1,13 +1,11 @@
 {
   "FLWfSH7ip9jukg3pDGAnheETpuYmm8W7XgDPXku7GYyf": {
     "pubkey": "FLWfSH7ip9jukg3pDGAnheETpuYmm8W7XgDPXku7GYyf",
-    "name": "Dũng Lê",
-    "bio": "hello my name is DungLe, an engineer future about computer science and data science\nGud to see you!!\nGotcha ",
-    "location": "qdwadawdawdwad",
-    "timezone": "Asia/Bangkok",
+    "name": "jnkajda",
+    "bio": "heheh",
+    "location": "ndawjkdna",
+    "timezone": "Asia/haloi",
     "meetingTypes": [
-      "Video call",
-      "Audio call",
       "In-person"
     ],
     "session": {
@@ -23,7 +21,42 @@
       "startPrice": "10",
       "bidStep": "1"
     },
-    "avatar": "/uploads/1760896121915-cute-cat-illustration-cat-kawaii-chibi-drawing-style-cat-cartoon-vector.jpg"
+    "avatar": "/uploads/1760896121915-cute-cat-illustration-cat-kawaii-chibi-drawing-style-cat-cartoon-vector.jpg",
+    "sessionTitle": "dwad",
+    "sessionDescription": "daw",
+    "sessionMaterials": "",
+    "availability": {
+      "1": [
+        9,
+        10,
+        11,
+        14,
+        15
+      ],
+      "3": [
+        9,
+        10,
+        14,
+        15
+      ],
+      "4": [
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ],
+      "5": [
+        9,
+        10,
+        11,
+        15,
+        16,
+        17,
+        18
+      ]
+    }
   },
   "Hkno7KjoeBE7Sm8k1ZZseekXdL99JwNZ9UHMq5KAFpxH": {
     "pubkey": "Hkno7KjoeBE7Sm8k1ZZseekXdL99JwNZ9UHMq5KAFpxH",

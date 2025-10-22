@@ -295,7 +295,7 @@ export default function CreatorDashboard() {
         <div className="fade-in" style={{ display: 'grid', gap: 20 }}>
           <div className="card" style={{ padding: 20 }}>
             <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-              <b style={{ fontSize: 18 }}>{useCalendar ? 'Weekly Availability' : 'Quick Slot Creator'}</b>
+              <b style={{ fontSize: 18 }}>{useCalendar ? 'Weekly Availability' : 'New slot'}</b>
               <label className="row" style={{ gap: 8, alignItems: 'center', cursor: 'pointer' }}>
                 <input type="checkbox" checked={useCalendar} onChange={(e) => setUseCalendar(e.target.checked)} />
                 <span className="muted">Use calendar mode</span>
@@ -396,7 +396,7 @@ export default function CreatorDashboard() {
             <b style={{ fontSize: 20, marginBottom: 16, display: 'block' }}>Revenue Overview</b>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 24 }}>
               <div>
-                <div className="muted" style={{ marginBottom: 8 }}>Total Earned</div>
+                <div className="muted" style={{ marginBottom: 8 }}>Total Earned (Revenue)</div>
                 <b style={{ fontSize: 28 }}>${revenue.toFixed(2)}</b>
               </div>
               <div>
