@@ -24,5 +24,64 @@
       "bidStep": "1"
     },
     "avatar": "/uploads/1760896121915-cute-cat-illustration-cat-kawaii-chibi-drawing-style-cat-cartoon-vector.jpg"
+  },
+  "Hkno7KjoeBE7Sm8k1ZZseekXdL99JwNZ9UHMq5KAFpxH": {
+    "pubkey": "Hkno7KjoeBE7Sm8k1ZZseekXdL99JwNZ9UHMq5KAFpxH",
+    "session": {
+      "title": "Lax",
+      "description": "Lax",
+      "materials": "Lax"
+    },
+    "name": "Laxurie",
+    "bio": "Lax",
+    "location": "Hanoi",
+    "timezone": "Asia/Saigon",
+    "meetingTypes": [
+      "Video call",
+      "Audio call",
+      "In-person"
+    ],
+    "defaults": {
+      "mode": "Stable",
+      "currency": "USDC",
+      "durationMin": "30",
+      "bufferMin": "10",
+      "price": "20",
+      "startPrice": "10",
+      "bidStep": "1"
+    },
+    "sessionTitle": "ASS",
+    "sessionDescription": "ASS",
+    "sessionMaterials": "",
+    "availability": {
+      "1": [
+        9,
+        10,
+        11,
+        14,
+        15
+      ],
+      "2": [
+        7,
+        8,
+        10,
+        15,
+        17,
+        18,
+        19
+      ],
+      "3": [
+        9,
+        10,
+        14,
+        15
+      ],
+      "5": [
+        9,
+        10,
+        11
+      ]
+    },
+    "avatar": "/uploads/1761088777474-_evangelion_.jfif"
   }
 }

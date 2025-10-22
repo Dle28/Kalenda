@@ -1,127 +1,155 @@
 "use client";
 import { useEffect, useMemo, useState } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import CalendarScheduler, { type WeeklyAvailability } from '@/components/CalendarScheduler';
+import ProfileSetup, { type ProfileData } from '@/components/ProfileSetup';
 
 type PricingMode = 'Stable' | 'EnglishAuction';
-
-type CreatorProfile = {
-  name: string;
-  bio: string;
-  location: string;
-  timezone: string;
-  meetingTypes: { video: boolean; audio: boolean; inperson: boolean };
-  avatar?: string;
-  defaults?: {
-    mode: PricingMode;
-    currency: 'USDC' | 'SOL';
-    durationMin: string;
-    bufferMin: string;
-    price?: string;
-    startPrice?: string;
-    bidStep?: string;
-  };
-};
-
-type ListingConfig = {
-  mode: PricingMode;
-  currency: 'USDC' | 'SOL';
-  price?: string;
-  startPrice?: string;
-  bidStep?: string;
-  durationMin: string;
-  bufferMin: string;
-};
+type Tab = 'overview' | 'profile' | 'slots' | 'earnings';
 
 export default function CreatorDashboard() {
   const wallet = useWallet();
-  const pubkey = wallet.publicKey?.toBase58() || 'DEMO_PUBKEY';
-  const [profile, setProfile] = useState<CreatorProfile>({
+  const router = useRouter();
+  const pubkey = wallet.publicKey?.toBase58();
+  
+  const [activeTab, setActiveTab] = useState<Tab>('overview');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [status, setStatus] = useState('');
+
+  // Profile state
+  const [profile, setProfile] = useState<ProfileData>({
     name: '',
     bio: '',
     location: '',
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     meetingTypes: { video: true, audio: false, inperson: false },
     avatar: undefined,
+    sessionTitle: '',
+    sessionDescription: '',
+    sessionMaterials: '',
     defaults: { mode: 'Stable', currency: 'USDC', durationMin: '30', bufferMin: '10', price: '20', startPrice: '10', bidStep: '1' },
   });
-  const [config, setConfig] = useState<ListingConfig>({ mode: 'Stable', currency: 'USDC', price: '', startPrice: '', bidStep: '1', durationMin: '30', bufferMin: '10' });
+
+  // Slots & availability
   const [availability, setAvailability] = useState<WeeklyAvailability>({ 0: [9, 10, 11], 2: [14, 15], 4: [9, 10, 16] });
   const [slots, setSlots] = useState<any[]>([]);
   const [revenue, setRevenue] = useState<number>(0);
   const [autoPublish, setAutoPublish] = useState(true);
   const [useCalendar, setUseCalendar] = useState(false);
 
-  // Quick create single slot (simple mode)
+  // Quick slot creator
   const [quick, setQuick] = useState({ date: '', start: '', durationMin: '30', mode: 'Stable' as PricingMode, price: '20', startPrice: '10', bidStep: '1' });
 
-  // Load saved profile on mount
+  // Load profile on mount
   useEffect(() => {
+    if (!pubkey) {
+      router.push('/profile');
+      return;
+    }
+
     const load = async () => {
       try {
         const res = await fetch(`/api/creator/profile?pubkey=${encodeURIComponent(pubkey)}`, { cache: 'no-store' });
         const json = await res.json();
+        
         if (json?.profile) {
-          const p = json.profile as any;
+          const p = json.profile;
           const mt = p.meetingTypes || [];
           const meetingTypes = {
             video: mt.includes('Video call') || !!p.meetingTypes?.video,
             audio: mt.includes('Audio call') || !!p.meetingTypes?.audio,
             inperson: mt.includes('In-person') || !!p.meetingTypes?.inperson,
           };
-          const loaded: CreatorProfile = {
+
+          setProfile({
             name: p.name || '',
             bio: p.bio || '',
             location: p.location || '',
             timezone: p.timezone || profile.timezone,
             meetingTypes,
             avatar: p.avatar,
+            sessionTitle: p.sessionTitle || '',
+            sessionDescription: p.sessionDescription || '',
+            sessionMaterials: p.sessionMaterials || '',
             defaults: {
-              mode: p.defaults?.mode || p.defaultMode || 'Stable',
-              currency: p.defaults?.currency || p.defaultCurrency || 'USDC',
-              durationMin: String(p.defaults?.durationMin || p.defaultDurationMin || '30'),
-              bufferMin: String(p.defaults?.bufferMin || p.defaultBufferMin || '10'),
-              price: p.defaults?.price ?? p.defaultPrice ?? '20',
-              startPrice: p.defaults?.startPrice ?? p.defaultStartPrice ?? '10',
-              bidStep: p.defaults?.bidStep ?? p.defaultBidStep ?? '1',
+              mode: p.defaults?.mode || 'Stable',
+              currency: p.defaults?.currency || 'USDC',
+              durationMin: String(p.defaults?.durationMin || '30'),
+              bufferMin: String(p.defaults?.bufferMin || '10'),
+              price: p.defaults?.price ?? '20',
+              startPrice: p.defaults?.startPrice ?? '10',
+              bidStep: p.defaults?.bidStep ?? '1',
             },
-          };
-          setProfile(loaded);
-          // apply defaults to forms so user doesn't re-enter
-          setConfig((c) => ({
-            ...c,
-            mode: loaded.defaults!.mode,
-            currency: loaded.defaults!.currency,
-            durationMin: loaded.defaults!.durationMin,
-            bufferMin: loaded.defaults!.bufferMin,
-            price: loaded.defaults!.price,
-            startPrice: loaded.defaults!.startPrice,
-            bidStep: loaded.defaults!.bidStep,
-          }));
-          setQuick((q) => ({
-            ...q,
-            mode: loaded.defaults!.mode,
-            durationMin: loaded.defaults!.durationMin,
-            price: loaded.defaults!.price || q.price,
-            startPrice: loaded.defaults!.startPrice || q.startPrice,
-            bidStep: loaded.defaults!.bidStep || q.bidStep,
-          }));
-        }
-      } catch {}
-    };
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pubkey]);
+          });
 
-  const canPublish = useMemo(() => profile.name.trim().length > 0 && profile.bio.trim().length > 0, [profile]);
+          if (p.availability) {
+            setAvailability(p.availability);
+          }
+        }
+      } catch (err) {
+        console.error('Load profile failed:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
+  }, [pubkey, router]);
+
+  async function handleSaveProfile() {
+    if (!pubkey) return;
+
+    setSaving(true);
+    setStatus('Saving...');
+
+    try {
+      const meetingTypes = Object.entries(profile.meetingTypes)
+        .filter(([, v]) => v)
+        .map(([k]) => ({ video: 'Video call', audio: 'Audio call', inperson: 'In-person' } as any)[k] || k);
+
+      const body = {
+        pubkey,
+        name: profile.name,
+        bio: profile.bio,
+        location: profile.location,
+        timezone: profile.timezone,
+        avatar: profile.avatar,
+        meetingTypes,
+        sessionTitle: profile.sessionTitle,
+        sessionDescription: profile.sessionDescription,
+        sessionMaterials: profile.sessionMaterials,
+        defaults: profile.defaults,
+        availability,
+      };
+
+      const res = await fetch('/api/creator/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) throw new Error('Failed to save');
+
+      setStatus('✓ Saved successfully');
+      setTimeout(() => setStatus(''), 2000);
+    } catch (err: any) {
+      setStatus(`Error: ${err.message}`);
+    } finally {
+      setSaving(false);
+    }
+  }
 
   async function generateSlotsFromAvailability() {
-    const dur = Math.max(15, Number(config.durationMin) || 30);
+    if (!pubkey) return;
+    
+    const dur = Math.max(15, Number(profile.defaults?.durationMin) || 30);
     const base = new Date();
-    // get Monday of current week
     const day = base.getDay();
     const monday = new Date(base);
-    const diff = (day === 0 ? -6 : 1) - day; // move to Monday
+    const diff = (day === 0 ? -6 : 1) - day;
     monday.setDate(base.getDate() + diff);
     const nextWeek = new Date(monday);
     nextWeek.setDate(monday.getDate() + 7);
@@ -135,265 +163,295 @@ export default function CreatorDashboard() {
         start.setHours(h, 0, 0, 0);
         const end = new Date(start);
         end.setMinutes(end.getMinutes() + dur);
-        const id = `${pubkey}-${start.toISOString()}`;
+        
         next.push({
-          id,
+          id: `${pubkey}-${start.toISOString()}`,
           creator: pubkey,
           start: start.toISOString(),
           end: end.toISOString(),
-          mode: config.mode,
-          price: config.mode === 'Stable' ? Number(config.price) || 0 : undefined,
-          startPrice: config.mode === 'EnglishAuction' ? Number(config.startPrice) || 0 : undefined,
+          mode: profile.defaults?.mode,
+          price: profile.defaults?.mode === 'Stable' ? Number(profile.defaults?.price) || 0 : undefined,
+          startPrice: profile.defaults?.mode === 'EnglishAuction' ? Number(profile.defaults?.startPrice) || 0 : undefined,
         });
       }
     }
+    
     next.sort((a, b) => a.start.localeCompare(b.start));
     setSlots(next);
+    
     if (autoPublish) {
       await fetch('/api/slots', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ slots: next }) });
+      setStatus('✓ Slots published');
+      setTimeout(() => setStatus(''), 2000);
     }
   }
 
-  async function saveProfile() {
-    const meetingTypes = Object.entries(profile.meetingTypes)
-      .filter(([, v]) => v)
-      .map(([k]) => ({ video: 'Video call', audio: 'Audio call', inperson: 'In-person' } as any)[k] || k);
-    const body = {
-      pubkey,
-      name: profile.name,
-      bio: profile.bio,
-      location: profile.location,
-      timezone: profile.timezone,
-      avatar: profile.avatar,
-      meetingTypes,
-      defaults: profile.defaults,
-    };
-    await fetch('/api/creator/profile', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-  }
-
-  async function publishSlots() {
-    if (!slots.length) return;
-    await fetch('/api/slots', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ slots }) });
-  }
-
-  function exportCSV() {
-    const headers = ['id', 'start', 'end', 'mode', 'price', 'startPrice'];
-    const body = [headers.join(',')].concat(slots.map((s) => headers.map((h) => s[h] ?? '').join(',')));
-    const blob = new Blob([body.join('\n')], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'slots.csv'; a.click(); URL.revokeObjectURL(url);
+  if (loading) {
+    return (
+      <section className="container" style={{ padding: '60px 20px', textAlign: 'center' }}>
+        <div className="spinner" style={{ margin: '0 auto 20px' }} />
+        <p className="muted">Loading dashboard...</p>
+      </section>
+    );
   }
 
   return (
-    <section className="container" style={{ padding: '20px 0 40px' }}>
-      <div className="dashboard-shell" style={{ display: 'grid', gridTemplateColumns: '1.1fr .9fr', gap: 16 }}>
-        {/* Left pane: profile + listing setup */}
-        <div className="panel" style={{ display: 'grid', gap: 12 }}>
-          <h1 className="title" style={{ fontSize: 26, margin: 0 }}>Creator Dashboard</h1>
-          <p className="muted">Set up your profile and availability, then publish slots.</p>
+    <section className="container page-enter" style={{ padding: '20px 0 60px', maxWidth: 1200 }}>
+      {/* Header */}
+      <div style={{ marginBottom: 32 }}>
+        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <h1 className="title" style={{ fontSize: 32, margin: 0 }}>Creator Dashboard</h1>
+          <Link href={`/creator/${pubkey}`} className="btn btn-outline" style={{ padding: '8px 16px' }}>
+            View Public Profile →
+          </Link>
+        </div>
+        <p className="muted">Manage your profile, availability, and earnings</p>
+      </div>
 
-          <div className="card" style={{ display: 'grid', gap: 10 }}>
-            <b>Session details</b>
-            <label className="stack">
-              <span className="muted">Title</span>
-              <input value={(profile as any).sessionTitle || ''} onChange={(e) => setProfile({ ...profile, sessionTitle: e.target.value } as any)} placeholder="e.g., 1:1 Mentoring / Portfolio Review" />
-            </label>
-            <label className="stack">
-              <span className="muted">Description</span>
-              <textarea value={(profile as any).sessionDescription || ''} onChange={(e) => setProfile({ ...profile, sessionDescription: e.target.value } as any)} placeholder="What attendees can expect, agenda, outcomes..." rows={4} />
-            </label>
-            <label className="stack">
-              <span className="muted">Materials / Links (optional)</span>
-              <input value={(profile as any).sessionMaterials || ''} onChange={(e) => setProfile({ ...profile, sessionMaterials: e.target.value } as any)} placeholder="Link to docs, calendar, slides..." />
-            </label>
-            <div className="row" style={{ gap: 8 }}>
-              <button className="btn btn-outline" style={{ padding: '6px 10px' }} onClick={async () => {
-                const body = { pubkey, session: { title: (profile as any).sessionTitle, description: (profile as any).sessionDescription, materials: (profile as any).sessionMaterials } };
-                await fetch('/api/creator/profile', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-              }}>Save session</button>
+      {status && (
+        <div className={`card`} style={{ padding: 12, marginBottom: 20, background: status.includes('Error') ? 'rgba(239,68,68,0.1)' : 'rgba(34,197,94,0.1)', border: `1px solid ${status.includes('Error') ? 'rgba(239,68,68,0.3)' : 'rgba(34,197,94,0.3)'}` }}>
+          <span style={{ color: status.includes('Error') ? '#fca5a5' : '#86efac' }}>{status}</span>
+        </div>
+      )}
+
+      {/* Tabs */}
+      <div className="tabs" style={{ marginBottom: 24, borderBottom: '1px solid rgba(148,163,184,0.1)' }}>
+        <div className="row" style={{ gap: 4 }}>
+          <button
+            className={`tab ${activeTab === 'overview' ? 'active' : ''}`}
+            onClick={() => setActiveTab('overview')}
+          >
+            📊 Overview
+          </button>
+          <button
+            className={`tab ${activeTab === 'profile' ? 'active' : ''}`}
+            onClick={() => setActiveTab('profile')}
+          >
+            👤 Profile
+          </button>
+          <button
+            className={`tab ${activeTab === 'slots' ? 'active' : ''}`}
+            onClick={() => setActiveTab('slots')}
+          >
+            📅 Slots
+          </button>
+          <button
+            className={`tab ${activeTab === 'earnings' ? 'active' : ''}`}
+            onClick={() => setActiveTab('earnings')}
+          >
+            💰 Earnings
+          </button>
+        </div>
+      </div>
+
+      {/* Overview Tab */}
+      {activeTab === 'overview' && (
+        <div className="fade-in" style={{ display: 'grid', gap: 20 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
+            <div className="card" style={{ padding: 20 }}>
+              <div className="muted" style={{ fontSize: 14, marginBottom: 8 }}>Total Earnings</div>
+              <b style={{ fontSize: 32 }}>${revenue.toFixed(2)}</b>
+            </div>
+            <div className="card" style={{ padding: 20 }}>
+              <div className="muted" style={{ fontSize: 14, marginBottom: 8 }}>Available Hours</div>
+              <b style={{ fontSize: 32 }}>{Object.values(availability).flat().length}/week</b>
+            </div>
+            <div className="card" style={{ padding: 20 }}>
+              <div className="muted" style={{ fontSize: 14, marginBottom: 8 }}>Published Slots</div>
+              <b style={{ fontSize: 32 }}>{slots.length}</b>
+            </div>
+            <div className="card" style={{ padding: 20 }}>
+              <div className="muted" style={{ fontSize: 14, marginBottom: 8 }}>Bookings</div>
+              <b style={{ fontSize: 32 }}>0</b>
             </div>
           </div>
 
-          <div className="card" style={{ display: 'grid', gap: 10 }}>
-            <b>Listing & Pricing</b>
-            <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
-              <label className="stack">
-                <span className="muted">Mode</span>
-                <select value={config.mode} onChange={(e) => setConfig({ ...config, mode: e.target.value as PricingMode })}>
-                  <option value="Stable">Fixed price</option>
-                  <option value="EnglishAuction">English auction</option>
-                </select>
-              </label>
-              <label className="stack">
-                <span className="muted">Currency</span>
-                <select value={config.currency} onChange={(e) => setConfig({ ...config, currency: e.target.value as any })}>
-                  <option value="USDC">USDC</option>
-                  <option value="SOL">SOL</option>
-                </select>
-              </label>
-              <label className="stack" style={{ minWidth: 120 }}>
-                <span className="muted">Duration (min)</span>
-                <input type="number" inputMode="numeric" min={5} step={5} value={config.durationMin} onChange={(e) => setConfig({ ...config, durationMin: e.target.value })} />
-              </label>
-              <label className="stack" style={{ minWidth: 120 }}>
-                <span className="muted">Buffer (min)</span>
-                <input type="number" inputMode="numeric" min={0} step={5} value={config.bufferMin} onChange={(e) => setConfig({ ...config, bufferMin: e.target.value })} />
-              </label>
-            </div>
-            {config.mode === 'Stable' ? (
-              <label className="stack">
-                <span className="muted">Price ({config.currency})</span>
-                <input type="number" inputMode="decimal" min={0} step={0.01} value={config.price} onChange={(e) => setConfig({ ...config, price: e.target.value })} />
-              </label>
-            ) : (
-              <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
-                <label className="stack">
-                  <span className="muted">Start price ({config.currency})</span>
-                  <input type="number" inputMode="decimal" min={0} step={0.01} value={config.startPrice} onChange={(e) => setConfig({ ...config, startPrice: e.target.value })} />
-                </label>
-                <label className="stack">
-                  <span className="muted">Bid step ({config.currency})</span>
-                  <input type="number" inputMode="decimal" min={0.01} step={0.01} value={config.bidStep} onChange={(e) => setConfig({ ...config, bidStep: e.target.value })} />
-                </label>
-              </div>
-            )}
-
-            <div className="row" style={{ gap: 8 }}>
-              {useCalendar && (
-                <button className="btn btn-secondary" style={{ padding: '8px 12px' }} disabled={!canPublish} onClick={generateSlotsFromAvailability}>Generate next week slots</button>
-              )}
-              <button className="btn btn-outline" style={{ padding: '8px 12px' }} onClick={saveProfile}>Save profile</button>
-              <button className="btn btn-outline" style={{ padding: '8px 12px' }} onClick={exportCSV}>Export CSV</button>
-              <label className="row" style={{ gap: 6, alignItems: 'center' }}>
-                <input type="checkbox" checked={autoPublish} onChange={(e) => setAutoPublish(e.target.checked)} />
-                <span className="muted">Auto publish on generate</span>
-              </label>
-            </div>
-          </div>
-
-          <div className="card" style={{ display: 'grid', gap: 10 }}>
-            <b>Revenue</b>
-            <div className="row" style={{ justifyContent: 'space-between' }}>
-              <span className="muted">Total earned</span>
-              <b>${revenue.toFixed(2)}</b>
-            </div>
-            <div className="row" style={{ gap: 8 }}>
-              <button className="btn btn-outline" style={{ padding: '6px 10px' }} onClick={() => setRevenue((v) => v + 10)}>Simulate +$10</button>
+          <div className="card" style={{ padding: 24 }}>
+            <b style={{ fontSize: 18, marginBottom: 16, display: 'block' }}>Quick Actions</b>
+            <div className="row" style={{ gap: 12, flexWrap: 'wrap' }}>
+              <button className="btn btn-secondary" onClick={() => setActiveTab('profile')}>Edit Profile</button>
+              <button className="btn btn-secondary" onClick={() => setActiveTab('slots')}>Manage Slots</button>
+              <button className="btn btn-outline" onClick={generateSlotsFromAvailability}>Generate Next Week</button>
+              <Link href={`/creator/${pubkey}`} className="btn btn-outline">Preview Profile</Link>
             </div>
           </div>
         </div>
+      )}
 
-        {/* Right pane: calendar scheduler */}
-        <div className="panel" style={{ display: 'grid', gap: 12 }}>
-          <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-            <b>{useCalendar ? 'Weekly availability (advanced)' : 'Quick create slot (simple)'}</b>
-            <label className="row" style={{ gap: 6, alignItems: 'center' }}>
-              <input type="checkbox" checked={useCalendar} onChange={(e) => setUseCalendar(e.target.checked)} />
-              <span className="muted">Use calendar mode</span>
-            </label>
+      {/* Profile Tab */}
+      {activeTab === 'profile' && (
+        <div className="fade-in">
+          <ProfileSetup value={profile} onChange={setProfile} mode="full" />
+          <div className="row" style={{ gap: 12, marginTop: 24, justifyContent: 'flex-end' }}>
+            <button className="btn btn-secondary" onClick={handleSaveProfile} disabled={saving}>
+              {saving ? 'Saving...' : '💾 Save Profile'}
+            </button>
           </div>
+        </div>
+      )}
 
-          {useCalendar ? (
-            <CalendarScheduler value={availability} onChange={setAvailability} startHour={8} endHour={20} />
-          ) : (
-            <div className="card" style={{ display: 'grid', gap: 10 }}>
-              <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
-                <label className="stack" style={{ minWidth: 160 }}>
-                  <span className="muted">Date</span>
-                  <input type="date" value={quick.date} onChange={(e) => setQuick({ ...quick, date: e.target.value })} />
-                </label>
-                <label className="stack" style={{ minWidth: 140 }}>
-                  <span className="muted">Start</span>
-                  <input type="time" value={quick.start} onChange={(e) => setQuick({ ...quick, start: e.target.value })} />
-                </label>
-                <label className="stack" style={{ minWidth: 140 }}>
-                  <span className="muted">Duration (min)</span>
-                  <input type="number" inputMode="numeric" min={5} step={5} value={quick.durationMin} onChange={(e) => setQuick({ ...quick, durationMin: e.target.value })} />
-                </label>
-                <label className="stack" style={{ minWidth: 180 }}>
-                  <span className="muted">Mode</span>
-                  <select value={quick.mode} onChange={(e) => setQuick({ ...quick, mode: e.target.value as PricingMode })}>
-                    <option value="Stable">Fixed price</option>
-                    <option value="EnglishAuction">English auction</option>
-                  </select>
-                </label>
-                {quick.mode === 'Stable' ? (
-                  <label className="stack" style={{ minWidth: 160 }}>
-                    <span className="muted">Price (USDC)</span>
-                    <input type="number" inputMode="decimal" min={0} step={0.01} value={quick.price} onChange={(e) => setQuick({ ...quick, price: e.target.value })} />
+      {/* Slots Tab */}
+      {activeTab === 'slots' && (
+        <div className="fade-in" style={{ display: 'grid', gap: 20 }}>
+          <div className="card" style={{ padding: 20 }}>
+            <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <b style={{ fontSize: 18 }}>{useCalendar ? 'Weekly Availability' : 'Quick Slot Creator'}</b>
+              <label className="row" style={{ gap: 8, alignItems: 'center', cursor: 'pointer' }}>
+                <input type="checkbox" checked={useCalendar} onChange={(e) => setUseCalendar(e.target.checked)} />
+                <span className="muted">Use calendar mode</span>
+              </label>
+            </div>
+
+            {useCalendar ? (
+              <>
+                <CalendarScheduler value={availability} onChange={setAvailability} startHour={7} endHour={22} />
+                <div className="row" style={{ gap: 12, marginTop: 16, justifyContent: 'space-between' }}>
+                  <label className="row" style={{ gap: 8, alignItems: 'center', cursor: 'pointer' }}>
+                    <input type="checkbox" checked={autoPublish} onChange={(e) => setAutoPublish(e.target.checked)} />
+                    <span className="muted">Auto-publish on generate</span>
                   </label>
-                ) : (
-                  <>
-                    <label className="stack" style={{ minWidth: 160 }}>
-                      <span className="muted">Start price (USDC)</span>
-                      <input type="number" inputMode="decimal" min={0} step={0.01} value={quick.startPrice} onChange={(e) => setQuick({ ...quick, startPrice: e.target.value })} />
-                    </label>
-                    <label className="stack" style={{ minWidth: 160 }}>
-                      <span className="muted">Bid step (USDC)</span>
-                      <input type="number" inputMode="decimal" min={0.01} step={0.01} value={quick.bidStep} onChange={(e) => setQuick({ ...quick, bidStep: e.target.value })} />
-                    </label>
-                  </>
-                )}
-              </div>
-              <div className="row" style={{ gap: 8 }}>
+                  <button className="btn btn-secondary" onClick={generateSlotsFromAvailability}>
+                    Generate Next Week Slots
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div style={{ display: 'grid', gap: 12 }}>
+                <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
+                  <label className="stack" style={{ minWidth: 160 }}>
+                    <span className="muted">Date</span>
+                    <input type="date" value={quick.date} onChange={(e) => setQuick({ ...quick, date: e.target.value })} />
+                  </label>
+                  <label className="stack" style={{ minWidth: 120 }}>
+                    <span className="muted">Start</span>
+                    <input type="time" value={quick.start} onChange={(e) => setQuick({ ...quick, start: e.target.value })} />
+                  </label>
+                  <label className="stack" style={{ minWidth: 120 }}>
+                    <span className="muted">Duration (min)</span>
+                    <input type="number" min={15} step={15} value={quick.durationMin} onChange={(e) => setQuick({ ...quick, durationMin: e.target.value })} />
+                  </label>
+                  <label className="stack" style={{ minWidth: 140 }}>
+                    <span className="muted">Price (USDC)</span>
+                    <input type="number" min={0} step={0.01} value={quick.price} onChange={(e) => setQuick({ ...quick, price: e.target.value })} />
+                  </label>
+                </div>
                 <button
                   className="btn btn-secondary"
-                  style={{ padding: '8px 12px' }}
                   onClick={async () => {
                     if (!quick.date || !quick.start || Number(quick.durationMin) <= 0) return;
                     const start = new Date(`${quick.date}T${quick.start}:00`);
                     const end = new Date(start);
-                    end.setMinutes(end.getMinutes() + Math.max(5, Number(quick.durationMin)));
+                    end.setMinutes(end.getMinutes() + Number(quick.durationMin));
                     const s = {
                       id: `${pubkey}-${start.toISOString()}`,
                       creator: pubkey,
                       start: start.toISOString(),
                       end: end.toISOString(),
-                      mode: quick.mode,
-                      price: quick.mode === 'Stable' ? Number(quick.price) || 0 : undefined,
-                      startPrice: quick.mode === 'EnglishAuction' ? Number(quick.startPrice) || 0 : undefined,
-                    } as any;
+                      mode: 'Stable',
+                      price: Number(quick.price) || 0,
+                    };
                     setSlots((prev) => [s, ...prev]);
                     if (autoPublish) {
                       await fetch('/api/slots', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(s) });
+                      setStatus('✓ Slot published');
+                      setTimeout(() => setStatus(''), 2000);
                     }
                   }}
                 >
-                  New slot
+                  + Create Slot
                 </button>
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
-          <div>
-            <h3 className="section-title">Generated slots preview</h3>
-            <div className="grid" style={{ marginTop: 12 }}>
-              {slots.length === 0 ? (
-                <div className="card muted">No slots generated yet.</div>
-              ) : (
-                slots.map((s) => (
-                  <div key={s.id} className="card" style={{ display: 'grid', gap: 6 }}>
-                    <div className="row" style={{ justifyContent: 'space-between' }}>
-                      <b>{s.mode === 'Stable' ? 'Fixed price' : 'Auction'}</b>
-                      <span className="badge">{config.durationMin} min</span>
+          <div className="card" style={{ padding: 20 }}>
+            <b style={{ fontSize: 18, marginBottom: 16, display: 'block' }}>Published Slots ({slots.length})</b>
+            {slots.length === 0 ? (
+              <p className="muted">No slots created yet. Use the creator above to add your first slot.</p>
+            ) : (
+              <div style={{ display: 'grid', gap: 12 }}>
+                {slots.slice(0, 5).map((s) => (
+                  <div key={s.id} className="card" style={{ padding: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <b>{new Date(s.start).toLocaleString()}</b>
+                      <div className="muted" style={{ fontSize: 14 }}>
+                        {s.mode === 'Stable' ? `$${s.price}` : `Auction from $${s.startPrice}`}
+                      </div>
                     </div>
-                    <span className="muted">{new Date(s.start).toLocaleString()} - {new Date(s.end).toLocaleTimeString()}</span>
-                    <div className="row" style={{ gap: 8 }}>
-                      <button className="btn btn-outline" style={{ padding: '6px 10px' }}>Edit</button>
-                      <button className="btn btn-outline" style={{ padding: '6px 10px' }} onClick={() => setSlots((prev)=>prev.filter(x=>x.id!==s.id))}>Remove</button>
-                    </div>
+                    <button className="btn btn-outline" style={{ padding: '6px 12px' }} onClick={() => setSlots((prev) => prev.filter((x) => x.id !== s.id))}>
+                      Remove
+                    </button>
                   </div>
-                ))
-              )}
-            </div>
-            <div className="row" style={{ gap: 8, marginTop: 12 }}>
-              <button className="btn btn-secondary" disabled={!slots.length} onClick={publishSlots}>Publish slots (save to server)</button>
-              <a className="btn btn-outline" href={`/api/slots?creator=${encodeURIComponent(pubkey)}`}>View on server</a>
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
-      </div>
+      )}
+
+      {/* Earnings Tab */}
+      {activeTab === 'earnings' && (
+        <div className="fade-in">
+          <div className="card" style={{ padding: 24 }}>
+            <b style={{ fontSize: 20, marginBottom: 16, display: 'block' }}>Revenue Overview</b>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 24 }}>
+              <div>
+                <div className="muted" style={{ marginBottom: 8 }}>Total Earned</div>
+                <b style={{ fontSize: 28 }}>${revenue.toFixed(2)}</b>
+              </div>
+              <div>
+                <div className="muted" style={{ marginBottom: 8 }}>This Month</div>
+                <b style={{ fontSize: 28 }}>$0.00</b>
+              </div>
+              <div>
+                <div className="muted" style={{ marginBottom: 8 }}>Pending</div>
+                <b style={{ fontSize: 28 }}>$0.00</b>
+              </div>
+            </div>
+            <button className="btn btn-outline" onClick={() => setRevenue((v) => v + 25)}>
+              Simulate +$25 Revenue
+            </button>
+          </div>
+        </div>
+      )}
+
+      <style>{`
+        .tabs { padding: 0 4px; }
+        .tab {
+          padding: 12px 20px;
+          background: transparent;
+          border: none;
+          border-bottom: 2px solid transparent;
+          color: rgba(148,163,184,0.8);
+          cursor: pointer;
+          font-size: 15px;
+          transition: all 0.2s ease;
+        }
+        .tab:hover { color: #f8fafc; background: rgba(148,163,184,0.05); }
+        .tab.active {
+          color: #60a5fa;
+          border-bottom-color: #60a5fa;
+          font-weight: 600;
+        }
+        .fade-in {
+          animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .spinner {
+          border: 3px solid rgba(148,163,184,0.2);
+          border-top-color: #60a5fa;
+          border-radius: 50%;
+          width: 40px;
+          height: 40px;
+          animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </section>
   );
 }
