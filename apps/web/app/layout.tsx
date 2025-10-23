@@ -11,6 +11,9 @@ import WalletStatus from '../components/WalletStatus';
 export const metadata: Metadata = {
   title: 'Kalenda',
   description: 'Smart time booking on Solana',
+  icons: {
+    icon: '/favicon.ico',
+  },
   other: {
     google: 'notranslate',
   },

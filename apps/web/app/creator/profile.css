@@ -68,16 +68,36 @@
 
 .profile-hero {
   display: grid;
-  grid-template-columns: 12fr; /* avoid parallel layout with calendar */
-  gap: 12px; /* tighter spacing inside hero */
-  padding: 8px 0 0; /* reduce top/bottom padding */
+  grid-template-columns: 1fr; /* single column to prevent overlap */
+  gap: 12px;
+  padding: 8px 0 0;
   position: relative;
   z-index: 1;
 }
 
 /* Ensure left content (calendar) is above the hero image card */
-.hero-left { position: relative; z-index: 2; max-width: calc(100% - 560px); padding-right: 12px; }
-@media (max-width: 960px) { .hero-left { max-width: 100%; padding-right: 0; } }
+.hero-left { 
+  position: relative; 
+  z-index: 2; 
+  max-width: 100%; /* full width on left side */
+  padding-right: 0;
+  width: 100%;
+  overflow: visible; /* allow content to flow naturally */
+}
+
+@media (min-width: 1200px) {
+  .hero-left {
+    max-width: calc(100% - 540px); /* reserve space for hero-card */
+    padding-right: 20px;
+  }
+}
+
+@media (max-width: 960px) { 
+  .hero-left { 
+    max-width: 100%; 
+    padding-right: 0; 
+  } 
+}
 
 .hero-left .pf-title {
   margin: 0;
@@ -143,27 +163,56 @@
 }
 
 .hero-card {
-  position: absolute; /* float in corner, not parallel to calendar */
+  position: absolute;
   top: 50px;
   right: 32px;
-  width: 500px;
-  border-radius: 28px; /* bigger corner radius */
+  width: 480px;
+  max-width: 480px;
+  min-width: 400px;
+  flex-shrink: 0; /* prevent shrinking */
+  border-radius: 28px;
   overflow: hidden;
   border: 1px solid rgba(255,255,255,.12);
   background: rgba(255,255,255,.02);
   box-shadow: inset 0 0 0 1px rgba(255,255,255,.03), 0 12px 40px rgba(0,0,0,.35);
   transition: transform .4s ease, box-shadow .4s ease, border-color .4s ease;
-  z-index: 1; /* below left content to avoid covering text */
-  pointer-events: auto; /* enable hover and interactions on card */
-  contain: paint; /* prevent internal effects from painting outside */
-  clip-path: inset(0 round 28px); /* strict clip to rounded corners */
+  z-index: 1; /* below hero-left content to avoid covering calendar */
+  pointer-events: auto;
+  contain: paint;
+  clip-path: inset(0 round 28px);
+}
+
+/* Hide hero-card on tablets and mobile to prevent overlap */
+@media (max-width: 1199px) {
+  .hero-card { 
+    display: none; 
+  }
+}
+
+/* On very large screens, ensure hero-card doesn't overlap */
+@media (min-width: 1600px) {
+  .hero-card {
+    width: 520px;
+    max-width: 520px;
+  }
 }
 
 /* calendar inside hero-left */
-/* Let calendar use full width; it will layer over the hero image card */
-.hero-calendar { margin-top: 6px; width: 100%; max-width: 100%; }
+/* Let calendar use full width within its container */
+.hero-calendar { 
+  margin-top: 6px; 
+  width: 100%; 
+  max-width: 100%;
+  overflow: auto; /* allow scrolling if content overflows */
+  position: relative;
+  z-index: 3; /* ensure calendar is above hero-card */
+}
+
 @media (max-width: 960px) {
-  .hero-calendar { max-width: 100%; }
+  .hero-calendar { 
+    max-width: 100%;
+    overflow-x: auto; /* horizontal scroll on mobile if needed */
+  }
 }
 .hero-media {
   width: 100%;
@@ -439,6 +488,18 @@
   .profile-wrap::before { inset: -40% -40% auto; height: 160%; }
   .profile-loading .skeleton-grid { grid-template-columns: 1fr; }
   .hero-card { display: none; }
+  .hero-left { max-width: 100% !important; }
+}
+
+/* Additional tablet breakpoint for better responsiveness */
+@media (max-width: 1199px) and (min-width: 961px) {
+  .hero-left {
+    max-width: 100% !important;
+    padding-right: 0;
+  }
+  .profile-hero {
+    grid-template-columns: 1fr;
+  }
 }
 
 @keyframes profile-fade-in {

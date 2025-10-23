@@ -73,7 +73,7 @@ export const slots: Slot[] = (() => {
   ) => {
     const s = new Date(startOfDay);
     s.setDate(s.getDate() + dayOffset);
-    s.setHours(hour);
+    s.setHours(hour, 0, 0, 0);
     const e = new Date(s);
     e.setMinutes(e.getMinutes() + durMin);
     return {
@@ -86,20 +86,80 @@ export const slots: Slot[] = (() => {
       startPrice,
     } as Slot;
   };
-  const c0 = (creators as any)[0].pubkey,
-    c1 = (creators as any)[1].pubkey;
+
+  const seedFrom = (input: string) => {
+    let hash = 0;
+    for (let i = 0; i < input.length; i++) {
+      hash = (hash * 31 + input.charCodeAt(i)) % 2147483647;
+    }
+    return hash || 1;
+  };
+
+  const makeRng = (seed: number) => () => {
+    seed = (seed * 48271) % 2147483647;
+    return (seed - 1) / 2147483646;
+  };
+
+  const c0 = (creators as any)[0].pubkey;
+  const c1 = (creators as any)[1].pubkey;
+
   const list = [
     mk(c0, 0, 10, 30, 'Stable', 25),
     mk(c0, 1, 14, 45, 'EnglishAuction', undefined, 10),
     mk(c1, 2, 9, 30, 'Stable', 30),
     mk(c1, 3, 15, 60, 'EnglishAuction', undefined, 12),
   ] as Slot[];
+
+  const seen = new Set(list.map((slot) => slot.id));
+  const randomSlots: Slot[] = [];
+
+  (creators as CreatorUI[]).forEach((creator) => {
+    const rng = makeRng(seedFrom(creator.pubkey));
+    const slotCount = 2 + Math.floor(rng() * 3); // 2-4 slots per creator
+    for (let i = 0; i < slotCount; i++) {
+      const dayOffset = Math.floor(rng() * 7); // within the current week
+      const startHour = 9 + Math.floor(rng() * 9); // 9 AM - 17 PM
+      const minuteBucket = rng() > 0.5 ? 30 : 0;
+      const durOptions = [30, 45, 60, 75, 90];
+      const duration = durOptions[Math.floor(rng() * durOptions.length)];
+      const mode: Slot['mode'] = rng() > 0.7 ? 'EnglishAuction' : 'Stable';
+      const basePrice = Number(creator.pricePerSlot || 10);
+      const priceSpread = 0.75 + rng() * 0.6;
+      const stablePrice = Number((basePrice * priceSpread).toFixed(2));
+      const auctionStart = Number((stablePrice * (0.55 + rng() * 0.25)).toFixed(2));
+
+      const s = new Date(startOfDay);
+      s.setDate(s.getDate() + dayOffset);
+      s.setHours(startHour, minuteBucket, 0, 0);
+      const e = new Date(s);
+      e.setMinutes(e.getMinutes() + duration);
+      const id = `${creator.pubkey}-${s.toISOString()}`;
+      if (seen.has(id)) continue;
+      seen.add(id);
+
+      randomSlots.push({
+        id,
+        creator: creator.pubkey,
+        start: s.toISOString(),
+        end: e.toISOString(),
+        mode,
+        price: mode === 'Stable' ? stablePrice : undefined,
+        startPrice: mode === 'EnglishAuction' ? auctionStart : undefined,
+      });
+    }
+  });
+
   // Demo: attach sample NFT metadata to the first auction slot
   const firstAuction = list.find((s) => s.mode === 'EnglishAuction');
   if (firstAuction) {
     firstAuction.nftMint = 'DemoMint111111111111111111111111111111111';
     firstAuction.nftUri = '/sample/nft.json';
   }
-  return list;
+
+  const fullList = [...list, ...randomSlots].sort(
+    (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime(),
+  );
+
+  return fullList;
 })();
 

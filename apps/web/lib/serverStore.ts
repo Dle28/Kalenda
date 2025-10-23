@@ -67,7 +67,14 @@ export type BookingRequest = {
 
 export async function upsertSlots(slots: ServerSlot[]) {
   await ensure();
-  const list: ServerSlot[] = JSON.parse(await fs.readFile(slotsPath, 'utf-8') || '[]');
+  let list: ServerSlot[] = [];
+  try {
+    const raw = await fs.readFile(slotsPath, 'utf-8');
+    list = JSON.parse(raw || '[]');
+  } catch (err) {
+    console.error('Failed to parse slots.json, resetting:', err);
+    list = [];
+  }
   const byId = new Map(list.map((s) => [s.id, s] as const));
   for (const s of slots) byId.set(s.id, s);
   const merged = Array.from(byId.values()).sort((a, b) => a.start.localeCompare(b.start));
@@ -77,7 +84,15 @@ export async function upsertSlots(slots: ServerSlot[]) {
 
 export async function getSlotsByCreator(pubkey: string) {
   await ensure();
-  const list: ServerSlot[] = JSON.parse(await fs.readFile(slotsPath, 'utf-8') || '[]');
+  let list: ServerSlot[] = [];
+  try {
+    const raw = await fs.readFile(slotsPath, 'utf-8');
+    list = JSON.parse(raw || '[]');
+  } catch (err) {
+    console.error('Failed to parse slots.json, resetting:', err);
+    await fs.writeFile(slotsPath, JSON.stringify([]), 'utf-8');
+    list = [];
+  }
   return list.filter((x) => x.creator === pubkey);
 }
 

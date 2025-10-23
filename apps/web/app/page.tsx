@@ -13,6 +13,7 @@ import UpcomingAppointments from '@/components/UpcomingAppointments';
 import { summarizeSlotsByCreator } from '@/lib/slotSummary';
 import CategoryBar, { type CatItem } from '@/components/CategoryBar';
 import CalendarInfographic from '@/components/CalendarInfographic';
+import GlobalConnectInfographic from '@/components/GlobalConnectInfographic';
 
 export default function Page() {
   const enrichedCreators = useMemo(() => {
@@ -63,10 +64,6 @@ export default function Page() {
     return enrichedCreators.filter((c: any) => (c.fields || []).some((f: string) => String(f).toLowerCase().includes(needle)) || String(c.bio || '').toLowerCase().includes(needle));
   }, [cat, enrichedCreators]);
 
-  const featured = filtered.slice(0, 8);
-  const leftItems = featured.filter((_, i) => i % 2 === 0);
-  const rightItems = featured.filter((_, i) => i % 2 === 1);
-
   const topWeek = useMemo(() => {
     return [...(creators as any[])]
       .sort((a: any, b: any) => Number(b.rating || 0) - Number(a.rating || 0))
@@ -78,8 +75,6 @@ export default function Page() {
       <ScrollEffects />
       <section className={styles.wrap}>
         <div className="container">
-          {/* Category bar */}
-          <CategoryBar items={catItems} active={cat} onChange={(k) => setCat(k)} />
           <div className={styles.hero}>
             <div className={styles.left}>
               <h1 className={styles.heading}>TIME IS MONEY.</h1>
@@ -90,61 +85,8 @@ export default function Page() {
               </div>
               <SubtleParticles />
             </div>
-
             <div className={styles.right}>
-              <div className={`${styles.col} ${styles.colLeft}`}>
-                <div className={styles.track}>
-                  {[0, 1].map((dup) => (
-                    leftItems.map((c: any, idx: number) => (
-                      <Link key={`L-${dup}-${idx}-${c.pubkey}`} href={`/creator/${encodeURIComponent(c.pubkey)}`} className={styles.tile} data-reveal data-float="0.02">
-                        <div className={styles.media} style={{ backgroundImage: `url(${c.avatar || 'https://placehold.co/600x800'})` }} />
-                        <div className={styles.overlay}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-                            <b>{c.name}</b>
-                          </div>
-                          {c.saleSummary?.headline && (
-                            <div className="muted" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.saleSummary.headline}</div>
-                          )}
-                          {c.saleSummary?.window ? (
-                            <div className="muted" style={{ fontSize: 12 }}>{c.saleSummary.window}</div>
-                          ) : (
-                            c.bio && (
-                              <div className="muted" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.bio}</div>
-                            )
-                          )}
-                        </div>
-                      </Link>
-                    ))
-                  ))}
-                </div>
-              </div>
-
-              <div className={`${styles.col} ${styles.colRight}`}>
-                <div className={styles.track}>
-                  {[0, 1].map((dup) => (
-                    rightItems.map((c: any, idx: number) => (
-                      <Link key={`R-${dup}-${idx}-${c.pubkey}`} href={`/creator/${encodeURIComponent(c.pubkey)}`} className={styles.tile} data-reveal data-float="0.02">
-                        <div className={styles.media} style={{ backgroundImage: `url(${c.avatar || 'https://placehold.co/600x800'})` }} />
-                        <div className={styles.overlay}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-                            <b>{c.name}</b>
-                          </div>
-                          {c.saleSummary?.headline && (
-                            <div className="muted" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.saleSummary.headline}</div>
-                          )}
-                          {c.saleSummary?.window ? (
-                            <div className="muted" style={{ fontSize: 12 }}>{c.saleSummary.window}</div>
-                          ) : (
-                            c.bio && (
-                              <div className="muted" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.bio}</div>
-                            )
-                          )}
-                        </div>
-                      </Link>
-                    ))
-                  ))}
-                </div>
-              </div>
+              <GlobalConnectInfographic />
             </div>
           </div>
         </div>

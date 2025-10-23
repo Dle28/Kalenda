@@ -102,6 +102,11 @@ export default function CreatorBalance({ creatorPubkey }: { creatorPubkey: strin
         if (!active) return;
         setLamports(bal);
         setLastUpdated(Date.now());
+      } catch (error) {
+        console.error("Failed to get balance:", error);
+        if (active) {
+          setLamports(null);
+        }
       } finally {
         if (active) setLoadingSol(false);
       }
@@ -113,7 +118,9 @@ export default function CreatorBalance({ creatorPubkey }: { creatorPubkey: strin
           setLamports(acc.lamports);
           setLastUpdated(Date.now());
         });
-      } catch {}
+      } catch (error) {
+        console.error("Failed to subscribe to account changes:", error);
+      }
     }
     return () => { if (sub !== null) { try { connection.removeAccountChangeListener(sub); } catch {} } active = false; };
   }, [connection, publicKey]);
