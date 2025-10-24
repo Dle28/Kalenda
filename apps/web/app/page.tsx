@@ -1,6 +1,6 @@
 "use client";
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { creators, slots } from '@/lib/mock';
 import styles from './home.module.css';
 import FloatingBadges from '@/components/FloatingBadges';
@@ -11,9 +11,8 @@ import EventsStrip from '@/components/EventsStrip';
 import ScrollEffects from '@/components/ScrollEffects';
 import UpcomingAppointments from '@/components/UpcomingAppointments';
 import { summarizeSlotsByCreator } from '@/lib/slotSummary';
-import CategoryBar, { type CatItem } from '@/components/CategoryBar';
 import CalendarInfographic from '@/components/CalendarInfographic';
-import GlobalConnectInfographic from '@/components/GlobalConnectInfographic';
+import GlobalConnectInfographic from '../components/GlobalConnectInfographic';
 
 export default function Page() {
   const enrichedCreators = useMemo(() => {
@@ -24,45 +23,7 @@ export default function Page() {
     }));
   }, []);
 
-  const allCategories = useMemo(() => {
-    const collected = new Set<string>();
-    enrichedCreators.forEach((c: any) => (c.fields || []).forEach((f: string) => collected.add(f)));
-    const dynamic = Array.from(collected).filter((key) => key !== 'All' && key !== 'Top').sort((a, b) => a.localeCompare(b));
-    return ['All', 'Top', ...dynamic];
-  }, [enrichedCreators]);
-
-  const catItems = useMemo<CatItem[]>(() => {
-    const iconMap: Record<string, string> = {
-      All: '◻️',
-      Top: '🔥',
-      Founders: '🏢',
-      Influencers: '⭐',
-      Investors: '💼',
-      'UI/UX Design': '🧩',
-      Athletes: '🏃',
-      Solana: '💠',
-      Musicians: '🎤',
-      'Media & Marketing': '🎯',
-    };
-
-    return allCategories.map((key) => ({
-      key,
-      label: key === 'All' ? 'All Creators' : key === 'Top' ? 'Top Creators' : key,
-      icon: iconMap[key] ?? '�️',
-    }));
-  }, [allCategories]);
-
-  const [cat, setCat] = useState<string>('All');
-  const filtered = useMemo(() => {
-    if (cat === 'All') return enrichedCreators;
-    if (cat === 'Top') {
-      return [...enrichedCreators]
-        .sort((a: any, b: any) => (Number(b.rating || 0) - Number(a.rating || 0)) || (Number(b.trend || 0) - Number(a.trend || 0)))
-        .slice(0, 12);
-    }
-    const needle = cat.toLowerCase();
-    return enrichedCreators.filter((c: any) => (c.fields || []).some((f: string) => String(f).toLowerCase().includes(needle)) || String(c.bio || '').toLowerCase().includes(needle));
-  }, [cat, enrichedCreators]);
+  const filtered = useMemo(() => enrichedCreators, [enrichedCreators]);
 
   const topWeek = useMemo(() => {
     return [...(creators as any[])]

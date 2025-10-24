@@ -3,11 +3,11 @@
 
 .hero {
   display: grid;
-  grid-template-columns: 1fr;
-  justify-items: center;
-  gap: 32px;
-  padding: 50px 0 30px;
-  text-align: center;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 36px;
+  padding: 56px 0 40px;
+  align-items: center;
+  justify-items: stretch;
 }
 
 .left {
@@ -15,9 +15,10 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   gap: 18px;
-  max-width: 720px;
+  max-width: 640px;
+  text-align: left;
 }
 .heading { margin: 0 0 10px; font-size: 76px; line-height: 1.02; letter-spacing: .4px; font-family: var(--display); font-weight: 900 }
 .sub { margin: 0 0 20px; color: #cbd5e1; font-size: 20px }
@@ -27,8 +28,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: clamp(480px, 60vh, 760px);
-  width: min(640px, 86vw);
+  min-height: clamp(520px, 72vh, 840px);
+  width: min(560px, 92%);
+  justify-self: center;
 }
 
 /* page-scoped floating badges container ensures on top of grid */
@@ -37,10 +39,20 @@
 
 
 @media (max-width: 960px) {
-  .hero { gap: 24px; padding: 40px 0 24px; }
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 44px 0 26px;
+    justify-items: center;
+    text-align: center;
+  }
+  .left {
+    align-items: center;
+    text-align: center;
+  }
   .heading { font-size: 44px; line-height: 1.06; }
   .sub { font-size: 16px; }
-  .right { min-height: 360px; }
+  .right { min-height: 360px; width: min(520px, 100%); }
 }
 
 
