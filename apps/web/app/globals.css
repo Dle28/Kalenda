@@ -183,9 +183,52 @@ body::after {
   to   { background-position: 600px 0 }
 }
 
-/* Floating side badges */
-.float-badge { position: fixed; left: 24px; color: #f4c2d5; display:flex; align-items:center; gap:8px; background: rgba(255,255,255,.06); border:1px solid rgba(239,132,189,.35); border-radius: 999px; padding: 6px 10px; backdrop-filter: blur(4px); box-shadow: 0 8px 24px rgba(0,0,0,.45); animation: floaty 6s ease-in-out infinite }
-.float-badge.right { left: auto; right: 24px }
+/* Floating side clocks (replaces pill badges) */
+.float-badge { position: fixed; pointer-events: none; }
+.float-badge.left { left: 24px }
+.float-badge.right { right: 24px }
+
+/* Minimal circular clock style */
+.float-clock {
+  width: 64px;
+  height: 64px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  padding: 6px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+  backdrop-filter: blur(6px);
+  transition: transform .28s ease, opacity .28s ease;
+  animation: floaty 6s ease-in-out infinite;
+  position: fixed; /* keep using top from inline style */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 45;
+  overflow: visible;
+  pointer-events: auto;
+}
+
+.float-clock .clock { display:block }
+.float-clock .clock-bg { mix-blend-mode: normal }
+.float-clock .clock-track { opacity: 0.9 }
+.float-clock .clock-ring { stroke: linear-gradient(90deg, var(--accent) 0%, var(--accent3) 100%); }
+.float-clock .hand-group { transform-origin: 24px 24px }
+
+.float-clock .clock-label {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: var(--fg);
+  opacity: 0.95;
+  background: rgba(0,0,0,0);
+}
+
 @keyframes floaty { 0% { transform: translateY(-8px) } 50% { transform: translateY(6px) } 100% { transform: translateY(-8px) } }
 
 /* Inputs/selects on dark surface */
