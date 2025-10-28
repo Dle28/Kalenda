@@ -212,9 +212,9 @@
   grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
   gap: 24px;
   align-items: start;
-  width: min(1200px, 100%);
-  margin: 0 auto;
-  padding: 0 16px 40px;
+  width: 100%;
+  margin: 0;
+  padding: 0 clamp(24px, 4vw, 48px) 40px;
 }
 
 .primaryColumn {
@@ -260,7 +260,7 @@
 @media (max-width: 960px) {
   .contentLayout {
     grid-template-columns: 1fr;
-    padding: 0 0 32px;
+    padding: 0 20px 32px;
   }
   
   .supportingColumn {
