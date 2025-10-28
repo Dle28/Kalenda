@@ -6,11 +6,9 @@ import styles from './home.module.css';
 import SubtleParticles from '@/components/SubtleParticles';
 import Spotlight from '@/components/Spotlight';
 import Testimonials from '@/components/Testimonials';
-import EventsStrip from '@/components/EventsStrip';
 import ScrollEffects from '@/components/ScrollEffects';
 import { summarizeSlotsByCreator } from '@/lib/slotSummary';
 import CalendarInfographic from '@/components/CalendarInfographic';
-import UpcomingAppointments from '@/components/UpcomingAppointments';
 import GlobalConnectInfographic from '../components/GlobalConnectInfographic';
 
 export default function Page() {
@@ -30,31 +28,50 @@ export default function Page() {
       .slice(0, 6);
   }, []);
 
+  const upcomingSlots = useMemo(() => {
+    const now = Date.now();
+    return [...(slots as any[])]
+      .filter((s: any) => new Date(s.start).getTime() > now)
+      .sort((a: any, b: any) => new Date(a.start).getTime() - new Date(b.start).getTime())
+      .slice(0, 3);
+  }, []);
+
+  const formatSlotTime = (isoString: string) =>
+    new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+      timeZone: 'UTC',
+    }).format(new Date(isoString));
+
   return (
     <>
       <ScrollEffects />
       <section className={styles.wrap}>
-        <div className="container">
-          
+        <div className={styles.heroShell}>
           {/* ===== BƯỚC 1: TÁI CẤU TRÚC HERO ===== */}
           <div className={styles.hero}>
-            <h1 className={styles.heading}>TIME IS MONEY.</h1>
-            <p className={styles.sub}>Reserve expert time slots secured on Solana.</p>
-            
-            <div className={styles.primaryCta}>
-              {/* LƯU Ý: Bạn cần import component WalletButton của mình. 
-                Copilot đề xuất nó ở đây. Nếu chưa có, bạn có thể 
-                tạm thời bỏ qua hoặc comment nó lại.
-              */}
-              {/* <WalletButton /> */}
-              <Link className="btn btn-secondary" href="/book">Book a session</Link>
+            <div className={styles.heroContent}>
+              <h1 className={styles.heading}>TIME IS MONEY.</h1>
+              <p className={styles.sub}>Reserve expert time slots secured on Solana.</p>
+              
+              <div className={styles.primaryCta}>
+                {/* LƯU Ý: Bạn cần import component WalletButton của mình. 
+                  Copilot đề xuất nó ở đây. Nếu chưa có, bạn có thể 
+                  tạm thời bỏ qua hoặc comment nó lại.
+                */}
+                {/* <WalletButton /> */}
+                <Link className="btn btn-secondary" href="/book">Book a session</Link>
+              </div>
             </div>
+
+            <div className={styles.heroGraphic}>
+              <GlobalConnectInfographic />
+            </div>
+
             <SubtleParticles />
-          </div>
-          
-          {/* Đồ họa bây giờ nằm dưới hero, không còn bên cạnh nữa */}
-          <div className={styles.heroGraphic}>
-            <GlobalConnectInfographic />
           </div>
           {/* ===== KẾT THÚC TÁI CẤU TRÚC HERO ===== */}
 
@@ -64,63 +81,78 @@ export default function Page() {
         <section className={styles.contentLayout}>
           
           {/* KHỐI HÀNH ĐỘNG CHÍNH (Lịch + Lưới Booking) */}
-          <div className={styles.primaryActionCard}>
-            {/* LƯU Ý: Đây là nơi Copilot gợi ý đặt Tabs (Intro Call | Fixed Price | Auction) 
-              Chúng ta sẽ thêm component Tabs sau. 
-              Trước mắt, hãy dùng component Lịch + Lưới booking bạn đã sửa.
-            */}
-
-            {/* Bạn có thể di chuyển <CalendarInfographic> vào đây nếu muốn */}
-            {/* <CalendarInfographic /> */}
-
-            {/* HOẶC dùng component Lịch của bạn (từ ảnh chụp) */}
-            {/* <SmartCalendar ... /> */}
-            
-            {/* TODO: Bạn cần di chuyển component chịu trách nhiệm 
-              hiển thị "Smart calendar" VÀ "lưới booking" (Kira, Aiko...)
-              vào đây. Dựa trên code cũ, có vẻ đó là <UpcomingAppointments /> ?
-              Nếu chưa có, bạn hãy dùng component <CalendarInfographic> và
-              phần lưới booking ở dưới.
-            */}
-            
-            {/* Tạm thời tôi sẽ lấy từ code cũ của bạn */}
-            <div style={{ margin: '8px 0 12px' }}>
+          <div className={styles.primaryColumn}>
+            <div className={styles.card}>
               <CalendarInfographic />
+              {upcomingSlots.length > 0 ? (
+                <div className={styles.bookingGrid}>
+                  {upcomingSlots.map((slot: any) => {
+                    const creator = (creators as any[]).find((x: any) => x.pubkey === slot.creator);
+                    return (
+                      <Link
+                        key={slot.id}
+                        href={`/slot/${encodeURIComponent(slot.id)}`}
+                        className={styles.eventCard}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={creator?.avatar || 'https://placehold.co/160'}
+                          alt={creator?.name || 'creator'}
+                          width={56}
+                          height={56}
+                        />
+                        <div className={styles.eventBody}>
+                          <b className="one-line">{creator?.name || 'Creator'}</b>
+                          <span className="muted">{formatSlotTime(slot.start)}</span>
+                          <span className={styles.badgeMode}>{slot.mode === 'Stable' ? 'Fixed' : 'Auction'}</span>
+                        </div>
+                        <span className={styles.eventCta}>Reserve</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className={styles.bookingEmpty}>
+                  <span className="muted">No upcoming slots yet. Check back soon.</span>
+                </div>
+              )}
             </div>
-            
-            <UpcomingAppointments slots={slots as any} creators={creators as any} />
 
-            {/* Tạm thời di chuyển phần "How-to" vào đây */}
-            <div className={styles.how}>
-              <div className={styles.step}>
-                <div className={styles.stepIcon}>1</div>
-                <div className={styles.stepText}>
-                  <b>Select a creator</b>
-                  <span className="muted">View pricing, availability, and reviews</span>
+            <div className={styles.card}>
+              <div className={styles.how}>
+                <div className={styles.step}>
+                  <div className={styles.stepIcon}>1</div>
+                  <div className={styles.stepText}>
+                    <b>Select a creator</b>
+                    <span className="muted">View pricing, availability, and reviews</span>
+                  </div>
                 </div>
-              </div>
-              <div className={styles.step}>
-                <div className={styles.stepIcon}>2</div>
-                <div className={styles.stepText}>
-                  <b>Book & Pay</b>
-                  <span className="muted">Secure your spot with USDC</span>
+                <div className={styles.step}>
+                  <div className={styles.stepIcon}>2</div>
+                  <div className={styles.stepText}>
+                    <b>Book & Pay</b>
+                    <span className="muted">Secure your spot with USDC</span>
+                  </div>
                 </div>
-              </div>
-              <div className={styles.step}>
-                <div className={styles.stepIcon}>3</div>
-                <div className={styles.stepText}>
-                  <b>Meet & Receive Materials</b>
-                  <span className="muted">Join the call and get timely follow-ups</span>
+                <div className={styles.step}>
+                  <div className={styles.stepIcon}>3</div>
+                  <div className={styles.stepText}>
+                    <b>Meet & Receive Materials</b>
+                    <span className="muted">Join the call and get timely follow-ups</span>
+                  </div>
                 </div>
               </div>
             </div>
 
+            <div className={styles.card}>
+              <Testimonials embedded />
+            </div>
           </div>
 
           {/* KHỐI HỖ TRỢ (Creators + Trending) */}
           <aside className={styles.supportingColumn}>
             {/* Top Creators (Spotlight) */}
-            <div className={styles.supportingCard}>
+            <div className={styles.card}>
               <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center', margin: '0 0 10px' }}>
                 <div className="row" style={{ gap: 10, alignItems: 'center' }}>
                   <div style={{ width: 36, height: 36, borderRadius: 12, background: 'rgba(239,132,189,.15)', border: '1px solid rgba(239,132,189,.35)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>🔥</div>
@@ -134,7 +166,7 @@ export default function Page() {
             </div>
 
             {/* Top This Week (MiniList) */}
-            <div className={styles.supportingCard}>
+            <div className={styles.card}>
               <div className={styles.miniHeader}>Top This Week</div>
               <div className={styles.miniList}>
                 {(topWeek as any[]).map((c: any) => (
@@ -154,9 +186,6 @@ export default function Page() {
 
         </section>
         {/* ===== KẾT THÚC BƯỚC 2 ===== */}
-
-        <Testimonials />
-        <EventsStrip />
         <footer className={styles.footer}>
           <div className="container" style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center' }}>
             <div className="row" style={{ gap: 10, flexWrap: 'wrap' }}>

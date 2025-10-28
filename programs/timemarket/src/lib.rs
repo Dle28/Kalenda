@@ -5,6 +5,7 @@ use anchor_spl::token_interface::{transfer_checked, mint_to, Mint, TokenAccount,
 // Group logic into focused modules for readability
 mod market;
 mod escrow;
+mod tipping;
 
 declare_id!("Gz7jdgqsn3R8mBrthEx5thAFYdM369kHN7wMTY3PKhty");
 
@@ -35,11 +36,13 @@ pub struct CreatorProfile {
     pub payout_wallet: Pubkey,
     pub fee_bps_override: Option<u16>,
     pub platform: Pubkey,
+    pub total_tips_received: u64,
+    pub tip_count: u32,
     pub bump: u8,
 }
 
 impl CreatorProfile {
-    pub const LEN: usize = 32 + 32 + 1 + 2 + 32 + 1; // Option<u16> ~ 1 tag + 2 value
+    pub const LEN: usize = 32 + 32 + 1 + 2 + 32 + 8 + 4 + 1; // Option<u16> ~ 1 tag + 2 value
 }
 
 // Fee policy helper: use creator override when present, otherwise platform default
@@ -110,11 +113,12 @@ pub struct TimeSlot {
     pub auction_start_ts: Option<i64>,
     pub auction_end_ts: Option<i64>,
     pub anti_sniping_sec: Option<u32>,
+    pub total_tips_received: u64,
     pub bump: u8,
 }
 
 impl TimeSlot {
-    pub const LEN: usize = 32 + 32 + 32 + 32 + 8 + 8 + 2 + 32 + 32 + 1 + 1 + 1 + 2 + 2 + 32 + 8 + 2 + (1 + 8) + (1 + 8) + (1 + 8) + (1 + 4) + 1;
+    pub const LEN: usize = 32 + 32 + 32 + 32 + 8 + 8 + 2 + 32 + 32 + 1 + 1 + 1 + 2 + 2 + 32 + 8 + 2 + (1 + 8) + (1 + 8) + (1 + 8) + (1 + 4) + 8 + 1;
 }
 
 #[account]
@@ -459,6 +463,8 @@ pub enum ErrorCode {
     CapacityExhausted,
     #[msg("Multi-capacity unsupported for auctions")] 
     MultiCapacityUnsupported,
+    #[msg("Invalid amount")]
+    InvalidAmount,
 }
 
 // ===================== CPI helpers =====================
@@ -1351,6 +1357,121 @@ pub mod timemarket {
     pub fn close_slot_sol(ctx: Context<CloseSlotSol>) -> Result<()> {
         escrow::close_slot_sol(ctx)
     }
+
+    // Tipping system
+    pub fn tip_creator_spl(ctx: Context<TipCreatorSpl>, amount: u64, message_hash: Option<[u8; 32]>) -> Result<()> {
+        tipping::tip_creator_spl(ctx, amount, message_hash)
+    }
+
+    pub fn tip_creator_sol(ctx: Context<TipCreatorSol>, amount: u64, message_hash: Option<[u8; 32]>) -> Result<()> {
+        tipping::tip_creator_sol(ctx, amount, message_hash)
+    }
+
+    pub fn tip_for_session_spl(ctx: Context<TipForSessionSpl>, amount: u64, message_hash: Option<[u8; 32]>) -> Result<()> {
+        tipping::tip_for_session_spl(ctx, amount, message_hash)
+    }
+}
+
+// ===================== Tipping Context Accounts =====================
+
+#[derive(Accounts)]
+pub struct TipCreatorSpl<'info> {
+    #[account(mut)]
+    pub tipper: Signer<'info>,
+    #[account(
+        mut,
+        seeds = [b"creator", creator_profile.authority.as_ref(), platform.key().as_ref()],
+        bump = creator_profile.bump
+    )]
+    pub creator_profile: Account<'info, CreatorProfile>,
+    pub platform: Account<'info, Platform>,
+    #[account(constraint = mint.key() == platform.mint)]
+    pub mint: InterfaceAccount<'info, Mint>,
+    #[account(mut)]
+    pub tipper_token: InterfaceAccount<'info, TokenAccount>,
+    #[account(address = creator_profile.payout_wallet)]
+    /// CHECK: Address is constrained to `creator_profile.payout_wallet` above.
+    pub profile_payout_wallet: UncheckedAccount<'info>,
+    #[account(
+        init_if_needed,
+        payer = tipper,
+        associated_token::mint = mint,
+        associated_token::authority = profile_payout_wallet,
+        associated_token::token_program = token_program
+    )]
+    pub creator_payout_ata: InterfaceAccount<'info, TokenAccount>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
+    pub token_program: Interface<'info, TokenInterface>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct TipCreatorSol<'info> {
+    #[account(mut)]
+    pub tipper: Signer<'info>,
+    #[account(
+        mut,
+        seeds = [b"creator", creator_profile.authority.as_ref(), platform.key().as_ref()],
+        bump = creator_profile.bump
+    )]
+    pub creator_profile: Account<'info, CreatorProfile>,
+    pub platform: Account<'info, Platform>,
+    #[account(mut, address = creator_profile.payout_wallet)]
+    /// CHECK: Address is constrained to `creator_profile.payout_wallet` above.
+    pub creator_payout: UncheckedAccount<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct TipForSessionSpl<'info> {
+    #[account(mut)]
+    pub tipper: Signer<'info>,
+    #[account(mut)]
+    pub slot: Account<'info, TimeSlot>,
+    #[account(
+        mut,
+        seeds = [b"creator", creator_profile.authority.as_ref(), platform.key().as_ref()],
+        bump = creator_profile.bump,
+        constraint = slot.creator_profile == creator_profile.key()
+    )]
+    pub creator_profile: Account<'info, CreatorProfile>,
+    pub platform: Account<'info, Platform>,
+    #[account(constraint = mint.key() == platform.mint)]
+    pub mint: InterfaceAccount<'info, Mint>,
+    #[account(mut)]
+    pub tipper_token: InterfaceAccount<'info, TokenAccount>,
+    #[account(address = creator_profile.payout_wallet)]
+    /// CHECK: Address is constrained to `creator_profile.payout_wallet` above.
+    pub profile_payout_wallet: UncheckedAccount<'info>,
+    #[account(
+        init_if_needed,
+        payer = tipper,
+        associated_token::mint = mint,
+        associated_token::authority = profile_payout_wallet,
+        associated_token::token_program = token_program
+    )]
+    pub creator_payout_ata: InterfaceAccount<'info, TokenAccount>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
+    pub token_program: Interface<'info, TokenInterface>,
+    pub system_program: Program<'info, System>,
+}
+
+// ===================== Tipping Events =====================
+
+#[event]
+pub struct TipEvent {
+    pub from: Pubkey,
+    pub to: Pubkey,
+    pub amount: u64,
+    pub message_hash: Option<[u8; 32]>,
+    pub timestamp: i64,
+}
+
+#[event]
+pub struct SessionTipEvent {
+    pub slot: Pubkey,
+    pub from: Pubkey,
+    pub amount: u64,
 }
 
 

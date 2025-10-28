@@ -117,17 +117,6 @@ export default function GlobalConnectInfographic() {
         </div>
       </div>
 
-      <div className={styles.legend}>
-        {hubs.map((hub) => (
-          <div key={`legend-${hub.id}`} className={styles.legendItem}>
-            <span className={styles.dot} />
-            <div className={styles.legendCopy}>
-              <b>{hub.label}</b>
-              <span>{hub.detail}</span>
-            </div>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }

@@ -1,38 +1,55 @@
-﻿.wrap { color: #e5e7eb; position: relative; isolation: isolate }
+.wrap { color: #e5e7eb; position: relative; isolation: isolate }
 
+
+.heroShell {
+  width: 100%;
+  margin: 0;
+}
 
 .hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 48px;
+  align-items: center;
+  width: 100%;
+  margin: 0;
+  padding: 88px 0 64px;
+}
+
+.heroContent {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
   gap: 20px;
-  padding-block: 72px;
-  position: relative;
+  align-items: flex-start;
+  text-align: left;
+  max-width: 560px;
+  z-index: 1;
 }
 
-.left {
-}
-.heading { margin: 0 0 10px; font-size: 76px; line-height: 1.02; letter-spacing: .4px; font-family: var(--display); font-weight: 900 }
-.sub { margin: 0 0 20px; color: #cbd5e1; font-size: 20px }
-
-.right {
-}
+.heading { margin: 0; font-size: clamp(52px, 6vw, 76px); line-height: 1.02; letter-spacing: .4px; font-family: var(--display); font-weight: 900 }
+.sub { margin: 0; color: #cbd5e1; font-size: 20px; max-width: 440px }
 
 .primaryCta {
   display: flex;
   gap: 12px;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   margin-top: 12px;
 }
 
 .heroGraphic {
   display: flex;
-  justify-content: center;
-  padding-block: 20px 40px;
-  max-width: 90%;
-  margin: 0 auto;
+  justify-content: flex-end;
+  align-items: center;
+  max-width: 640px;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.heroGraphic > * {
+  width: 100%;
 }
 
 /* page-scoped floating badges container ensures on top of grid */
@@ -41,12 +58,19 @@
 
 
 @media (max-width: 960px) {
-  .hero {
-    padding-block: 56px 44px;
+  .heroShell {
+    width: 100%;
   }
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding: 56px 0 44px;
+  }
+  .heroContent { align-items: center; text-align: center; max-width: none }
   .heading { font-size: 44px; line-height: 1.06; }
   .sub { font-size: 16px; }
-  .heroGraphic { max-width: 100%; padding-block: 16px 32px; }
+  .heroGraphic { justify-content: center; padding: 0 0 24px; }
+  .primaryCta { justify-content: center; }
 }
 
 
@@ -116,14 +140,36 @@
   padding: 0 16px 40px;
 }
 
-.primaryActionCard {
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 24px;
+.primaryColumn {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
+}
+
+.card {
+  border-radius: 20px;
+  background: var(--color-bg-panel, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--color-border, rgba(255, 255, 255, 0.12));
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.bookingGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.bookingEmpty {
+  margin-top: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+  text-align: center;
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .supportingColumn {
@@ -132,16 +178,6 @@
   gap: 20px;
   position: sticky;
   top: 80px;
-}
-
-.supportingCard {
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
 }
 
 @media (max-width: 960px) {
@@ -154,3 +190,4 @@
     position: static;
   }
 }
+

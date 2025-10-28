@@ -75,6 +75,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <SearchBar />
               <div className="spacer" />
               <Link href="/creators" className="link">Explore creators</Link>
+              <Link href="/tips" className="link" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <span>💰</span> Tips
+              </Link>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 12 }}>
                 <CombinedHeaderProfile />
                 <WalletButton />
@@ -82,7 +85,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </nav>
           </header>
           <main className="container">{children}</main>
-          <footer className="container muted">Â© <span suppressHydrationWarning>{new Date().getFullYear()}</span> TimeMarket</footer>
+          <footer className="container muted">&copy; <span suppressHydrationWarning>{new Date().getFullYear()}</span> Kalenda</footer>
         </Providers>
       </body>
     </html>
