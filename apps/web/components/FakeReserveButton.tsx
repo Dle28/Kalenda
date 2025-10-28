@@ -135,7 +135,7 @@ export default function FakeReserveButton({
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            zIndex: 1000,
+            zIndex: 9999,
             padding: "20px",
           }}
           onClick={() => setShowSuccessModal(false)}
@@ -148,9 +148,10 @@ export default function FakeReserveButton({
               padding: "40px",
               maxWidth: "500px",
               width: "100%",
+              maxHeight: "90vh",
+              overflowY: "auto",
               boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(16, 185, 129, 0.1)",
               animation: "slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
-              position: "relative",
             }}
             onClick={(e) => e.stopPropagation()}
           >

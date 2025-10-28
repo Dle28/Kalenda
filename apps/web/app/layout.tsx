@@ -75,6 +75,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <SearchBar />
               <div className="spacer" />
               <Link href="/creators" className="link">Explore creators</Link>
+              <Link href="/history" className="link">Transaction History</Link>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 12 }}>
                 <CombinedHeaderProfile />
                 <WalletButton />
