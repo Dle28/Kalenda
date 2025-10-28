@@ -27,3 +27,4 @@ export default function Reveal({ children, as: As = 'div', delay = 0, className 
   return <As ref={ref as any} className={cls} {...rest}>{children}</As>;
 }
 
+

@@ -17,7 +17,7 @@ export type ProfileData = {
   sessionMaterials?: string;
   defaults?: {
     mode: 'Stable' | 'EnglishAuction';
-    currency: 'USDC' | 'SOL';
+    currency: 'SOL' | 'SOL';
     durationMin: string;
     bufferMin: string;
     price?: string;
@@ -253,7 +253,7 @@ export default function ProfileSetup({ value, onChange, mode = 'full' }: Profile
                 onChange={(e) => onChange({ 
                   ...value, 
                   defaults: { 
-                    ...(value.defaults || { currency: 'USDC', durationMin: '30', bufferMin: '10' }), 
+                    ...(value.defaults || { currency: 'SOL', durationMin: '30', bufferMin: '10' }), 
                     mode: e.target.value as any 
                   } 
                 })}
@@ -266,7 +266,7 @@ export default function ProfileSetup({ value, onChange, mode = 'full' }: Profile
             <label className="stack" style={{ minWidth: 140 }}>
               <span className="muted">Currency</span>
               <select 
-                value={value.defaults?.currency || 'USDC'} 
+                value={value.defaults?.currency || 'SOL'} 
                 onChange={(e) => onChange({ 
                   ...value, 
                   defaults: { 
@@ -275,7 +275,7 @@ export default function ProfileSetup({ value, onChange, mode = 'full' }: Profile
                   } 
                 })}
               >
-                <option value="USDC">USDC</option>
+                <option value="SOL">SOL</option>
                 <option value="SOL">SOL</option>
               </select>
             </label>
@@ -290,7 +290,7 @@ export default function ProfileSetup({ value, onChange, mode = 'full' }: Profile
                 onChange={(e) => onChange({ 
                   ...value, 
                   defaults: { 
-                    ...(value.defaults || { mode: 'Stable', currency: 'USDC', bufferMin: '10' }), 
+                    ...(value.defaults || { mode: 'Stable', currency: 'SOL', bufferMin: '10' }), 
                     durationMin: e.target.value 
                   } 
                 })} 
@@ -307,7 +307,7 @@ export default function ProfileSetup({ value, onChange, mode = 'full' }: Profile
                 onChange={(e) => onChange({ 
                   ...value, 
                   defaults: { 
-                    ...(value.defaults || { mode: 'Stable', currency: 'USDC', durationMin: '30' }), 
+                    ...(value.defaults || { mode: 'Stable', currency: 'SOL', durationMin: '30' }), 
                     bufferMin: e.target.value 
                   } 
                 })} 
@@ -317,7 +317,7 @@ export default function ProfileSetup({ value, onChange, mode = 'full' }: Profile
 
           {(value.defaults?.mode || 'Stable') === 'Stable' ? (
             <label className="stack" style={{ maxWidth: 200 }}>
-              <span className="muted">Price ({value.defaults?.currency || 'USDC'})</span>
+              <span className="muted">Price ({value.defaults?.currency || 'SOL'})</span>
               <input 
                 type="number" 
                 min={0} 
@@ -326,7 +326,7 @@ export default function ProfileSetup({ value, onChange, mode = 'full' }: Profile
                 onChange={(e) => onChange({ 
                   ...value, 
                   defaults: { 
-                    ...(value.defaults || { mode: 'Stable', currency: 'USDC', durationMin: '30', bufferMin: '10' }), 
+                    ...(value.defaults || { mode: 'Stable', currency: 'SOL', durationMin: '30', bufferMin: '10' }), 
                     price: e.target.value 
                   } 
                 })} 
@@ -335,7 +335,7 @@ export default function ProfileSetup({ value, onChange, mode = 'full' }: Profile
           ) : (
             <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
               <label className="stack" style={{ minWidth: 160 }}>
-                <span className="muted">Start price ({value.defaults?.currency || 'USDC'})</span>
+                <span className="muted">Start price ({value.defaults?.currency || 'SOL'})</span>
                 <input 
                   type="number" 
                   min={0} 
@@ -344,14 +344,14 @@ export default function ProfileSetup({ value, onChange, mode = 'full' }: Profile
                   onChange={(e) => onChange({ 
                     ...value, 
                     defaults: { 
-                      ...(value.defaults || { mode: 'EnglishAuction', currency: 'USDC', durationMin: '30', bufferMin: '10' }), 
+                      ...(value.defaults || { mode: 'EnglishAuction', currency: 'SOL', durationMin: '30', bufferMin: '10' }), 
                       startPrice: e.target.value 
                     } 
                   })} 
                 />
               </label>
               <label className="stack" style={{ minWidth: 160 }}>
-                <span className="muted">Bid step ({value.defaults?.currency || 'USDC'})</span>
+                <span className="muted">Bid step ({value.defaults?.currency || 'SOL'})</span>
                 <input 
                   type="number" 
                   min={0.01} 
@@ -360,7 +360,7 @@ export default function ProfileSetup({ value, onChange, mode = 'full' }: Profile
                   onChange={(e) => onChange({ 
                     ...value, 
                     defaults: { 
-                      ...(value.defaults || { mode: 'EnglishAuction', currency: 'USDC', durationMin: '30', bufferMin: '10' }), 
+                      ...(value.defaults || { mode: 'EnglishAuction', currency: 'SOL', durationMin: '30', bufferMin: '10' }), 
                       bidStep: e.target.value 
                     } 
                   })} 
@@ -373,3 +373,4 @@ export default function ProfileSetup({ value, onChange, mode = 'full' }: Profile
     </div>
   );
 }
+

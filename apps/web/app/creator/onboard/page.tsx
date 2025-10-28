@@ -31,7 +31,7 @@ export default function OnboardPage() {
     sessionMaterials: '',
     defaults: {
       mode: 'Stable',
-      currency: 'USDC',
+      currency: 'SOL',
       durationMin: '30',
       bufferMin: '10',
       price: '20',
@@ -301,13 +301,13 @@ export default function OnboardPage() {
                   <label className="stack" style={{ minWidth: 120 }}>
                     <span className="muted">Currency</span>
                     <select 
-                      value={profile.defaults?.currency || 'USDC'} 
+                      value={profile.defaults?.currency || 'SOL'} 
                       onChange={(e) => setProfile({ 
                         ...profile, 
                         defaults: { ...profile.defaults!, currency: e.target.value as any } 
                       })}
                     >
-                      <option value="USDC">USDC</option>
+                      <option value="SOL">SOL</option>
                       <option value="SOL">SOL</option>
                     </select>
                   </label>
@@ -524,3 +524,4 @@ export default function OnboardPage() {
     </section>
   );
 }
+

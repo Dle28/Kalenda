@@ -14,7 +14,7 @@
     },
     "defaults": {
       "mode": "Stable",
-      "currency": "USDC",
+      "currency": "SOL",
       "durationMin": "30",
       "bufferMin": "10",
       "price": "20",
@@ -76,7 +76,7 @@
     ],
     "defaults": {
       "mode": "Stable",
-      "currency": "USDC",
+      "currency": "SOL",
       "durationMin": "30",
       "bufferMin": "10",
       "price": "20",
@@ -134,7 +134,7 @@
     "sessionMaterials": "https://meet.google.com/mfs-hqpf-hkj",
     "defaults": {
       "mode": "EnglishAuction",
-      "currency": "USDC",
+      "currency": "SOL",
       "durationMin": "180",
       "bufferMin": "10",
       "price": "20",

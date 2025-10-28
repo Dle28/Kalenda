@@ -252,3 +252,4 @@ export default function TipButton({ creatorPubkey, creatorName, platformAddress 
     </>
   );
 }
+

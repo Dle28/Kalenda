@@ -34,3 +34,4 @@ export default function CategoryBar({ items, active, onChange }: { items: CatIte
   );
 }
 
+

@@ -197,3 +197,4 @@ export function getCountdownsForSlots(slots: TimeSlot[]): Record<string, ReturnT
 
   return countdowns;
 }
+

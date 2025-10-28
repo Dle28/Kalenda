@@ -1,4 +1,4 @@
-﻿import './globals.css';
+import './globals.css';
 import '@solana/wallet-adapter-react-ui/styles.css';
 import type { Metadata } from 'next';
 import Script from 'next/script';
@@ -76,7 +76,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div className="spacer" />
               <Link href="/creators" className="link">Explore creators</Link>
               <Link href="/tips" className="link" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <span>💰</span> Tips
+                <span>??</span> Tips
               </Link>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 12 }}>
                 <CombinedHeaderProfile />
@@ -91,3 +91,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+

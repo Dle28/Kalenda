@@ -28,3 +28,4 @@ export default function AvatarRain({ image, count = 24, forceMotion = true }: { 
   });
   return <div className={`avatar-rain${forceMotion ? ' motion-allow' : ''}`} aria-hidden>{drops}</div>;
 }
+

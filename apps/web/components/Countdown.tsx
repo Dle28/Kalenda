@@ -22,3 +22,4 @@ export default function Countdown({ to }: { to: Date }) {
   return <span className="muted">Ends in {fmt(left)}</span>;
 }
 
+

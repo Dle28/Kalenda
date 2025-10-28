@@ -104,7 +104,7 @@ export default function RequestsPanel({ creatorPubkey, pricePerMin }: { creatorP
             </div>
             <div className="row" style={{ gap: 10, alignItems: 'end', flexWrap: 'wrap' }}>
               <label className="stack" style={{ minWidth: 160 }}>
-                <span className="muted">Price (USDC)</span>
+                <span className="muted">Price (SOL)</span>
                 <input type="number" inputMode="decimal" min={0} step={0.01} value={edit.price} onChange={(e) => setEdit({ ...edit, price: e.target.value })} />
               </label>
               <div className="row" style={{ gap: 8 }}>
@@ -117,3 +117,4 @@ export default function RequestsPanel({ creatorPubkey, pricePerMin }: { creatorP
     </div>
   );
 }
+

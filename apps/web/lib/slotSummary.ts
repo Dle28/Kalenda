@@ -87,3 +87,4 @@ export function summarizeSlotsByCreator(slots: Slot[]): Record<string, SaleSumma
   }
   return result;
 }
+

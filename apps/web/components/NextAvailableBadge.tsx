@@ -41,3 +41,4 @@ export default function NextAvailableBadge({ creatorPubkey }: { creatorPubkey: s
   return <span className="chip" title="Next availability">{label}</span>;
 }
 
+

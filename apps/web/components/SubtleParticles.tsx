@@ -35,3 +35,4 @@ export default function SubtleParticles({ count = 14 }: { count?: number }) {
   return <div className={styles.particlesWrap} aria-hidden>{nodes}</div>;
 }
 
+

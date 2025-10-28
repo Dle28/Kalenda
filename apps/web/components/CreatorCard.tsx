@@ -65,3 +65,4 @@ export default function CreatorCard(props: CreatorCardProps) {
 }
 import dynamic from 'next/dynamic';
 const NextAvailableBadge = dynamic(() => import('./NextAvailableBadge'), { ssr: false });
+

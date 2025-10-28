@@ -72,7 +72,7 @@ export default function Page() {
                   tạm thời bỏ qua hoặc comment nó lại.
                 */}
                 {/* <WalletButton /> */}
-                <Link className={`${styles.ctaPrimary} btn btn-secondary`} href="/book">Book a session</Link>
+                <Link className={`${styles.ctaPrimary} btn btn-secondary`} href="/creators">Book a session</Link>
               </div>
             </div>
 
@@ -140,7 +140,7 @@ export default function Page() {
                   <div className={styles.stepIcon}>2</div>
                   <div className={styles.stepText}>
                     <b>Book & Pay</b>
-                    <span className="muted">Secure your spot with USDC</span>
+                    <span className="muted">Secure your spot with SOL</span>
                   </div>
                 </div>
                 <div className={styles.step}>
@@ -212,3 +212,4 @@ export default function Page() {
     </>
   );
 }
+

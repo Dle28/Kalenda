@@ -57,3 +57,4 @@ export async function getCreatorAvailability(pubkey: string): Promise<Availabili
   const list = await getAvailabilityByCreator(k).catch(() => [] as any[]);
   return list as any;
 }
+

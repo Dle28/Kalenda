@@ -66,3 +66,4 @@ export default function TicketPanel(props: { slotId: string; creator: string; st
     </div>
   );
 }
+

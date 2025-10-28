@@ -30,7 +30,7 @@ export default function CreatorDashboard() {
     sessionTitle: '',
     sessionDescription: '',
     sessionMaterials: '',
-    defaults: { mode: 'Stable', currency: 'USDC', durationMin: '30', bufferMin: '10', price: '20', startPrice: '10', bidStep: '1' },
+    defaults: { mode: 'Stable', currency: 'SOL', durationMin: '30', bufferMin: '10', price: '20', startPrice: '10', bidStep: '1' },
   });
 
   // Slots & availability
@@ -76,7 +76,7 @@ export default function CreatorDashboard() {
             sessionMaterials: p.sessionMaterials || '',
             defaults: {
               mode: p.defaults?.mode || 'Stable',
-              currency: p.defaults?.currency || 'USDC',
+              currency: p.defaults?.currency || 'SOL',
               durationMin: String(p.defaults?.durationMin || '30'),
               bufferMin: String(p.defaults?.bufferMin || '10'),
               price: p.defaults?.price ?? '20',
@@ -331,7 +331,7 @@ export default function CreatorDashboard() {
                     <input type="number" min={15} step={15} value={quick.durationMin} onChange={(e) => setQuick({ ...quick, durationMin: e.target.value })} />
                   </label>
                   <label className="stack" style={{ minWidth: 140 }}>
-                    <span className="muted">Price (USDC)</span>
+                    <span className="muted">Price (SOL)</span>
                     <input type="number" min={0} step={0.01} value={quick.price} onChange={(e) => setQuick({ ...quick, price: e.target.value })} />
                   </label>
                 </div>
@@ -455,3 +455,4 @@ export default function CreatorDashboard() {
     </section>
   );
 }
+

@@ -9,10 +9,10 @@ export type ReserveButtonProps = {
   mode: 'Stable' | 'EnglishAuction';
   price?: number;
   startPrice?: number;
-  currency?: 'USDC' | 'SOL';
+  currency?: 'SOL' | 'SOL';
 };
 
-export default function ReserveButton({ slotId, mode, price, startPrice, currency = 'USDC' }: ReserveButtonProps) {
+export default function ReserveButton({ slotId, mode, price, startPrice, currency = 'SOL' }: ReserveButtonProps) {
   const { connection } = useConnection();
   const wallet = useWallet();
   const [submitting, setSubmitting] = useState(false);
@@ -55,3 +55,4 @@ export default function ReserveButton({ slotId, mode, price, startPrice, currenc
     </div>
   );
 }
+

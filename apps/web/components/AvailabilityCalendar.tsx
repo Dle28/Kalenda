@@ -97,3 +97,4 @@ export default function AvailabilityCalendar({ slots, days = 14 }: { slots: Slot
     </div>
   );
 }
+

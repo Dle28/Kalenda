@@ -77,12 +77,12 @@ export default function OwnerSlotQuickAdd({ creatorPubkey }: { creatorPubkey: st
         </label>
         {quick.mode === 'Stable' ? (
           <label className="stack" style={{ minWidth: 160 }}>
-            <span className="muted">Price (USDC)</span>
+            <span className="muted">Price (SOL)</span>
             <input type="number" inputMode="decimal" min={0} step={0.01} value={quick.price} onChange={(e) => setQuick({ ...quick, price: e.target.value })} />
           </label>
         ) : (
           <label className="stack" style={{ minWidth: 160 }}>
-            <span className="muted">Start price (USDC)</span>
+            <span className="muted">Start price (SOL)</span>
             <input type="number" inputMode="decimal" min={0} step={0.01} value={quick.startPrice} onChange={(e) => setQuick({ ...quick, startPrice: e.target.value })} />
           </label>
         )}
@@ -96,4 +96,5 @@ export default function OwnerSlotQuickAdd({ creatorPubkey }: { creatorPubkey: st
     </div>
   );
 }
+
 

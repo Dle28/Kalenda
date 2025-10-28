@@ -7,10 +7,10 @@ export default function BidRoom(props: {
   startPrice: number;
   bidStep: number;
   currentPrice?: number;
-  currency?: 'USDC' | 'SOL';
+  currency?: 'SOL' | 'SOL';
   onPlaceBid?: (amount: number) => Promise<void> | void;
 }) {
-  const { startPrice, bidStep, currentPrice, currency = 'USDC', onPlaceBid } = props;
+  const { startPrice, bidStep, currentPrice, currency = 'SOL', onPlaceBid } = props;
   const [maxAutoBid, setMaxAutoBid] = useState<string>('');
   const [log, setLog] = useState<BidEvent[]>([]);
 
@@ -87,4 +87,5 @@ export default function BidRoom(props: {
     </div>
   );
 }
+
 

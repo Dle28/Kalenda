@@ -239,3 +239,4 @@ export default function UpcomingAppointments({ slots, creators }: UpcomingAppoin
     </div>
   );
 }
+

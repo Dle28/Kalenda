@@ -39,3 +39,4 @@ export default function Spotlight({ list, intervalMs = 7000 }: { list: Spotlight
     </Link>
   );
 }
+

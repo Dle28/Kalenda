@@ -17,7 +17,7 @@ export default function SlotCard({ slot, fallbackPrice }: { slot: Slot; fallback
         <b>{dateLabel}</b>
         <span className="muted">{durMin} min • {isAuction ? 'Auction' : 'Fixed price'}</span>
         <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-          <span className="badge">{isAuction ? `Start ${price} USDC` : `${price} USDC`}</span>
+          <span className="badge">{isAuction ? `Start ${price} SOL` : `${price} SOL`}</span>
           <Link href={`/slot/${encodeURIComponent(slot.id)}`} className={isAuction ? 'btn btn-outline' : 'btn btn-secondary'} style={{ padding: '6px 10px' }}>
             {isAuction ? 'Join auction' : 'Book now'}
           </Link>
@@ -31,3 +31,4 @@ export default function SlotCard({ slot, fallbackPrice }: { slot: Slot; fallback
     </div>
   );
 }
+

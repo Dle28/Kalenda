@@ -169,3 +169,4 @@ export async function deleteBookingRequest(id: string) {
   await fs.writeFile(requestsPath, JSON.stringify(next, null, 2), 'utf-8');
   return { ok: true };
 }
+

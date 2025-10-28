@@ -101,17 +101,17 @@ export default function OnboardPage() {
               </label>
               {mode === 'Stable' ? (
                 <label className="stack" style={{ minWidth: 160 }}>
-                  <span className="muted">Price (USDC)</span>
+                  <span className="muted">Price (SOL)</span>
                   <input value={price} onChange={(e) => setPrice(e.target.value)} />
                 </label>
               ) : (
                 <>
                   <label className="stack" style={{ minWidth: 160 }}>
-                    <span className="muted">Start price (USDC)</span>
+                    <span className="muted">Start price (SOL)</span>
                     <input value={startPrice} onChange={(e) => setStartPrice(e.target.value)} />
                   </label>
                   <label className="stack" style={{ minWidth: 160 }}>
-                    <span className="muted">Bid step (USDC)</span>
+                    <span className="muted">Bid step (SOL)</span>
                     <input value={bidStep} onChange={(e) => setBidStep(e.target.value)} />
                   </label>
                 </>
@@ -132,7 +132,7 @@ export default function OnboardPage() {
               <span><b>Fee (BPS):</b> {feeBps || 'default'}</span>
               <span><b>Mode:</b> {mode}</span>
               <span><b>Duration:</b> {durationMin} min</span>
-              <span><b>Price:</b> {mode === 'Stable' ? `${price} USDC` : `Start ${startPrice} USDC • step ${bidStep}`}</span>
+              <span><b>Price:</b> {mode === 'Stable' ? `${price} SOL` : `Start ${startPrice} SOL • step ${bidStep}`}</span>
             </div>
             <div className="row" style={{ gap: 8 }}>
               <button className="btn btn-secondary" onClick={goDashboard}>Go to Dashboard</button>
@@ -144,3 +144,4 @@ export default function OnboardPage() {
     </section>
   );
 }
+

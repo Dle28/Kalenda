@@ -420,3 +420,4 @@ export default function WeekCalendar({ slots, avail = [], defaultInterval = 60, 
     </div>
   );
 }
+

@@ -12,3 +12,4 @@ export default function OwnerEditOnProfile({ pubkey }: { pubkey: string }) {
     </div>
   );
 }
+

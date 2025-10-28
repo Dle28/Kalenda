@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
@@ -11,11 +11,11 @@ export default function CreatorBalance({ creatorPubkey }: { creatorPubkey: strin
 
   const [lamports, setLamports] = useState<number | null>(null);
   const [loadingSol, setLoadingSol] = useState(false);
-  const [usdc, setUsdc] = useState<number | null>(null);
+  const [SOL, setSOL] = useState<number | null>(null);
   const [tokenBal, setTokenBal] = useState<number | null>(null);
   const [calBal, setCalBal] = useState<number | null>(null);
   const [customMint, setCustomMint] = useState<string>("");
-  const [view, setView] = useState<"SOL" | "USDC" | "CAL" | "TOKEN">("SOL");
+  const [view, setView] = useState<"SOL" | "SOL" | "CAL" | "TOKEN">("SOL");
   const [solUsd, setSolUsd] = useState<number | null>(null);
   const PRICE_FETCH_ENABLED = process.env.NEXT_PUBLIC_ENABLE_PRICE_FETCH !== 'false';
   const [lastUpdated, setLastUpdated] = useState<number | null>(null);
@@ -40,7 +40,7 @@ export default function CreatorBalance({ creatorPubkey }: { creatorPubkey: strin
           const amt = info.tokenAmount?.uiAmount;
           total += Number(amt || 0);
         }
-        setUsdc(total);
+        setSOL(total);
       }
       try {
         const r = await fetch("https://price.jup.ag/v4/price?ids=SOL", { cache: "no-store" });
@@ -125,13 +125,13 @@ export default function CreatorBalance({ creatorPubkey }: { creatorPubkey: strin
     return () => { if (sub !== null) { try { connection.removeAccountChangeListener(sub); } catch {} } active = false; };
   }, [connection, publicKey]);
 
-  // USDC polling (5s)
+  // SOL polling (5s)
   useEffect(() => {
     let timer: any;
     let active = true;
-    async function loadUSDC() {
+    async function loadSOL() {
       try {
-        if (!publicKey) return setUsdc(null);
+        if (!publicKey) return setSOL(null);
         const endpoint = process.env.NEXT_PUBLIC_RPC_ENDPOINT || "";
         const cluster = endpoint.includes("devnet") ? "devnet" : (endpoint.includes("testnet") ? "testnet" : "mainnet");
         const MINT = cluster === "mainnet" ? "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" : "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr";
@@ -145,13 +145,13 @@ export default function CreatorBalance({ creatorPubkey }: { creatorPubkey: strin
           const amt = info.tokenAmount?.uiAmount;
           total += Number(amt || 0);
         }
-        if (active) { setUsdc(total); setLastUpdated(Date.now()); }
+        if (active) { setSOL(total); setLastUpdated(Date.now()); }
       } catch {
-        if (active) setUsdc(null);
+        if (active) setSOL(null);
       }
     }
-    loadUSDC();
-    timer = setInterval(loadUSDC, 5000);
+    loadSOL();
+    timer = setInterval(loadSOL, 5000);
     return () => { if (timer) clearInterval(timer); active = false; };
   }, [connection, publicKey]);
 
@@ -192,16 +192,16 @@ export default function CreatorBalance({ creatorPubkey }: { creatorPubkey: strin
   const cluster = endpoint.includes("devnet") ? "devnet" : (endpoint.includes("testnet") ? "testnet" : undefined);
   const explorer = `https://explorer.solana.com/address/${encodeURIComponent(base58)}${cluster ? `?cluster=${cluster}` : ""}`;
 
-  const label = view === "SOL" ? "SOL balance" : (view === "USDC" ? "USDC balance" : (view === "CAL" ? "CAL balance" : "Token balance"));
-  const value = view === "SOL" ? (sol !== null ? sol.toFixed(4) : "-") : (view === "USDC" ? (usdc !== null ? usdc.toFixed(2) : "-") : (view === "CAL" ? (calBal !== null ? calBal.toFixed(6) : "-") : (tokenBal !== null ? tokenBal.toFixed(6) : "-")));
-  const rateLine = solUsd ? `1 SOL ~ ${solUsd.toFixed(2)} USDC | 1 USDC ~ ${(1 / solUsd).toFixed(6)} SOL` : "Fetching price...";
+  const label = view === "SOL" ? "SOL balance" : (view === "SOL" ? "SOL balance" : (view === "CAL" ? "CAL balance" : "Token balance"));
+  const value = view === "SOL" ? (sol !== null ? sol.toFixed(4) : "-") : (view === "SOL" ? (SOL !== null ? SOL.toFixed(2) : "-") : (view === "CAL" ? (calBal !== null ? calBal.toFixed(6) : "-") : (tokenBal !== null ? tokenBal.toFixed(6) : "-")));
+  const rateLine = solUsd ? `1 SOL ~ ${solUsd.toFixed(2)} SOL | 1 SOL ~ ${(1 / solUsd).toFixed(6)} SOL` : "Fetching price...";
 
   return (
     <div className="card" style={{ marginTop: 12 }}>
       <h3 className="section-title" style={{ marginTop: 0 }}>Balance</h3>
       <div className="row" style={{ gap: 6, marginBottom: 8, alignItems: "center" }}>
         <button className="chip" onClick={() => setView("SOL")} style={{ color: "#fff", background: view === "SOL" ? "rgba(255,255,255,.16)" : "rgba(255,255,255,.06)" }}>SOL</button>
-        <button className="chip" onClick={() => setView("USDC")} style={{ color: "#fff", background: view === "USDC" ? "rgba(255,255,255,.16)" : "rgba(255,255,255,.06)" }}>USDC</button>
+        <button className="chip" onClick={() => setView("SOL")} style={{ color: "#fff", background: view === "SOL" ? "rgba(255,255,255,.16)" : "rgba(255,255,255,.06)" }}>SOL</button>
         <button className="chip" onClick={() => setView("CAL")} style={{ color: "#fff", background: view === "CAL" ? "rgba(255,255,255,.16)" : "rgba(255,255,255,.06)" }}>CAL</button>
         <button className="chip" onClick={() => setView("TOKEN")} style={{ color: "#fff", background: view === "TOKEN" ? "rgba(255,255,255,.16)" : "rgba(255,255,255,.06)" }}>Token</button>
         <span className="muted" style={{ marginLeft: "auto", fontSize: 12 }}>Last updated: {lastUpdated ? new Date(lastUpdated).toLocaleTimeString() : "-"}</span>
@@ -229,8 +229,8 @@ export default function CreatorBalance({ creatorPubkey }: { creatorPubkey: strin
           <span className="stat-value">{(loadingSol && view === "SOL") ? "..." : value}</span>
           {solUsd && (
             <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>
-              {view === "SOL" && typeof sol === "number" ? `≈ ${(sol * solUsd).toFixed(2)} USDC` : null}
-              {view === "USDC" && typeof usdc === "number" ? `≈ ${(usdc / solUsd).toFixed(6)} SOL` : null}
+              {view === "SOL" && typeof sol === "number" ? `? ${(sol * solUsd).toFixed(2)} SOL` : null}
+              {view === "SOL" && typeof SOL === "number" ? `? ${(SOL / solUsd).toFixed(6)} SOL` : null}
             </div>
           )}
         </div>
@@ -238,5 +238,6 @@ export default function CreatorBalance({ creatorPubkey }: { creatorPubkey: strin
     </div>
   );
 }
+
 
 

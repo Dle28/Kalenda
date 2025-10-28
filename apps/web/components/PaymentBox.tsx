@@ -1,7 +1,7 @@
 "use client";
 import { useMemo, useState } from 'react';
 
-type Currency = 'USDC' | 'SOL';
+type Currency = 'SOL' | 'SOL';
 
 export default function PaymentBox(props: {
   baseAmount: number; // in selected currency units
@@ -9,7 +9,7 @@ export default function PaymentBox(props: {
   feeBps?: number; // platform fee in basis points
   onCurrencyChange?: (c: Currency) => void;
 }) {
-  const { baseAmount, defaultCurrency = 'USDC', feeBps = 250, onCurrencyChange } = props;
+  const { baseAmount, defaultCurrency = 'SOL', feeBps = 250, onCurrencyChange } = props;
   const [currency, setCurrency] = useState<Currency>(defaultCurrency);
 
   const breakdown = useMemo(() => {
@@ -25,10 +25,10 @@ export default function PaymentBox(props: {
         <b>Payment</b>
         <div className="row" style={{ gap: 8 }}>
           <button
-            onClick={() => { setCurrency('USDC'); onCurrencyChange?.('USDC'); }}
-            className={currency === 'USDC' ? 'btn btn-secondary' : 'btn btn-outline'}
+            onClick={() => { setCurrency('SOL'); onCurrencyChange?.('SOL'); }}
+            className={currency === 'SOL' ? 'btn btn-secondary' : 'btn btn-outline'}
             style={{ padding: '6px 10px' }}
-          >USDC</button>
+          >SOL</button>
           <button
             onClick={() => { setCurrency('SOL'); onCurrencyChange?.('SOL'); }}
             className={currency === 'SOL' ? 'btn btn-secondary' : 'btn btn-outline'}
@@ -55,4 +55,5 @@ export default function PaymentBox(props: {
     </div>
   );
 }
+
 

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useEffect, useState } from "react";
 import styles from "@/app/home.module.css";
 
@@ -34,3 +34,4 @@ export default function Testimonials({ embedded = false }: { embedded?: boolean 
     </section>
   );
 }
+
