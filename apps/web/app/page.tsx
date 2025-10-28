@@ -51,11 +51,20 @@ export default function Page() {
       <ScrollEffects />
       <section className={styles.wrap}>
         <div className={styles.heroShell}>
+          <div className={styles.heroBackground} aria-hidden />
           {/* ===== BƯỚC 1: TÁI CẤU TRÚC HERO ===== */}
           <div className={styles.hero}>
             <div className={styles.heroContent}>
+              <div className={styles.heroAura} aria-hidden />
+              <span className={styles.heroKicker}>Kalenda on Solana</span>
               <h1 className={styles.heading}>TIME IS MONEY.</h1>
               <p className={styles.sub}>Reserve expert time slots secured on Solana.</p>
+
+              <div className={styles.heroStats}>
+                <span>Live escrow</span>
+                <span>Instant payouts</span>
+                <span>6 continents</span>
+              </div>
               
               <div className={styles.primaryCta}>
                 {/* LƯU Ý: Bạn cần import component WalletButton của mình. 
@@ -63,7 +72,7 @@ export default function Page() {
                   tạm thời bỏ qua hoặc comment nó lại.
                 */}
                 {/* <WalletButton /> */}
-                <Link className="btn btn-secondary" href="/book">Book a session</Link>
+                <Link className={`${styles.ctaPrimary} btn btn-secondary`} href="/book">Book a session</Link>
               </div>
             </div>
 
