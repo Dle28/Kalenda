@@ -120,17 +120,17 @@
   "BUbmBExp9teHHjHFzcMZb5XhFU8D4LHbduSXqVzgpkZy": {
     "pubkey": "BUbmBExp9teHHjHFzcMZb5XhFU8D4LHbduSXqVzgpkZy",
     "name": "Louis",
-    "bio": "NGƯỜI ĐẸP TRAI NHẤT VIỆT NAM",
+    "bio": "NGƯỜI ĐẸP TRAI NHẤT THANH HÓA",
     "location": "HCM",
     "timezone": "Asia/Bangkok",
-    "avatar": "/uploads/1761547269409-map-of-vietnam.jpg",
+    "avatar": "/uploads/1761123786769-cong-dung-cua-rau-ma.png",
     "meetingTypes": [
       "Video call",
       "Audio call",
       "In-person"
     ],
-    "sessionTitle": "HOÀNG SA TRƯỜNG SA LÀ CỦA VIỆT NAM",
-    "sessionDescription": "YÊU VIỆT NAM",
+    "sessionTitle": "THANH HÓA LÀ SỐ 1",
+    "sessionDescription": "TÔI LÀ NGƯỜI THANH HÓA",
     "sessionMaterials": "https://meet.google.com/mfs-hqpf-hkj",
     "defaults": {
       "mode": "EnglishAuction",

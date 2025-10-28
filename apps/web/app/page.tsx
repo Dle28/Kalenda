@@ -15,18 +15,6 @@ import CalendarInfographic from '@/components/CalendarInfographic';
 import GlobalConnectInfographic from '../components/GlobalConnectInfographic';
 
 export default function Page() {
-  const heroStats = [
-    { label: 'Hours booked this week', value: '1,284h' },
-    { label: 'Avg. creator rating', value: '4.8 / 5' },
-    { label: 'Instant confirmations', value: '3.2k' },
-  ];
-
-  const heroSessions = [
-    { city: 'Tokyo', label: 'Storyboard critique', time: 'Today · 18:30 JST', price: '42 USDC' },
-    { city: 'Berlin', label: 'Lighting masterclass', time: 'Today · 20:00 CET', price: '55 USDC' },
-    { city: 'New York', label: 'Investor AMA', time: 'Tomorrow · 10:00 EST', price: '68 USDC' },
-  ];
-
   const enrichedCreators = useMemo(() => {
     const index = summarizeSlotsByCreator(slots as any);
     return (creators as any[]).map((c: any) => ({
@@ -47,63 +35,24 @@ export default function Page() {
     <>
       <ScrollEffects />
       <section className={styles.wrap}>
-        <FloatingBadges values={[72, 49, 58, 38]} />
-        <div className={styles.heroShell}>
+        <div className="container">
           <div className={styles.hero}>
             <div className={styles.left}>
-              <div className={styles.superTitle}>Creators everywhere</div>
-              <h1 className={styles.heading}>Time is money.</h1>
-              <p className={styles.sub}>Build your schedule around verified creators and collect high-impact sessions without time zone headaches.</p>
-              <div className={styles.heroChecklist}>
-                <div>Guaranteed calendar sync &amp; on-chain escrow</div>
-                <div>Live availability across 14+ timezones</div>
-                <div>Instant payouts once each session is complete</div>
-              </div>
+              <h1 className={styles.heading}>TIME IS MONEY.</h1>
+              <p className={styles.sub}>Get instant access and invest in your favorite creators and experts.</p>
               <div className="cta">
                 <Link className="btn btn-secondary" href="/creators">Explore creators</Link>
                 <Link className="btn btn-outline" href="/creator/onboard">Get paid for your expertise</Link>
               </div>
-              <div className={styles.metrics}>
-                {heroStats.map((stat) => (
-                  <div key={stat.label} className={styles.metricCard}>
-                    <span>{stat.label}</span>
-                    <strong>{stat.value}</strong>
-                  </div>
-                ))}
-              </div>
               <SubtleParticles />
             </div>
             <div className={styles.right}>
-              <div className={styles.globeCard}>
-                <div className={styles.liveTag}>Marketplace live</div>
-                <GlobalConnectInfographic />
-                <div className={styles.scheduleCard}>
-                  <div className={styles.scheduleHeader}>
-                    <span>Spotlight sessions</span>
-                    <span className={styles.pill}>Filling fast</span>
-                  </div>
-                  <ul>
-                    {heroSessions.map((session) => (
-                      <li key={session.city}>
-                        <div className={styles.slotCity}>{session.city}</div>
-                        <div className={styles.slotMeta}>
-                          <span>{session.label}</span>
-                          <time>{session.time}</time>
-                        </div>
-                        <span className={styles.slotPrice}>{session.price}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div className={styles.volumeCard}>
-                  <span>24h marketplace volume</span>
-                  <strong>312&nbsp;SOL</strong>
-                  <small>+12% vs. yesterday</small>
-                </div>
-              </div>
+              <GlobalConnectInfographic />
             </div>
           </div>
         </div>
+
+        <FloatingBadges />
 
         {/* Below-hero sections */}
         <section className={styles.below}>
