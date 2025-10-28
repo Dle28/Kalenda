@@ -202,7 +202,7 @@ export default function WeekCalendar({ slots, avail = [], defaultInterval = 60, 
           <div className="row" style={{ gap: 14, alignItems: 'center' }}>
             <span className="legend"><span className="dot fixed" />Fixed</span>
             <span className="legend"><span className="dot auction" />Auction</span>
-            <span className="legend"><span className="dot avail" />Free</span>
+            <span className="legend"><span className="dot avail" />Intro Call</span>
             <span className="legend"><span className="dot unavail" />Unavailable</span>
           </div>
         </div>

@@ -95,7 +95,7 @@ export default function CalendarInfographic() {
         <div className="row" style={{ gap: 10, alignItems: 'center', opacity: .9 }}>
           <span className="dot fixed" /> <span className="muted" style={{ fontSize: 12 }}>Fixed</span>
           <span className="dot auction" /> <span className="muted" style={{ fontSize: 12 }}>Auction</span>
-          <span className="dot avail" /> <span className="muted" style={{ fontSize: 12 }}>Free</span>
+          <span className="dot avail" /> <span className="muted" style={{ fontSize: 12 }}>Intro Call</span>
         </div>
       </div>
       <div className="grid">

@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { useMemo } from 'react';
 import { creators, slots } from '@/lib/mock';
 import styles from './home.module.css';
-import FloatingBadges from '@/components/FloatingBadges';
 import SubtleParticles from '@/components/SubtleParticles';
 import Spotlight from '@/components/Spotlight';
 import Testimonials from '@/components/Testimonials';
@@ -51,8 +50,6 @@ export default function Page() {
             </div>
           </div>
         </div>
-
-        <FloatingBadges />
 
         {/* Below-hero sections */}
         <section className={styles.below}>

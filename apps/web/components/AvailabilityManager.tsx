@@ -47,7 +47,7 @@ export default function AvailabilityManager({ creatorPubkey }: { creatorPubkey: 
   return (
     <div className="card" style={{ marginTop: 10 }}>
       <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-        <h3 className="section-title" style={{ margin: 0 }}>Free time</h3>
+        <h3 className="section-title" style={{ margin: 0 }}>Intro call slots</h3>
         <button className="btn btn-outline" style={{ padding: '6px 10px' }} onClick={load}>Refresh</button>
       </div>
       {loading ? (
