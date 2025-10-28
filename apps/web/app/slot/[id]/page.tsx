@@ -37,7 +37,7 @@ export default async function SlotPage({ params }: { params: Promise<{ id: strin
               <span className="muted">{label}</span>
               <div className="row" style={{ justifyContent: 'space-between' }}>
                 <span className="muted">{s.mode === 'EnglishAuction' ? 'Starting price' : 'Price'}</span>
-                <b>{priceDisplay} USDC</b>
+                <b>{priceDisplay} SOL</b>
               </div>
               {s.mode === 'EnglishAuction' && (
                 <div className="row" style={{ justifyContent: 'space-between' }}>
@@ -49,7 +49,7 @@ export default async function SlotPage({ params }: { params: Promise<{ id: strin
           </div>
 
           {s.mode === 'EnglishAuction' ? (
-            <BidRoom startPrice={s.startPrice ?? 0} bidStep={1} currency="USDC" />
+            <BidRoom startPrice={s.startPrice ?? 0} bidStep={1} currency="SOL" />
           ) : (
             <div className="card" style={{ display: 'grid', gap: 10 }}>
               <b>Reserve</b>
@@ -59,14 +59,14 @@ export default async function SlotPage({ params }: { params: Promise<{ id: strin
               </div>
               <div className="row" style={{ justifyContent: 'space-between' }}>
                 <span className="muted">Price</span>
-                <b>{s.price ?? 0} USDC</b>
+                <b>{s.price ?? 0} SOL</b>
               </div>
               <button className="btn btn-secondary" style={{ padding: '8px 12px' }}>Reserve now</button>
             </div>
           )}
         </div>
         <div className="panel">
-          <PaymentBox baseAmount={priceDisplay} defaultCurrency="USDC" feeBps={250} />
+          <PaymentBox baseAmount={priceDisplay} feeBps={250} />
           <TicketPanel slotId={decodedId} creator={s.creator} nftMint={(s as any).nftMint} nftUri={(s as any).nftUri} />
         </div>
       </div>

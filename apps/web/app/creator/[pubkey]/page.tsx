@@ -131,7 +131,7 @@ export default async function CreatorProfilePage({ params }: Params) {
               <h3 className="section-title">Stats</h3>
               <div className="stats">
                 <div className="stat"><span className="stat-label">Slots</span><span className="stat-value">{list.length}</span></div>
-                <div className="stat"><span className="stat-label">Price/min</span><span className="stat-value">{creator?.pricePerSlot ?? '-'} USDC</span></div>
+                <div className="stat"><span className="stat-label">Price/min</span><span className="stat-value">{creator?.pricePerSlot ?? '-'} SOL</span></div>
                 <div className="stat"><span className="stat-label">Rating</span><span className="stat-value">{creator?.rating ?? '-'}</span></div>
               </div>
               <CreatorBalance creatorPubkey={pubkey} />

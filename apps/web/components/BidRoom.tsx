@@ -7,7 +7,7 @@ export default function BidRoom(props: {
   startPrice: number;
   bidStep: number;
   currentPrice?: number;
-  currency?: 'SOL' | 'SOL';
+  currency?: 'SOL';
   onPlaceBid?: (amount: number) => Promise<void> | void;
 }) {
   const { startPrice, bidStep, currentPrice, currency = 'SOL', onPlaceBid } = props;
