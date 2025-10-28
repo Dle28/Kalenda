@@ -3,6 +3,7 @@ import BidRoom from '@/components/BidRoom';
 import PaymentBox from '@/components/PaymentBox';
 import TicketPanel from '@/components/TicketPanel';
 import Countdown from '@/components/Countdown';
+import FakeReserveButton from '@/components/FakeReserveButton';
 
 export default async function SlotPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -61,7 +62,7 @@ export default async function SlotPage({ params }: { params: Promise<{ id: strin
                 <span className="muted">Price</span>
                 <b>{s.price ?? 0} SOL</b>
               </div>
-              <button className="btn btn-secondary" style={{ padding: '8px 12px' }}>Reserve now</button>
+              <FakeReserveButton slotId={decodedId} price={s.price ?? 0} duration={durMin} />
             </div>
           )}
         </div>

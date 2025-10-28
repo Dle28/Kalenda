@@ -8,7 +8,6 @@ import OwnerEditOnProfile from '@/components/OwnerEditOnProfile';
 import OwnerSlotQuickAdd from '@/components/OwnerSlotQuickAdd';
 import OwnerAvailabilityQuickAdd from '@/components/OwnerAvailabilityQuickAdd';
 import WeekCalendar from '@/components/WeekCalendar';
-import TipButton from '@/components/TipButton';
 const CreatorBalance = dynamic(() => import('@/components/CreatorBalance'), { ssr: false });
 const AvailabilityManager = dynamic(() => import('@/components/AvailabilityManager'), { ssr: false });
 const RequestsPanel = dynamic(() => import('@/components/RequestsPanel'), { ssr: false });
@@ -75,10 +74,6 @@ export default async function CreatorProfilePage({ params }: Params) {
                   {typeof creator.rating === 'number' && (
                     <span className="badge">Rating {creator.rating.toFixed(1)} / 5</span>
                   )}
-                </div>
-                {/* Tip Button */}
-                <div style={{ marginTop: 12 }}>
-                  <TipButton creatorPubkey={pubkey} creatorName={creator.name} />
                 </div>
               </div>
             </div>
