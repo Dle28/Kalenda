@@ -126,109 +126,126 @@ export default function FakeReserveButton({
         <div
           style={{
             position: "fixed",
-            inset: 0,
-            background: "rgba(0, 0, 0, 0.7)",
-            backdropFilter: "blur(4px)",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0, 0, 0, 0.75)",
+            backdropFilter: "blur(8px)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             zIndex: 1000,
-            padding: 20,
+            padding: "20px",
           }}
           onClick={() => setShowSuccessModal(false)}
         >
           <div
             style={{
-              background: "linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(59, 130, 246, 0.1))",
-              border: "1px solid rgba(16, 185, 129, 0.3)",
-              borderRadius: 24,
-              padding: 32,
-              maxWidth: 480,
+              background: "linear-gradient(145deg, rgba(17, 24, 39, 0.95), rgba(31, 41, 55, 0.95))",
+              border: "1px solid rgba(16, 185, 129, 0.2)",
+              borderRadius: "20px",
+              padding: "40px",
+              maxWidth: "500px",
               width: "100%",
-              boxShadow: "0 20px 60px rgba(0, 0, 0, 0.5)",
-              animation: "slideUp 0.3s ease",
+              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(16, 185, 129, 0.1)",
+              animation: "slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+              position: "relative",
             }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Success Icon */}
-            <div style={{ textAlign: "center", marginBottom: 24 }}>
+            <div style={{ textAlign: "center", marginBottom: "32px" }}>
               <div
                 style={{
-                  width: 80,
-                  height: 80,
+                  width: "96px",
+                  height: "96px",
                   background: "linear-gradient(135deg, #10b981, #059669)",
                   borderRadius: "50%",
-                  display: "flex",
+                  display: "inline-flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  margin: "0 auto",
-                  boxShadow: "0 10px 30px rgba(16, 185, 129, 0.3)",
+                  boxShadow: "0 20px 40px rgba(16, 185, 129, 0.4), 0 0 0 8px rgba(16, 185, 129, 0.1)",
                 }}
               >
-                <span style={{ fontSize: 48 }}>✓</span>
+                <span style={{ fontSize: "56px", color: "white", lineHeight: 1 }}>✓</span>
               </div>
             </div>
 
             {/* Title */}
             <h2
               style={{
-                fontSize: 28,
+                fontSize: "32px",
                 fontWeight: 700,
                 textAlign: "center",
-                marginBottom: 12,
-                background: "linear-gradient(135deg, #10b981, #3b82f6)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
+                marginBottom: "8px",
+                color: "white",
+                letterSpacing: "-0.025em",
               }}
             >
               Booking Confirmed!
             </h2>
 
+            <p style={{ 
+              textAlign: "center", 
+              color: "rgba(156, 163, 175, 1)", 
+              marginBottom: "32px",
+              fontSize: "15px",
+            }}>
+              Your transaction has been recorded on Solana blockchain
+            </p>
+
             {/* Details */}
             <div
               style={{
-                background: "rgba(255, 255, 255, 0.05)",
-                borderRadius: 16,
-                padding: 20,
-                marginBottom: 24,
+                background: "rgba(16, 185, 129, 0.05)",
+                border: "1px solid rgba(16, 185, 129, 0.15)",
+                borderRadius: "16px",
+                padding: "24px",
+                marginBottom: "28px",
               }}
             >
               <div
                 style={{
                   display: "flex",
                   justifyContent: "space-between",
-                  marginBottom: 12,
+                  alignItems: "center",
+                  marginBottom: "16px",
                 }}
               >
-                <span style={{ color: "var(--muted)" }}>Duration</span>
-                <span style={{ fontWeight: 600 }}>{duration} minutes</span>
+                <span style={{ color: "rgba(156, 163, 175, 1)", fontSize: "15px" }}>Duration</span>
+                <span style={{ fontWeight: 600, color: "white", fontSize: "16px" }}>{duration} minutes</span>
               </div>
               <div
                 style={{
                   display: "flex",
                   justifyContent: "space-between",
-                  marginBottom: 12,
+                  alignItems: "center",
+                  paddingBottom: "16px",
+                  borderBottom: "1px solid rgba(16, 185, 129, 0.1)",
                 }}
               >
-                <span style={{ color: "var(--muted)" }}>Amount</span>
-                <span style={{ fontWeight: 600 }}>{price} SOL</span>
+                <span style={{ color: "rgba(156, 163, 175, 1)", fontSize: "15px" }}>Amount</span>
+                <span style={{ fontWeight: 700, color: "#10b981", fontSize: "18px" }}>{price} SOL</span>
               </div>
               <div
                 style={{
-                  borderTop: "1px solid rgba(255, 255, 255, 0.1)",
-                  paddingTop: 12,
-                  marginTop: 12,
+                  paddingTop: "16px",
                 }}
               >
-                <div style={{ color: "var(--muted)", fontSize: 12, marginBottom: 6 }}>
+                <div style={{ color: "rgba(156, 163, 175, 1)", fontSize: "13px", marginBottom: "8px", fontWeight: 500 }}>
                   Transaction ID
                 </div>
                 <div
                   style={{
-                    fontSize: 11,
+                    fontSize: "12px",
                     fontFamily: "monospace",
                     wordBreak: "break-all",
                     color: "#10b981",
+                    background: "rgba(16, 185, 129, 0.08)",
+                    padding: "10px 12px",
+                    borderRadius: "8px",
+                    lineHeight: "1.5",
                   }}
                 >
                   {txSignature}
@@ -237,33 +254,63 @@ export default function FakeReserveButton({
             </div>
 
             {/* Action Buttons */}
-            <div style={{ display: "flex", gap: 12 }}>
+            <div style={{ display: "flex", gap: "12px", flexDirection: "column" }}>
               <a
                 href={solscanUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn btn-secondary"
                 style={{
-                  flex: 1,
-                  padding: "12px 20px",
+                  width: "100%",
+                  padding: "16px",
                   textAlign: "center",
                   textDecoration: "none",
                   background: "linear-gradient(135deg, #10b981, #059669)",
                   border: "none",
+                  borderRadius: "12px",
+                  color: "white",
+                  fontSize: "16px",
+                  fontWeight: 600,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  gap: 8,
+                  gap: "8px",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                  boxShadow: "0 4px 12px rgba(16, 185, 129, 0.3)",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                  e.currentTarget.style.boxShadow = "0 8px 20px rgba(16, 185, 129, 0.4)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0)";
+                  e.currentTarget.style.boxShadow = "0 4px 12px rgba(16, 185, 129, 0.3)";
                 }}
               >
                 <span>🔍</span>
                 <span>View on Solscan</span>
               </a>
               <button
-                className="btn btn-outline"
                 onClick={() => setShowSuccessModal(false)}
                 style={{
-                  padding: "12px 20px",
+                  width: "100%",
+                  padding: "14px",
+                  background: "transparent",
+                  border: "1px solid rgba(75, 85, 99, 0.5)",
+                  borderRadius: "12px",
+                  color: "rgba(156, 163, 175, 1)",
+                  fontSize: "15px",
+                  fontWeight: 500,
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(156, 163, 175, 0.8)";
+                  e.currentTarget.style.color = "white";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "rgba(75, 85, 99, 0.5)";
+                  e.currentTarget.style.color = "rgba(156, 163, 175, 1)";
                 }}
               >
                 Close
@@ -277,11 +324,11 @@ export default function FakeReserveButton({
         @keyframes slideUp {
           from {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(30px) scale(0.95);
           }
           to {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
           }
         }
       `}</style>
