@@ -10,6 +10,7 @@ import EventsStrip from '@/components/EventsStrip';
 import ScrollEffects from '@/components/ScrollEffects';
 import { summarizeSlotsByCreator } from '@/lib/slotSummary';
 import CalendarInfographic from '@/components/CalendarInfographic';
+import UpcomingAppointments from '@/components/UpcomingAppointments';
 import GlobalConnectInfographic from '../components/GlobalConnectInfographic';
 
 export default function Page() {
@@ -87,6 +88,8 @@ export default function Page() {
               <CalendarInfographic />
             </div>
             
+            <UpcomingAppointments slots={slots as any} creators={creators as any} />
+
             {/* Tạm thời di chuyển phần "How-to" vào đây */}
             <div className={styles.how}>
               <div className={styles.step}>
@@ -111,8 +114,6 @@ export default function Page() {
                 </div>
               </div>
             </div>
-            
-            {/* TODO: Di chuyển Lưới Booking (Kira, Aiko...) vào đây */}
 
           </div>
 
