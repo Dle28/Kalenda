@@ -17,7 +17,22 @@ export default function NextAvailableBadge({ creatorPubkey }: { creatorPubkey: s
         if (!next) return setLabel(null);
         const today = new Date();
         const isSameDay = next.s.toDateString() === today.toDateString();
-        setLabel(isSameDay ? `Available today ${next.s.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : `Next ${next.s.toLocaleDateString()} ${next.s.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`);
+        
+        // Fix hydration: use consistent timezone
+        const timeStr = new Intl.DateTimeFormat('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit',
+          hour12: true,
+          timeZone: 'UTC'
+        }).format(next.s);
+        
+        const dateStr = new Intl.DateTimeFormat('en-US', {
+          month: 'short',
+          day: 'numeric',
+          timeZone: 'UTC'
+        }).format(next.s);
+        
+        setLabel(isSameDay ? `Available today ${timeStr}` : `Next ${dateStr} ${timeStr}`);
       } catch {}
     };
     load();

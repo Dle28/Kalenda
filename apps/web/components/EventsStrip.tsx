@@ -3,7 +3,17 @@ import Link from "next/link";
 import { slots, creators } from '@/lib/mock';
 import styles from '@/app/home.module.css';
 
-function fmt(d: Date) { return d.toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }); }
+// Fix hydration: use consistent timezone
+function fmt(d: Date) { 
+  return new Intl.DateTimeFormat('en-US', { 
+    month: 'short', 
+    day: 'numeric', 
+    hour: '2-digit', 
+    minute: '2-digit',
+    hour12: true,
+    timeZone: 'UTC'
+  }).format(d); 
+}
 
 export default function EventsStrip() {
   const now = Date.now();

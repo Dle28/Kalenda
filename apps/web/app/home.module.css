@@ -2,35 +2,37 @@
 
 
 .hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 36px;
-  padding: 56px 0 40px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-items: stretch;
+  text-align: center;
+  gap: 20px;
+  padding-block: 72px;
+  position: relative;
 }
 
 .left {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 18px;
-  max-width: 640px;
-  text-align: left;
 }
 .heading { margin: 0 0 10px; font-size: 76px; line-height: 1.02; letter-spacing: .4px; font-family: var(--display); font-weight: 900 }
 .sub { margin: 0 0 20px; color: #cbd5e1; font-size: 20px }
 
 .right {
-  position: relative;
+}
+
+.primaryCta {
   display: flex;
+  gap: 12px;
   align-items: center;
   justify-content: center;
-  min-height: clamp(520px, 72vh, 840px);
-  width: min(560px, 92%);
-  justify-self: center;
+  margin-top: 12px;
+}
+
+.heroGraphic {
+  display: flex;
+  justify-content: center;
+  padding-block: 20px 40px;
+  max-width: 90%;
+  margin: 0 auto;
 }
 
 /* page-scoped floating badges container ensures on top of grid */
@@ -40,19 +42,11 @@
 
 @media (max-width: 960px) {
   .hero {
-    grid-template-columns: 1fr;
-    gap: 24px;
-    padding: 44px 0 26px;
-    justify-items: center;
-    text-align: center;
-  }
-  .left {
-    align-items: center;
-    text-align: center;
+    padding-block: 56px 44px;
   }
   .heading { font-size: 44px; line-height: 1.06; }
   .sub { font-size: 16px; }
-  .right { min-height: 360px; width: min(520px, 100%); }
+  .heroGraphic { max-width: 100%; padding-block: 16px 32px; }
 }
 
 
@@ -100,14 +94,6 @@
 .badgeMode { font-size: 12px; opacity: .85 }
 .eventCta { font-weight:600; border:1px solid rgba(255,255,255,.18); border-radius:10px; padding:4px 8px }
 
-/* Below-hero grouped sections */
-.below { padding: 10px 0 0 }
-.belowGrid { display:grid; grid-template-columns: 1.3fr .7fr; gap: 16px }
-.belowMain { display:flex; flex-direction:column; gap: 12px }
-.belowSide { display:flex; flex-direction:column; gap:8px }
-@media (max-width: 960px) { .belowGrid { grid-template-columns: 1fr } }
-
-
 .reveal { opacity: 0; transform: translateY(14px) scale(.98); transition: opacity .6s ease, transform .6s ease; will-change: transform, opacity }
 
 .reveal.in { opacity: 1; transform: translateY(calc(var(--float-y, 0px))) scale(1) }
@@ -118,3 +104,53 @@
 .cta { display:flex; gap: 10px; margin: 8px 0 6px }
 .cta .btn { font-size: 16px !important; padding: 12px 18px !important; border-radius: 14px }
 .cta .btn-secondary { font-weight: 700 }
+
+/* ===== Content layout restructuring ===== */
+.contentLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  width: min(1200px, 100%);
+  margin: 0 auto;
+  padding: 0 16px 40px;
+}
+
+.primaryActionCard {
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.supportingColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 80px;
+}
+
+.supportingCard {
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (max-width: 960px) {
+  .contentLayout {
+    grid-template-columns: 1fr;
+    padding: 0 0 32px;
+  }
+  
+  .supportingColumn {
+    position: static;
+  }
+}

@@ -38,12 +38,13 @@ export function describeUpcomingSlot(slots: Slot[], now: Date = new Date()): Sal
   const durationMinutes = Math.max(1, Math.round((endDate.getTime() - startDate.getTime()) / MINUTE));
   const amount = slot.mode === 'Stable' ? slot.price : slot.startPrice;
 
+  // Fix hydration issue: use consistent timezone (UTC) for both server and client
   const formatTime = (date: Date, opts: Intl.DateTimeFormatOptions) =>
-    new Intl.DateTimeFormat('en-US', opts).format(date);
+    new Intl.DateTimeFormat('en-US', { ...opts, timeZone: 'UTC' }).format(date);
 
   const dayPart = formatTime(startDate, { month: 'short', day: 'numeric' });
-  const startPart = formatTime(startDate, { hour: 'numeric', minute: '2-digit' });
-  const endPart = formatTime(endDate, { hour: 'numeric', minute: '2-digit' });
+  const startPart = formatTime(startDate, { hour: 'numeric', minute: '2-digit', hour12: true });
+  const endPart = formatTime(endDate, { hour: 'numeric', minute: '2-digit', hour12: true });
 
   let headline: string;
   if (slot.mode === 'Stable') {
