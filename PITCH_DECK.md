@@ -148,9 +148,9 @@
 │                                         │
 │         💎 KEY FEATURES                 │
 │                                         │
-│  💰 Dual Pricing System                │
-│     • Fixed price for standard slots   │
-│     • English auction for premium      │
+│  💰 Fixed-Price Bookings (Live Now)    │
+│     • Instant reservation with SOL     │
+│     • USDC support coming Q2 2025      │
 │                                         │
 │  ⚡ Solana-Powered                     │
 │     • 400ms transaction speed          │
@@ -160,11 +160,15 @@
 │     • Complete history                 │
 │     • Blockchain verification          │
 │                                         │
+│  🎯 Auction System (Q2 Development)    │
+│     • Smart contracts for bidding      │
+│     • Automated escrow & settlement    │
+│                                         │
 └─────────────────────────────────────────┘
 ```
 
 ### Speaker Notes:
-> "Our dual pricing system lets creators use fixed prices for regular slots, or auctions for high-demand times. Powered by Solana for 400-millisecond settlement and minimal fees. And every booking is tracked in a beautiful dashboard with direct blockchain verification."
+> "Our MVP supports instant fixed-price bookings with SOL today. We're prioritizing USDC stablecoin support for Q2 because creators need price stability - that's critical for adoption. Powered by Solana for 400-millisecond settlement and minimal fees. Every booking is tracked in a beautiful dashboard with direct blockchain verification. And we're actively building the auction system with Anchor smart contracts for high-demand time slots - coming Q2."
 
 ---
 
@@ -180,17 +184,18 @@
 │  Frontend: Next.js 14 + TypeScript      │
 │  Blockchain: Solana Web3.js             │
 │  Wallet: Phantom/Solflare Adapter       │
-│  Smart Contracts: Anchor Framework      │
+│  Payments: SystemProgram (fixed price)  │
+│  Smart Contracts: Anchor (in dev)       │
 │  Network: Devnet (Mainnet-ready)        │
 │                                         │
-│  ✅ Production-ready architecture       │
-│  ✅ Scalable & secure                  │
+│  ✅ MVP live with fixed-price bookings  │
+│  ✅ Auction system under development    │
 │                                         │
 └─────────────────────────────────────────┘
 ```
 
 ### Speaker Notes:
-> "Built with Next.js and TypeScript for the frontend, Solana Web3.js for blockchain integration, and Anchor framework for smart contracts. Currently on Devnet for testing, but fully ready for Mainnet deployment."
+> "Built with Next.js and TypeScript for the frontend, Solana Web3.js for blockchain integration. Our MVP uses SystemProgram for direct SOL transfers - simple and battle-tested. We're actively developing Anchor smart contracts for the auction system, with escrow and automated bidding coming in Q2."
 
 ---
 
@@ -234,13 +239,14 @@
 │         🛣️ PRODUCT ROADMAP             │
 │                                         │
 │  Q1 2025 (Current)                      │
-│  ✅ MVP with booking + auctions         │
+│  ✅ MVP with fixed-price booking        │
 │  ✅ Phantom wallet integration          │
+│  ✅ Transaction history dashboard       │
 │                                         │
-│  Q2 2025                                │
+│  Q2 2025 (High Priority)                │
+│  🔜 USDC/USDT stablecoin support        │
+│  🔜 Auction system (Anchor contracts)   │
 │  🔜 NFT tickets (proof of attendance)   │
-│  🔜 Multi-token support (USDC)          │
-│  🔜 Creator analytics dashboard         │
 │                                         │
 │  Q3-Q4 2025                             │
 │  🔮 Mobile app (iOS/Android)            │
@@ -251,7 +257,7 @@
 ```
 
 ### Speaker Notes:
-> "We have a working MVP today. Next quarter we'll add NFT tickets for proof of attendance and multi-token support. By year-end, we'll launch mobile apps and implement DAO governance for community-driven platform decisions."
+> "We have a working MVP with fixed-price bookings today. Our top priority for Q2 is USDC stablecoin support - we know creators need price stability. Alongside that, we're building the auction system with Anchor smart contracts and NFT proof-of-attendance tickets. By year-end, we'll launch mobile apps and implement DAO governance for community-driven platform decisions."
 
 ---
 
@@ -274,13 +280,13 @@
 │  ❌ High fees → ✅ $0.0001 only        │
 │  ❌ No transparency → ✅ On-chain      │
 │                                         │
-│  🏆 First mover in Web3 booking        │
+│  🏆 First to combine 0% fees + auctions│
 │                                         │
 └─────────────────────────────────────────┘
 ```
 
 ### Speaker Notes:
-> "Compared to Calendly, we charge zero platform fees versus their 8-15%. We're decentralized, they're centralized. We offer dynamic auction pricing, they don't. Against traditional booking platforms, we settle instantly versus 7-30 days, and everything is verifiable on-chain."
+> "Compared to Calendly, we charge zero platform fees versus their 8-15%. We're blockchain-based with on-chain verification, they're centralized. We're building dynamic auction pricing for high-demand slots - they don't offer that. Against traditional booking platforms, we settle instantly versus 7-30 days, and everything is verifiable on-chain. We're one of the first to combine true 0% fees with auction mechanisms on Solana."
 
 ---
 
@@ -324,16 +330,16 @@
 ## 📋 Q&A PREPARATION
 
 ### Q: How do you make money?
-**A:** "Currently zero platform fees to bootstrap network effects. Future monetization through optional premium features like advanced analytics, calendar integrations, and enterprise white-label licensing. We may also implement a small optional creator tip mechanism where users can voluntarily tip the platform."
+**A:** "We're keeping 0% platform fees to maximize creator earnings and drive adoption. Our sustainable revenue model includes: optional premium features (advanced analytics, calendar sync), enterprise white-label licensing for companies, and later, optional on-chain tipping where users can support platform development. In V1, core team provides support as we're mission-driven to prove the model works. Once we reach scale, the community-supported features become self-sustaining."
 
 ### Q: Why Solana vs Ethereum?
 **A:** "Three reasons: Speed - 400ms vs 15 seconds. Cost - $0.0001 vs $5+ gas fees. User Experience - better for frequent transactions. Solana is also the home of the NFT and creator community, which is our core market."
 
 ### Q: What about smart contract security?
-**A:** "Our MVP uses Solana's battle-tested SystemProgram for direct transfers. Before mainnet launch, we'll undergo a full security audit by a reputable firm. Our code is open source, and we'll implement multi-sig for any platform-controlled funds."
+**A:** "Our current MVP uses Solana's battle-tested SystemProgram for fixed-price bookings - simple direct transfers with minimal attack surface. For the upcoming auction feature, we're building Anchor smart contracts that will undergo full security audit by a reputable firm before mainnet. Our code is open source for community review, and we'll implement multi-sig for any platform-controlled funds."
 
 ### Q: How do you handle disputes?
-**A:** "V1 uses traditional customer support as a fallback. V2 will implement escrow with time-lock releases. V3 will have DAO-governed dispute resolution. But the key point is: every transaction is recorded on-chain as immutable proof of payment."
+**A:** "Great question about balancing decentralization with user protection. V1 offers free community support provided by our core team during the bootstrapping phase to build trust and iterate quickly. V2 will implement on-chain escrow with time-lock releases for automated dispute windows. V3 transitions to full DAO governance where token holders vote on dispute resolutions. Every transaction is permanently recorded on-chain as immutable proof, which is the foundation for all dispute resolution, regardless of the mechanism used."
 
 ### Q: What's your go-to-market strategy?
 **A:** "We're starting with micro-influencers and consultants who already understand Web3. We'll offer early creator incentives, build integrations with popular creator tools, and leverage the Solana community for initial traction. Content creators are already familiar with crypto - we just make it useful for their business."

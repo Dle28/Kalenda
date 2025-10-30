@@ -5,13 +5,13 @@ const SOL_USD = 200; // demo conversion rate
 
 export default function PaymentBox({
   baseAmount,
-  feeBps = 250,
+  feeBps = 0, // ZERO PLATFORM FEE - Changed from 250 to 0
 }: {
   baseAmount: number; // SOL
   feeBps?: number;
 }) {
   const breakdown = useMemo(() => {
-    const platformFee = Math.round(baseAmount * feeBps) / 10000;
+    const platformFee = 0; // ALWAYS ZERO - We don't charge platform fees
     const networkFee = 0.0005;
     const total = baseAmount + platformFee + networkFee;
     return { platformFee, networkFee, total };
@@ -33,7 +33,12 @@ export default function PaymentBox({
 
       <div className="row" style={{ justifyContent: "space-between" }}>
         <span className="muted">Platform fee</span>
-        <span>{breakdown.platformFee.toFixed(3)} SOL</span>
+        <span style={{ color: "var(--primary)", fontWeight: 600 }}>
+          {breakdown.platformFee.toFixed(3)} SOL
+          <span style={{ marginLeft: 8, fontSize: 12, color: "var(--primary)" }}>
+            (0% - You keep 100%!)
+          </span>
+        </span>
       </div>
 
       <div className="row" style={{ justifyContent: "space-between" }}>

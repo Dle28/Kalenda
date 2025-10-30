@@ -67,7 +67,7 @@ export default async function SlotPage({ params }: { params: Promise<{ id: strin
           )}
         </div>
         <div className="panel">
-          <PaymentBox baseAmount={priceDisplay} feeBps={250} />
+          <PaymentBox baseAmount={priceDisplay} />
           <TicketPanel slotId={decodedId} creator={s.creator} nftMint={(s as any).nftMint} nftUri={(s as any).nftUri} />
         </div>
       </div>

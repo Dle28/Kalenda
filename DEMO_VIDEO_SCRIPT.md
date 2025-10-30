@@ -113,21 +113,22 @@ Decentralized Time Booking on Solana
 1. Slot details page loads
 2. Scroll through payment breakdown section:
    - Amount: 0.038 SOL
-   - Platform fee: 0.001 SOL
-   - Network fee: 0.0005 SOL
-   - Total: 0.040 SOL
-3. Highlight "0.001 SOL platform fee" (minimal)
+   - Platform fee: 0.000 SOL (ZERO!)
+   - Network fee: ~0.0005 SOL
+   - Total: 0.0385 SOL
+3. Highlight "0.000 SOL platform fee" - emphasize ZERO
 4. Click "Reserve now" button
 5. Phantom wallet popup appears
 6. Click "Approve" in Phantom
 7. Show "Processing..." state
 
 **Voiceover:**
-> "Transparent pricing with minimal fees. Platform fee is just 0.001 SOL - that's less than a penny. Connect your Phantom wallet and confirm the transaction with one click."
+> "Completely transparent pricing. As you can see, platform fee is ZERO - you keep 100% of what you pay to the creator. Only the tiny Solana network fee applies, about half a cent. Connect your Phantom wallet and confirm the transaction with one click."
 
 **Key Visual Elements:**
 - Payment breakdown card
 - SOL amounts clearly visible
+- **Platform fee: 0.000 SOL prominently displayed**
 - Reserve now button
 - Phantom popup
 - Processing spinner
@@ -224,13 +225,13 @@ Built for [Hackathon Name]
 ## 🎙️ ALTERNATIVE VOICEOVER SCRIPTS
 
 ### Script A: Technical Focus
-> "Kalenda leverages Solana's high-speed blockchain to enable instant, fee-free booking transactions. Built with Next.js and Solana Web3.js, every reservation is cryptographically signed and permanently recorded on-chain. Smart contracts handle payments, Solscan provides verification, and creators retain 100% of their earnings."
+> "Kalenda leverages Solana's high-speed blockchain to enable instant, zero-fee booking transactions. Built with Next.js and Solana Web3.js, every reservation is cryptographically signed and permanently recorded on-chain. Direct wallet-to-wallet transfers mean creators retain 100% of their earnings - we charge absolutely nothing."
 
 ### Script B: Creator Focus
-> "As a creator, you deserve to keep what you earn. Kalenda eliminates middlemen - no platform fees, no waiting for payouts. Set your price, manage your calendar, and receive instant SOL payments directly to your wallet. Every booking is blockchain-verified, so you and your clients have complete trust."
+> "As a creator, you deserve to keep what you earn. Kalenda eliminates middlemen completely - zero platform fees, no waiting for payouts. Set your price, manage your calendar, and receive instant SOL payments directly to your wallet. We don't take a cut. You keep 100%. Every booking is blockchain-verified for complete trust."
 
 ### Script C: Simple & Direct
-> "Book time with creators. Pay with crypto. Verify on blockchain. That's Kalenda - the simplest way to monetize your time on Solana. No fees, no waiting, no BS. Just fast, transparent bookings powered by blockchain technology."
+> "Book time with creators. Pay with crypto. Verify on blockchain. That's Kalenda - the simplest way to monetize your time on Solana. Zero platform fees - not 'low fees', actually zero. No waiting, no middlemen. Just fast, transparent bookings where creators keep everything they earn."
 
 ---
 
@@ -248,11 +249,12 @@ Built for [Hackathon Name]
 - **Natural Flow**: Make it feel like a real user would do it
 
 ### What to Highlight:
-- ✅ Zero platform fees
+- ✅ **Zero platform fees (0.000 SOL) - EMPHASIZE THIS!**
 - ✅ Transaction speed (<1 second)
 - ✅ Solscan verification
 - ✅ Beautiful UI/UX
 - ✅ Blockchain transparency
+- ✅ Only network fee (~$0.0001)
 - ✅ Transaction history dashboard
 
 ### What to Avoid:
@@ -290,7 +292,7 @@ Built for [Hackathon Name]
 [Homepage] → "Zero Platform Fees"
 [Creators] → "20+ Verified Creators"
 [Booking] → "One-Click Reservation"
-[Payment] → "0.001 SOL Platform Fee"
+[Payment] → "0% Platform Fee - Keep 100%"
 [Success] → "Confirmed in <1 Second"
 [Solscan] → "Blockchain Verified ✓"
 [History] → "Complete Transaction Logs"

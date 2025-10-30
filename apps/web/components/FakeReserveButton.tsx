@@ -4,8 +4,7 @@ import { useWallet, useConnection } from "@solana/wallet-adapter-react";
 import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js";
 
 // REPLACE THIS WITH YOUR ACTUAL WALLET ADDRESS
-const TREASURY_ADDRESS = "PUT_YOUR_WALLET_ADDRESS_HERE";
-
+const TREASURY_ADDRESS = "2eaTg4UY8nRmj16DWnASQwM88hAB1f4YXHUvMM5pTHWT";
 export default function FakeReserveButton({
   slotId,
   price,
