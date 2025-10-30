@@ -50,7 +50,12 @@ export default async function SlotPage({ params }: { params: Promise<{ id: strin
           </div>
 
           {s.mode === 'EnglishAuction' ? (
-            <BidRoom startPrice={s.startPrice ?? 0} bidStep={1} currency="SOL" />
+            <BidRoom 
+              startPrice={s.startPrice ?? 0} 
+              bidStep={0.01} 
+              currency="SOL"
+              enableDemoBidding={false}
+            />
           ) : (
             <div className="card" style={{ display: 'grid', gap: 10 }}>
               <b>Reserve</b>

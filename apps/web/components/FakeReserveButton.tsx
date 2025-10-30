@@ -3,7 +3,9 @@ import { useState } from "react";
 import { useWallet, useConnection } from "@solana/wallet-adapter-react";
 import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js";
 
-// REPLACE THIS WITH YOUR ACTUAL WALLET ADDRESS
+// REPLACE THIS WITH A DIFFERENT WALLET ADDRESS (creator/treasury wallet)
+// ⚠️ IMPORTANT: This should NOT be your main wallet address!
+// Use a separate wallet to receive payments, or this is just a demo showing self-transfer
 const TREASURY_ADDRESS = "2eaTg4UY8nRmj16DWnASQwM88hAB1f4YXHUvMM5pTHWT";
 export default function FakeReserveButton({
   slotId,
@@ -125,36 +127,35 @@ export default function FakeReserveButton({
       {/* Success Modal */}
       {showSuccessModal && (
         <div
+          onClick={() => setShowSuccessModal(false)}
           style={{
             position: "fixed",
             top: 0,
             left: 0,
-            right: 0,
-            bottom: 0,
+            width: "100vw",
+            height: "100vh",
             background: "rgba(0, 0, 0, 0.75)",
             backdropFilter: "blur(8px)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
             zIndex: 9999,
-            padding: "20px",
           }}
-          onClick={() => setShowSuccessModal(false)}
         >
           <div
+            onClick={(e) => e.stopPropagation()}
             style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
               background: "linear-gradient(145deg, rgba(17, 24, 39, 0.95), rgba(31, 41, 55, 0.95))",
               border: "1px solid rgba(16, 185, 129, 0.2)",
               borderRadius: "20px",
               padding: "40px",
+              width: "90%",
               maxWidth: "500px",
-              width: "100%",
               maxHeight: "90vh",
               overflowY: "auto",
               boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(16, 185, 129, 0.1)",
-              animation: "slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
             }}
-            onClick={(e) => e.stopPropagation()}
           >
             {/* Success Icon */}
             <div style={{ textAlign: "center", marginBottom: "32px" }}>

@@ -1,0 +1,20 @@
+﻿# CHECK YOUR SETUP
+
+## Your current Treasury Address:
+2eaTg4UY8nRmj16DWnASQwM88hAB1f4YXHUvMM5pTHWT
+
+## To fix:
+1. Open new Phantom wallet OR
+2. Get a different wallet address
+3. Replace TREASURY_ADDRESS in:
+   apps/web/components/FakeReserveButton.tsx (line 7)
+
+## To verify it works:
+1. Book a slot
+2. Check Solscan: FROM and TO should be DIFFERENT addresses
+3. Your balance should DECREASE by slot price + fee
+
+## Current behavior:
+- FROM: Your wallet
+- TO: Your wallet (SAME!)
+- Result: Balance unchanged (only fee deducted)
