@@ -1,0 +1,13 @@
+﻿#  TRANSACTION AMOUNT FIX - Oct 30, 2025
+
+## PROBLEM:
+Transaction only sent 0.001 SOL regardless of slot price
+
+## SOLUTION:
+1. FakeReserveButton.tsx - Send actual price
+2. history/page.tsx - Fetch real amounts from blockchain
+3. Total spent calculation fixed
+
+## FILES CHANGED:
+- apps/web/components/FakeReserveButton.tsx
+- apps/web/app/history/page.tsx

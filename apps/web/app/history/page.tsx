@@ -1,7 +1,7 @@
 "use client";
 import { useWallet, useConnection } from "@solana/wallet-adapter-react";
 import { useEffect, useState } from "react";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import Link from "next/link";
 
 interface Transaction {
@@ -37,15 +37,45 @@ export default function TransactionHistory() {
         limit: 20,
       });
 
-      // Map to our transaction format
-      const txs: Transaction[] = signatures.map((sig) => ({
-        signature: sig.signature,
-        timestamp: sig.blockTime ? sig.blockTime * 1000 : Date.now(),
-        amount: 0.001, // We don't have exact amounts from signature info
-        status: sig.err ? "failed" : "success",
-        type: "booking",
-      }));
+      // Fetch full transaction details to get actual amounts
+      const txPromises = signatures.map(async (sig) => {
+        try {
+          const tx = await connection.getTransaction(sig.signature, {
+            maxSupportedTransactionVersion: 0,
+          });
+          
+          // Calculate amount from transaction
+          let amount = 0;
+          if (tx?.meta && tx.meta.postBalances && tx.meta.preBalances) {
+            // Find the change in user's balance (negative = sent out)
+            const balanceChange = tx.meta.postBalances[0] - tx.meta.preBalances[0];
+            amount = Math.abs(balanceChange) / LAMPORTS_PER_SOL;
+            
+            // Subtract network fee to get actual transfer amount
+            const fee = (tx.meta.fee || 0) / LAMPORTS_PER_SOL;
+            amount = Math.max(0, amount - fee);
+          }
 
+          return {
+            signature: sig.signature,
+            timestamp: sig.blockTime ? sig.blockTime * 1000 : Date.now(),
+            amount: amount,
+            status: sig.err ? "failed" : "success",
+            type: "booking",
+          } as Transaction;
+        } catch (err) {
+          // Fallback if transaction fetch fails
+          return {
+            signature: sig.signature,
+            timestamp: sig.blockTime ? sig.blockTime * 1000 : Date.now(),
+            amount: 0,
+            status: sig.err ? "failed" : "success",
+            type: "booking",
+          } as Transaction;
+        }
+      });
+
+      const txs = await Promise.all(txPromises);
       setTransactions(txs);
     } catch (err) {
       console.error("Error loading transactions:", err);
@@ -181,7 +211,7 @@ export default function TransactionHistory() {
             Total Spent
           </div>
           <div style={{ fontSize: "32px", fontWeight: 700, color: "#a855f7" }}>
-            {(transactions.length * 0.001).toFixed(3)} SOL
+            {transactions.reduce((sum, tx) => sum + (tx.status === "success" ? tx.amount : 0), 0).toFixed(3)} SOL
           </div>
         </div>
       </div>

@@ -39,12 +39,14 @@ export default function FakeReserveButton({
         treasuryPubkey = publicKey; // Fallback: send to yourself
       }
 
-      // Create a real transaction - send small amount
+      // Create a real transaction - send the ACTUAL slot price
+      const lamportsToSend = Math.round(price * LAMPORTS_PER_SOL); // Convert SOL to lamports
+      
       const transaction = new Transaction().add(
         SystemProgram.transfer({
           fromPubkey: publicKey,
           toPubkey: treasuryPubkey,
-          lamports: 1000000, // 0.001 SOL for demo
+          lamports: lamportsToSend, // Send actual slot price (e.g., 0.5 SOL = 500,000,000 lamports)
         })
       );
 

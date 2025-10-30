@@ -22,10 +22,10 @@ Kalenda is a decentralized time booking platform built on Solana that lets creat
 - **👛 Phantom Wallet Integration** - Seamless Web3 login and payments
 - **📊 Transaction History** - Full on-chain transaction tracking
 - **🎨 Beautiful UI** - Professional success modals and responsive design
-- **📅 Interactive Calendar** - Easy time slot selection and booking
+- **📅 Interactive Calendar** - Easy time slot selection and booking (with demo data)
 
 ### 🔜 Coming Soon (Roadmap)
-- **🎯 Auction Bidding System** - Bid for time slots with automatic refunds
+- **🎯 Auction Bidding System** - Smart contracts complete, frontend integration in progress
 - **💰 USDC/USDT Support** - Stablecoin payments for price stability
 - **🎫 NFT Ticketing** - Provable attendance with tradeable NFTs
 - **🏆 Creator Rankings** - Reputation system based on completed bookings
@@ -33,7 +33,28 @@ Kalenda is a decentralized time booking platform built on Solana that lets creat
 
 ---
 
-## 🚀 Quick Start
+## � Technical Details
+
+### Current MVP Implementation
+- **Payment Method:** Direct SOL transfers via `SystemProgram.transfer()` - 100% real blockchain transactions
+- **Data Source:** Mock creator profiles for demo purposes (production data layer coming soon)
+- **Smart Contracts:** Anchor auction contracts written and tested, deployment in progress
+- **Wallet Support:** Phantom & Solflare integration (fully functional)
+- **Network:** Solana Devnet (Mainnet-ready architecture)
+
+### Why Mock Data?
+The MVP demonstrates the complete user experience with real payments. Mock creator data allows us to showcase the platform's UX/UI without requiring on-chain profile management, which is planned for Q2 2025 with the auction system integration.
+
+### Production Roadmap
+1. Deploy Anchor auction contracts to Devnet
+2. Integrate frontend with smart contract methods
+3. Replace mock data with on-chain creator profiles
+4. Add USDC/USDT support via Token Program
+5. Implement NFT ticketing system
+
+---
+
+## �🚀 Quick Start
 
 ### Prerequisites
 - [Node.js](https://nodejs.org/) 18+

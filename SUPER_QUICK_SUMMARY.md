@@ -17,20 +17,22 @@
 ---
 
 ## ✅ CÓ GÌ NGAY BÂY GIỜ? (MVP)
-1. ✅ Book time slots với real SOL transactions
-2. ✅ Phantom wallet integration
-3. ✅ Transaction history từ blockchain
-4. ✅ Beautiful UI với success modal
-5. ✅ Solscan verification
+1. ✅ Book time slots với real SOL transactions (100% blockchain!)
+2. ✅ Phantom wallet integration (working perfectly)
+3. ✅ Transaction history từ blockchain (real data)
+4. ✅ Beautiful UI với success modal (professional)
+5. ✅ Solscan verification (every tx visible)
 6. ✅ **0% platform fees** - giữ 100%
+7. ℹ️ Interactive calendar (demo data cho UX showcase)
 
 ---
 
 ## 🔜 SẼ CÓ GÌ? (Roadmap)
-1. 🎯 **Auction system** - bid cho time slots
-2. 💰 **USDC/USDT** - stablecoin payments
-3. 🎫 **NFT tickets** - provable attendance
-4. 📱 **Mobile app** - iOS + Android
+1. 🎯 **Auction system** - Smart contracts written, frontend integration Q2
+2. 💰 **USDC/USDT** - Stablecoin payments (high priority)
+3. 🎫 **NFT tickets** - Provable attendance tokens
+4. 📱 **Mobile app** - iOS + Android native apps
+5. 📊 **On-chain profiles** - Replace demo data with real creator profiles
 
 ---
 
