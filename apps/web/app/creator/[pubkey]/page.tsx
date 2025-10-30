@@ -104,7 +104,7 @@ export default async function CreatorProfilePage({ params }: Params) {
                   <b>{creator.name}</b>
                   {typeof creator.pricePerSlot === 'number' && (
                     <span>
-                      ${creator.pricePerSlot.toFixed(2)} <span className="muted">/ slot</span>
+                      {creator.pricePerSlot.toFixed(3)} SOL <span className="muted">/ slot</span>
                     </span>
                   )}
                 </div>

@@ -108,7 +108,7 @@ export default function WeekCalendar({ slots, avail = [], defaultInterval = 60, 
         endRow = Math.min(rows, endRow);
 
         const priceValue = slot.mode === 'EnglishAuction' ? Number(slot.startPrice ?? slot.price ?? 0) : Number(slot.price ?? slot.startPrice ?? 0);
-        const priceLabel = slot.mode === 'EnglishAuction' ? `Auction $${priceValue.toFixed(2)}` : `$${priceValue.toFixed(2)}`;
+        const priceLabel = slot.mode === 'EnglishAuction' ? `Auction ${priceValue.toFixed(3)} SOL` : `${priceValue.toFixed(3)} SOL`;
 
         for (let r = startRow; r < endRow; r++) {
           const current = initial[r][dayIndex];
@@ -253,7 +253,7 @@ export default function WeekCalendar({ slots, avail = [], defaultInterval = 60, 
               for (const s of daySlots) {
                 const clipped = clipToDay(new Date(s.start), new Date(s.end));
                 if (!clipped) continue;
-                const priceLabel = s.mode === 'EnglishAuction' ? `Auction $${Number(s.startPrice || 0).toFixed(2)}` : `$${Number(s.price || 0).toFixed(2)}`;
+                const priceLabel = s.mode === 'EnglishAuction' ? `Auction ${Number(s.startPrice || 0).toFixed(3)} SOL` : `${Number(s.price || 0).toFixed(3)} SOL`;
                 const label = `${priceLabel} • ${fmtTime(clipped.s)}–${fmtTime(clipped.e)}`;
                 const cls = s.mode === 'EnglishAuction' ? 'auction' : 'fixed';
                 const firstId = s.id;

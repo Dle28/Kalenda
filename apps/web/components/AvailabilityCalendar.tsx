@@ -66,8 +66,8 @@ export default function AvailabilityCalendar({ slots, days = 14 }: { slots: Slot
                     const st = new Date(s.start);
                     const en = new Date(s.end);
                     const label = s.mode === 'EnglishAuction'
-                      ? `Auction from $${(s.startPrice ?? 0).toFixed(2)}`
-                      : `Fixed $${(s.price ?? 0).toFixed(2)}`;
+                      ? `Auction from ${(s.startPrice ?? 0).toFixed(3)} SOL`
+                      : `Fixed ${(s.price ?? 0).toFixed(3)} SOL`;
                     return (
                       <div key={s.id} className={`calv-slot ${s.mode === 'EnglishAuction' ? 'auction' : 'stable'}`} title={`${st.toLocaleString()} - ${en.toLocaleTimeString()}`}>
                         <span className="calv-time">{fmtTime(st)}–{fmtTime(en)}</span>

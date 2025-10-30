@@ -82,13 +82,13 @@ export default function ManageSlotPage({ params }: { params: { id: string } }) {
         <span className="muted">{st.toLocaleString()} - {en.toLocaleTimeString()}</span>
         {slot.mode === 'Stable' ? (
           <label className="stack">
-            <span className="muted">Price (USDC)</span>
-            <input type="number" inputMode="decimal" min={0} step={0.01} value={price} onChange={(e) => setPrice(e.target.value)} placeholder={String(slot.price ?? 0)} />
+            <span className="muted">Price (SOL)</span>
+            <input type="number" inputMode="decimal" min={0} step={0.001} value={price} onChange={(e) => setPrice(e.target.value)} placeholder={String(slot.price ?? 0)} />
           </label>
         ) : (
           <label className="stack">
-            <span className="muted">Start price (USDC)</span>
-            <input type="number" inputMode="decimal" min={0} step={0.01} value={startPrice} onChange={(e) => setStartPrice(e.target.value)} placeholder={String(slot.startPrice ?? 0)} />
+            <span className="muted">Start price (SOL)</span>
+            <input type="number" inputMode="decimal" min={0} step={0.001} value={startPrice} onChange={(e) => setStartPrice(e.target.value)} placeholder={String(slot.startPrice ?? 0)} />
           </label>
         )}
         <div className="row" style={{ gap: 8 }}>

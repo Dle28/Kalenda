@@ -18,8 +18,9 @@ export default function BidRoom(props: {
   currency?: 'SOL';
   onPlaceBid?: (amount: number) => Promise<void> | void;
   enableDemoBidding?: boolean; // New prop for demo mode
+  onBidChange?: (amount: number) => void; // Callback when bid changes
 }) {
-  const { startPrice, bidStep, currentPrice, currency = 'SOL', onPlaceBid, enableDemoBidding = false } = props;
+  const { startPrice, bidStep, currentPrice, currency = 'SOL', onPlaceBid, enableDemoBidding = false, onBidChange } = props;
   const [maxAutoBid, setMaxAutoBid] = useState<string>('');
   const [log, setLog] = useState<BidEvent[]>([]);
   const [highestBid, setHighestBid] = useState(currentPrice ?? startPrice);
@@ -28,6 +29,11 @@ export default function BidRoom(props: {
   const minNext = useMemo(() => {
     return Math.round((highestBid + bidStep) * 1e6) / 1e6;
   }, [highestBid, bidStep]);
+
+  // Notify parent component when bid changes
+  useEffect(() => {
+    onBidChange?.(highestBid);
+  }, [highestBid, onBidChange]);
 
   // Demo: Random bidders place bids (auto mode)
   useEffect(() => {

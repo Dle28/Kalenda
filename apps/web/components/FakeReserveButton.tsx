@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useWallet, useConnection } from "@solana/wallet-adapter-react";
 import { PublicKey, Transaction, SystemProgram, LAMPORTS_PER_SOL } from "@solana/web3.js";
 
@@ -20,8 +20,18 @@ export default function FakeReserveButton({
   const { connection } = useConnection();
   const [status, setStatus] = useState<"idle" | "processing" | "success">("idle");
   const [txSignature, setTxSignature] = useState<string>("");
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   const [solscanUrl, setSolscanUrl] = useState<string>("");
+
+  // Auto-hide toast after 5 seconds
+  useEffect(() => {
+    if (showToast) {
+      const timer = setTimeout(() => {
+        setShowToast(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [showToast]);
 
   const handleReserve = async () => {
     if (!connected || !publicKey || !signTransaction) {
@@ -86,8 +96,8 @@ export default function FakeReserveButton({
       console.log('Cluster:', cluster);
       console.log('Solscan URL:', url);
 
-      // Show success modal
-      setShowSuccessModal(true);
+      // Show success toast notification
+      setShowToast(true);
 
     } catch (error) {
       console.error("Transaction failed:", error);
@@ -124,207 +134,164 @@ export default function FakeReserveButton({
         </button>
       )}
 
-      {/* Success Modal */}
-      {showSuccessModal && (
+      {/* Success Toast Notification */}
+      {showToast && (
         <div
-          onClick={() => setShowSuccessModal(false)}
           style={{
             position: "fixed",
-            top: "0",
-            left: "0",
-            right: "0",
-            bottom: "0",
-            margin: "0",
-            padding: "0",
-            width: "100vw",
-            height: "100vh",
-            background: "rgba(0, 0, 0, 0.75)",
-            backdropFilter: "blur(8px)",
+            top: "24px",
+            right: "24px",
             zIndex: 9999,
-            overflow: "hidden",
+            animation: "slideInRight 0.4s ease-out",
           }}
         >
+          <style>{`
+            @keyframes slideInRight {
+              from {
+                transform: translateX(400px);
+                opacity: 0;
+              }
+              to {
+                transform: translateX(0);
+                opacity: 1;
+              }
+            }
+          `}</style>
+          
           <div
-            onClick={(e) => e.stopPropagation()}
             style={{
-              position: "fixed",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              margin: "0",
-              background: "linear-gradient(145deg, rgba(17, 24, 39, 0.95), rgba(31, 41, 55, 0.95))",
-              border: "1px solid rgba(16, 185, 129, 0.2)",
-              borderRadius: "20px",
-              padding: "40px",
-              width: "90%",
-              maxWidth: "500px",
-              maxHeight: "90vh",
-              overflowY: "auto",
-              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(16, 185, 129, 0.1)",
+              background: "linear-gradient(135deg, rgba(16, 185, 129, 0.98), rgba(5, 150, 105, 0.98))",
+              backdropFilter: "blur(12px)",
+              border: "1px solid rgba(255, 255, 255, 0.25)",
+              borderRadius: "14px",
+              padding: "18px 20px",
+              minWidth: "380px",
+              maxWidth: "420px",
+              boxShadow: "0 20px 50px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.15)",
             }}
           >
-            {/* Success Icon */}
-            <div style={{ textAlign: "center", marginBottom: "32px" }}>
+            {/* Header with checkmark and close */}
+            <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "14px" }}>
               <div
                 style={{
-                  width: "96px",
-                  height: "96px",
-                  background: "linear-gradient(135deg, #10b981, #059669)",
-                  borderRadius: "50%",
-                  display: "inline-flex",
+                  width: "44px",
+                  height: "44px",
+                  background: "rgba(255, 255, 255, 0.25)",
+                  borderRadius: "10px",
+                  display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  boxShadow: "0 20px 40px rgba(16, 185, 129, 0.4), 0 0 0 8px rgba(16, 185, 129, 0.1)",
+                  flexShrink: 0,
                 }}
               >
-                <span style={{ fontSize: "56px", color: "white", lineHeight: 1 }}>✓</span>
+                <span style={{ fontSize: "26px", lineHeight: 1 }}>✓</span>
               </div>
-            </div>
-
-            {/* Title */}
-            <h2
-              style={{
-                fontSize: "32px",
-                fontWeight: 700,
-                textAlign: "center",
-                marginBottom: "8px",
-                color: "white",
-                letterSpacing: "-0.025em",
-              }}
-            >
-              Booking Confirmed!
-            </h2>
-
-            <p style={{ 
-              textAlign: "center", 
-              color: "rgba(156, 163, 175, 1)", 
-              marginBottom: "32px",
-              fontSize: "15px",
-            }}>
-              Your transaction has been recorded on Solana blockchain
-            </p>
-
-            {/* Details */}
-            <div
-              style={{
-                background: "rgba(16, 185, 129, 0.05)",
-                border: "1px solid rgba(16, 185, 129, 0.15)",
-                borderRadius: "16px",
-                padding: "24px",
-                marginBottom: "28px",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: "16px",
-                }}
-              >
-                <span style={{ color: "rgba(156, 163, 175, 1)", fontSize: "15px" }}>Duration</span>
-                <span style={{ fontWeight: 600, color: "white", fontSize: "16px" }}>{duration} minutes</span>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  paddingBottom: "16px",
-                  borderBottom: "1px solid rgba(16, 185, 129, 0.1)",
-                }}
-              >
-                <span style={{ color: "rgba(156, 163, 175, 1)", fontSize: "15px" }}>Amount</span>
-                <span style={{ fontWeight: 700, color: "#10b981", fontSize: "18px" }}>{price} SOL</span>
-              </div>
-              <div
-                style={{
-                  paddingTop: "16px",
-                }}
-              >
-                <div style={{ color: "rgba(156, 163, 175, 1)", fontSize: "13px", marginBottom: "8px", fontWeight: 500 }}>
-                  Transaction ID
-                </div>
-                <div
-                  style={{
-                    fontSize: "12px",
-                    fontFamily: "monospace",
-                    wordBreak: "break-all",
-                    color: "#10b981",
-                    background: "rgba(16, 185, 129, 0.08)",
-                    padding: "10px 12px",
-                    borderRadius: "8px",
-                    lineHeight: "1.5",
-                  }}
-                >
-                  {txSignature}
-                </div>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div style={{ display: "flex", gap: "12px", flexDirection: "column" }}>
-              <a
-                href={solscanUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  width: "100%",
-                  padding: "16px",
-                  textAlign: "center",
-                  textDecoration: "none",
-                  background: "linear-gradient(135deg, #10b981, #059669)",
-                  border: "none",
-                  borderRadius: "12px",
+              
+              <div style={{ flex: 1 }}>
+                <h3 style={{ 
+                  margin: 0, 
+                  fontSize: "17px", 
+                  fontWeight: 700, 
                   color: "white",
-                  fontSize: "16px",
-                  fontWeight: 600,
+                  lineHeight: 1.3,
+                  marginBottom: "4px",
+                }}>
+                  Transaction Successful!
+                </h3>
+                <p style={{ 
+                  margin: 0, 
+                  fontSize: "13px", 
+                  color: "rgba(255, 255, 255, 0.85)",
+                  lineHeight: 1.4,
+                }}>
+                  Booking confirmed • {price} SOL
+                </p>
+              </div>
+
+              <button
+                onClick={() => setShowToast(false)}
+                style={{
+                  background: "rgba(255, 255, 255, 0.2)",
+                  border: "none",
+                  borderRadius: "7px",
+                  width: "30px",
+                  height: "30px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  gap: "8px",
                   cursor: "pointer",
-                  transition: "all 0.2s ease",
-                  boxShadow: "0 4px 12px rgba(16, 185, 129, 0.3)",
+                  color: "white",
+                  fontSize: "20px",
+                  flexShrink: 0,
+                  transition: "background 0.2s ease",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                  e.currentTarget.style.boxShadow = "0 8px 20px rgba(16, 185, 129, 0.4)";
+                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.3)";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "0 4px 12px rgba(16, 185, 129, 0.3)";
+                  e.currentTarget.style.background = "rgba(255, 255, 255, 0.2)";
                 }}
               >
-                <span>🔍</span>
-                <span>View on Solscan</span>
-              </a>
-              <button
-                onClick={() => setShowSuccessModal(false)}
-                style={{
-                  width: "100%",
-                  padding: "14px",
-                  background: "transparent",
-                  border: "1px solid rgba(75, 85, 99, 0.5)",
-                  borderRadius: "12px",
-                  color: "rgba(156, 163, 175, 1)",
-                  fontSize: "15px",
-                  fontWeight: 500,
-                  cursor: "pointer",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(156, 163, 175, 0.8)";
-                  e.currentTarget.style.color = "white";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(75, 85, 99, 0.5)";
-                  e.currentTarget.style.color = "rgba(156, 163, 175, 1)";
-                }}
-              >
-                Close
+                ×
               </button>
             </div>
+
+            {/* Solscan Link */}
+            <a
+              href={solscanUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                padding: "12px 16px",
+                background: "rgba(255, 255, 255, 0.18)",
+                borderRadius: "10px",
+                textDecoration: "none",
+                color: "white",
+                fontSize: "14px",
+                fontWeight: 600,
+                transition: "all 0.2s ease",
+                border: "1px solid rgba(255, 255, 255, 0.25)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(255, 255, 255, 0.28)";
+                e.currentTarget.style.transform = "translateY(-1px)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.2)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "rgba(255, 255, 255, 0.18)";
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+            >
+              <span>🔍</span>
+              <span>View on Solscan</span>
+              <span style={{ marginLeft: "auto", opacity: 0.7, fontSize: "16px" }}>→</span>
+            </a>
+
+            {/* Auto-close progress bar */}
+            <div style={{ 
+              marginTop: "14px", 
+              height: "3px", 
+              background: "rgba(255, 255, 255, 0.2)", 
+              borderRadius: "2px",
+              overflow: "hidden",
+            }}>
+              <div style={{
+                height: "100%",
+                background: "rgba(255, 255, 255, 0.6)",
+                animation: "shrink 5s linear",
+                width: "100%",
+              }} />
+            </div>
+            <style>{`
+              @keyframes shrink {
+                from { width: 100%; }
+                to { width: 0%; }
+              }
+            `}</style>
           </div>
         </div>
       )}

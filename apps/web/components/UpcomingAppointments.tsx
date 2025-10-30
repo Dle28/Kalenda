@@ -214,12 +214,12 @@ export default function UpcomingAppointments({ slots, creators }: UpcomingAppoin
                                 {slot.mode === 'EnglishAuction' ? (
                                   <>
                                     <span className={styles.label}>Auction</span>
-                                    <span className={styles.price}>${slot.startPrice?.toFixed(2)}</span>
+                                    <span className={styles.price}>{slot.startPrice?.toFixed(3)} SOL</span>
                                   </>
                                 ) : (
                                   <>
                                     <span className={styles.label}>Fixed</span>
-                                    <span className={styles.price}>${slot.price?.toFixed(2)}</span>
+                                    <span className={styles.price}>{slot.price?.toFixed(3)} SOL</span>
                                   </>
                                 )}
                               </div>
