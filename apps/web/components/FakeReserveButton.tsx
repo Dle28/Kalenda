@@ -130,22 +130,28 @@ export default function FakeReserveButton({
           onClick={() => setShowSuccessModal(false)}
           style={{
             position: "fixed",
-            top: 0,
-            left: 0,
+            top: "0",
+            left: "0",
+            right: "0",
+            bottom: "0",
+            margin: "0",
+            padding: "0",
             width: "100vw",
             height: "100vh",
             background: "rgba(0, 0, 0, 0.75)",
             backdropFilter: "blur(8px)",
             zIndex: 9999,
+            overflow: "hidden",
           }}
         >
           <div
             onClick={(e) => e.stopPropagation()}
             style={{
-              position: "absolute",
+              position: "fixed",
               top: "50%",
               left: "50%",
               transform: "translate(-50%, -50%)",
+              margin: "0",
               background: "linear-gradient(145deg, rgba(17, 24, 39, 0.95), rgba(31, 41, 55, 0.95))",
               border: "1px solid rgba(16, 185, 129, 0.2)",
               borderRadius: "20px",
