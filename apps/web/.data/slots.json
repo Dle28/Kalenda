@@ -192,6 +192,14 @@
     "price": 20
   },
   {
+    "id": "BUbmBExp9teHHjHFzcMZb5XhFU8D4LHbduSXqVzgpkZy-2025-10-28T12:00:00.000Z",
+    "creator": "BUbmBExp9teHHjHFzcMZb5XhFU8D4LHbduSXqVzgpkZy",
+    "start": "2025-10-28T12:00:00.000Z",
+    "end": "2025-10-28T12:30:00.000Z",
+    "mode": "Stable",
+    "price": 0.1
+  },
+  {
     "id": "FLWfSH7ip9jukg3pDGAnheETpuYmm8W7XgDPXku7GYyf-2025-10-28T13:00:00.000Z",
     "creator": "FLWfSH7ip9jukg3pDGAnheETpuYmm8W7XgDPXku7GYyf",
     "start": "2025-10-28T13:00:00.000Z",
@@ -620,6 +628,70 @@
     "creator": "BUbmBExp9teHHjHFzcMZb5XhFU8D4LHbduSXqVzgpkZy",
     "start": "2025-11-06T08:00:00.000Z",
     "end": "2025-11-06T11:00:00.000Z",
+    "mode": "EnglishAuction",
+    "startPrice": 10000
+  },
+  {
+    "id": "BUbmBExp9teHHjHFzcMZb5XhFU8D4LHbduSXqVzgpkZy-2025-11-07T04:00:00.000Z",
+    "creator": "BUbmBExp9teHHjHFzcMZb5XhFU8D4LHbduSXqVzgpkZy",
+    "start": "2025-11-07T04:00:00.000Z",
+    "end": "2025-11-07T07:00:00.000Z",
+    "mode": "EnglishAuction",
+    "startPrice": 10000
+  },
+  {
+    "id": "BUbmBExp9teHHjHFzcMZb5XhFU8D4LHbduSXqVzgpkZy-2025-11-07T05:00:00.000Z",
+    "creator": "BUbmBExp9teHHjHFzcMZb5XhFU8D4LHbduSXqVzgpkZy",
+    "start": "2025-11-07T05:00:00.000Z",
+    "end": "2025-11-07T08:00:00.000Z",
+    "mode": "EnglishAuction",
+    "startPrice": 10000
+  },
+  {
+    "id": "BUbmBExp9teHHjHFzcMZb5XhFU8D4LHbduSXqVzgpkZy-2025-11-07T06:00:00.000Z",
+    "creator": "BUbmBExp9teHHjHFzcMZb5XhFU8D4LHbduSXqVzgpkZy",
+    "start": "2025-11-07T06:00:00.000Z",
+    "end": "2025-11-07T09:00:00.000Z",
+    "mode": "EnglishAuction",
+    "startPrice": 10000
+  },
+  {
+    "id": "BUbmBExp9teHHjHFzcMZb5XhFU8D4LHbduSXqVzgpkZy-2025-11-07T07:00:00.000Z",
+    "creator": "BUbmBExp9teHHjHFzcMZb5XhFU8D4LHbduSXqVzgpkZy",
+    "start": "2025-11-07T07:00:00.000Z",
+    "end": "2025-11-07T10:00:00.000Z",
+    "mode": "EnglishAuction",
+    "startPrice": 10000
+  },
+  {
+    "id": "BUbmBExp9teHHjHFzcMZb5XhFU8D4LHbduSXqVzgpkZy-2025-11-07T08:00:00.000Z",
+    "creator": "BUbmBExp9teHHjHFzcMZb5XhFU8D4LHbduSXqVzgpkZy",
+    "start": "2025-11-07T08:00:00.000Z",
+    "end": "2025-11-07T11:00:00.000Z",
+    "mode": "EnglishAuction",
+    "startPrice": 10000
+  },
+  {
+    "id": "BUbmBExp9teHHjHFzcMZb5XhFU8D4LHbduSXqVzgpkZy-2025-11-07T09:00:00.000Z",
+    "creator": "BUbmBExp9teHHjHFzcMZb5XhFU8D4LHbduSXqVzgpkZy",
+    "start": "2025-11-07T09:00:00.000Z",
+    "end": "2025-11-07T12:00:00.000Z",
+    "mode": "EnglishAuction",
+    "startPrice": 10000
+  },
+  {
+    "id": "BUbmBExp9teHHjHFzcMZb5XhFU8D4LHbduSXqVzgpkZy-2025-11-07T10:00:00.000Z",
+    "creator": "BUbmBExp9teHHjHFzcMZb5XhFU8D4LHbduSXqVzgpkZy",
+    "start": "2025-11-07T10:00:00.000Z",
+    "end": "2025-11-07T13:00:00.000Z",
+    "mode": "EnglishAuction",
+    "startPrice": 10000
+  },
+  {
+    "id": "BUbmBExp9teHHjHFzcMZb5XhFU8D4LHbduSXqVzgpkZy-2025-11-07T11:00:00.000Z",
+    "creator": "BUbmBExp9teHHjHFzcMZb5XhFU8D4LHbduSXqVzgpkZy",
+    "start": "2025-11-07T11:00:00.000Z",
+    "end": "2025-11-07T14:00:00.000Z",
     "mode": "EnglishAuction",
     "startPrice": 10000
   },
