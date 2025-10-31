@@ -144,14 +144,6 @@
     "price": 20
   },
   {
-    "id": "FLWfSH7ip9jukg3pDGAnheETpuYmm8W7XgDPXku7GYyf-2025-10-28T07:00:00.000Z",
-    "creator": "FLWfSH7ip9jukg3pDGAnheETpuYmm8W7XgDPXku7GYyf",
-    "start": "2025-10-28T07:00:00.000Z",
-    "end": "2025-10-28T07:30:00.000Z",
-    "mode": "Stable",
-    "price": 20
-  },
-  {
     "id": "FLWfSH7ip9jukg3pDGAnheETpuYmm8W7XgDPXku7GYyf-2025-10-28T08:00:00.000Z",
     "creator": "FLWfSH7ip9jukg3pDGAnheETpuYmm8W7XgDPXku7GYyf",
     "start": "2025-10-28T08:00:00.000Z",
@@ -372,14 +364,6 @@
     "creator": "FLWfSH7ip9jukg3pDGAnheETpuYmm8W7XgDPXku7GYyf",
     "start": "2025-10-30T09:00:00.000Z",
     "end": "2025-10-30T09:30:00.000Z",
-    "mode": "Stable",
-    "price": 20
-  },
-  {
-    "id": "FLWfSH7ip9jukg3pDGAnheETpuYmm8W7XgDPXku7GYyf-2025-10-30T10:00:00.000Z",
-    "creator": "FLWfSH7ip9jukg3pDGAnheETpuYmm8W7XgDPXku7GYyf",
-    "start": "2025-10-30T10:00:00.000Z",
-    "end": "2025-10-30T10:30:00.000Z",
     "mode": "Stable",
     "price": 20
   },
