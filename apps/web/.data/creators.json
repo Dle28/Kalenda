@@ -1,11 +1,13 @@
 {
   "FLWfSH7ip9jukg3pDGAnheETpuYmm8W7XgDPXku7GYyf": {
     "pubkey": "FLWfSH7ip9jukg3pDGAnheETpuYmm8W7XgDPXku7GYyf",
-    "name": "jnkajda",
-    "bio": "heheh",
-    "location": "ndawjkdna",
+    "name": "Lax Huy",
+    "bio": "SOLANA LOVER",
+    "location": "Hanoi",
     "timezone": "Asia/haloi",
     "meetingTypes": [
+      "Video call",
+      "Audio call",
       "In-person"
     ],
     "session": {
@@ -15,15 +17,15 @@
     "defaults": {
       "mode": "Stable",
       "currency": "SOL",
-      "durationMin": "30",
-      "bufferMin": "10",
-      "price": "20",
+      "durationMin": "",
+      "bufferMin": "",
+      "price": "0.5",
       "startPrice": "10",
       "bidStep": "1"
     },
     "avatar": "/uploads/1760896121915-cute-cat-illustration-cat-kawaii-chibi-drawing-style-cat-cartoon-vector.jpg",
-    "sessionTitle": "dwad",
-    "sessionDescription": "daw",
+    "sessionTitle": "Pitching",
+    "sessionDescription": "Kalenda",
     "sessionMaterials": "",
     "availability": {
       "1": [
